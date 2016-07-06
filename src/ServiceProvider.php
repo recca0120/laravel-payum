@@ -35,7 +35,7 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @var bool
      */
-    protected $defer = false;
+    protected $defer = true;
 
     /**
      * boot.
@@ -110,7 +110,7 @@ class ServiceProvider extends BaseServiceProvider
         $gatewayConfigs = $config->get('payum.gatewayConfigs');
         foreach ($gatewayConfigs as $factoryName => $options) {
             $gatewayName = array_get($options, 'gatewayName');
-            $gatewayConfig = array_get($options, 'config');
+            $gatewayConfig = array_get($options, 'config', []);
             $payumBuilder->addGateway($gatewayName, array_merge([
                 'factory' => $factoryName,
             ], $gatewayConfig));
@@ -219,6 +219,7 @@ class ServiceProvider extends BaseServiceProvider
             return $app->make(PayumBuilder::class)->getPayum();
         });
 
+        $this->app->singleton(Payment::class, Payment::class);
         // ioc
         // $this->app->bind('payum.converter.reply_to_http_response', ReplyToSymfonyResponseConverter::class);
         // $this->app->bind('payum.action.get_http_request', GetHttpRequestAction::class);
@@ -234,8 +235,9 @@ class ServiceProvider extends BaseServiceProvider
     public function provides()
     {
         return [
-            PayumBuilder::class,
+            Payment::class,
             Payum::class,
+            PayumBuilder::class,
         ];
     }
 }

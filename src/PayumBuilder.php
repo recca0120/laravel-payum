@@ -4,7 +4,7 @@ namespace Recca0120\LaravelPayum;
 
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Payum\Core\Model\ArrayObject;
-use Payum\Core\Model\Payment;
+use Payum\Core\Model\Payment as PayumPayment;
 use Payum\Core\Model\Token;
 use Payum\Core\PayumBuilder as CorePayumBuilder;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
@@ -44,7 +44,7 @@ class PayumBuilder extends CorePayumBuilder
     {
         $this
             ->setTokenStorage($this->app->make(FilesystemStorage::class, ['modelClass' => Token::class, 'idProperty' => 'hash']))
-            ->addStorage(Payment::class, $this->app->make(FilesystemStorage::class, ['modelClass' => Payment::class, 'idProperty' => 'number']))
+            ->addStorage(PayumPayment::class, $this->app->make(FilesystemStorage::class, ['modelClass' => PayumPayment::class, 'idProperty' => 'number']))
             ->addStorage(ArrayObject::class, $this->app->make(FilesystemStorage::class, ['modelClass' => ArrayObject::class]));
 
         return $this;

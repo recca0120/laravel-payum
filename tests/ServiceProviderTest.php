@@ -10,6 +10,7 @@ use Payum\Core\Payum;
 use Payum\Core\Registry\StorageRegistryInterface;
 use Payum\Core\Storage\StorageInterface;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
+use Recca0120\LaravelPayum\Payment;
 use Recca0120\LaravelPayum\PayumBuilder;
 use Recca0120\LaravelPayum\ServiceProvider;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
@@ -37,6 +38,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 $closure(m::self());
             })
             ->shouldReceive('singleton')->with(Payum::class, m::type(Closure::class))
+            ->shouldReceive('singleton')->with(Payment::class, Payment::class)
             ->shouldReceive('make')->with(PayumBuilder::class)
             ->shouldReceive('offsetGet')->with('config')->andReturn($config)
             ->mock();

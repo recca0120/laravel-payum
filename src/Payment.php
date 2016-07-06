@@ -1,18 +1,20 @@
 <?php
 
-namespace Recca0120\LaravelPayum\Http\Controllers;
+namespace Recca0120\LaravelPayum;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Session\SessionManager;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
+use Payum\Core\Model\Payment as PayumPayment;
 use Payum\Core\Payum;
 use Payum\Core\Reply\ReplyInterface;
+use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\HttpRequestVerifierInterface;
+use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class Controller extends BaseController
+class Payment
 {
     /**
      * $payum.
@@ -22,18 +24,18 @@ abstract class Controller extends BaseController
     protected $payum;
 
     /**
-     * $converter.
-     *
-     * @var \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter
-     */
-    protected $converter;
-
-    /**
      * $sessionManager.
      *
      * @var \Illuminate\Session\SessionManager
      */
     protected $sessionManager;
+
+    /**
+     * $converter.
+     *
+     * @var \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter
+     */
+    protected $converter;
 
     /**
      * $payumTokenId.
@@ -48,13 +50,13 @@ abstract class Controller extends BaseController
      * @method __construct
      *
      * @param \Payum\Core\Payum                                          $payum
-     * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
      * @param \Illuminate\Session\SessionManager                         $sessionManager
+     * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
      */
     public function __construct(
         Payum $payum,
-        ReplyToSymfonyResponseConverter $converter,
-        SessionManager $sessionManager
+        SessionManager $sessionManager,
+        ReplyToSymfonyResponseConverter $converter
     ) {
         $this->payum = $payum;
         $this->converter = $converter;
@@ -62,17 +64,84 @@ abstract class Controller extends BaseController
     }
 
     /**
+     * getPayum.
+     *
+     * @method getPayum
+     *
+     * @return \Payum\Core\Payum
+     */
+    public function getPayum()
+    {
+        return $this->payum;
+    }
+
+    /**
+     * create.
+     *
+     * @method create
+     *
+     * @param string  $gatewayName
+     * @param Closure $closure
+     *
+     * @return mixed
+     */
+    public function prepare($gatewayName, Closure $closure)
+    {
+        $storage = $this->payum->getStorage($this->getPaymentModelName());
+        $payment = $storage->create();
+        $closure($payment, $storage, $this->payum);
+        $storage->update($payment);
+        $captureToken = $this->payum->getTokenFactory()->createCaptureToken($gatewayName, $payment, 'payment.done');
+
+        return redirect($captureToken->getTargetUrl());
+    }
+
+    /**
+     * getPaymentModelName.
+     *
+     * @method getPaymentModelName
+     *
+     * @return string
+     */
+    protected function getPaymentModelName()
+    {
+        return (in_array(EloquentPayment::class, array_keys($this->payum->getStorages())) === true) ?
+            EloquentPayment::class : PayumPayment::class;
+    }
+
+    /**
+     * done.
+     *
+     * @method done
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $payumToken
+     * @param \Closure                 $closure
+     *
+     * @return mixed
+     */
+    public function done($request, $payumToken, Closure $closure)
+    {
+        return $this->doAction($request, $payumToken, function ($httpRequestVerifier, $gateway, $token) use ($closure) {
+            $gateway->execute($status = new GetHumanStatus($token));
+            $payment = $status->getFirstModel();
+
+            return $closure($status, $payment);
+        });
+    }
+
+    /**
      * doAction.
      *
      * @method doAction
      *
-     * @param \Closure                 $closure
      * @param \Illuminate\Http\Request $request
      * @param string                   $payumToken
+     * @param \Closure                 $closure
      *
      * @return mixed
      */
-    protected function doAction(Closure $closure, Request $request, $payumToken = null)
+    public function doAction(Request $request, $payumToken, Closure $closure)
     {
         $httpRequestVerifier = $this->payum->getHttpRequestVerifier();
         $token = $this->getToken($httpRequestVerifier, $request, $payumToken);
