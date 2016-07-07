@@ -24,7 +24,7 @@ trait PaymentRefund
         return $payment->doAction($request, $payumToken, function ($httpRequestVerifier, $gateway, $token) {
             $gateway->execute(new Refund($token));
             $httpRequestVerifier->invalidate($token);
-            if ($token->getAfterUrl()) {
+            if (empty($token->getAfterUrl()) === false) {
                 return redirect($token->getAfterUrl());
             }
 

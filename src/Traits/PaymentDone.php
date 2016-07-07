@@ -31,8 +31,8 @@ trait PaymentDone
      *
      * @method showPayment
      *
-     * @param  \Payum\Core\Model\PaymentInterface $payment
-     * @param  mixed      $status
+     * @param \Payum\Core\Model\PaymentInterface $payment
+     * @param \Payum\Core\Request\GetHumanStatus $status
      *
      * @return mixed
      */

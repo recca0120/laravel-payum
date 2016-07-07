@@ -16,9 +16,12 @@ trait PaymentPrepare
      *
      * @return mixed
      */
-    public function prepare(Payment $payment)
+    public function prepare(Payment $payment, $gatewayName = null)
     {
-        if (empty($this->gatewayName) === true) {
+        $gatewayName = (empty($gatewayName) === true && empty($this->gatewayName) === false) ?
+            $this->gatewayName : $gatewayName;
+
+        if (empty($gatewayName) === true) {
             throw new InvalidArgumentException('Undefined property: '.static::class.'::$gatewayName');
         }
 

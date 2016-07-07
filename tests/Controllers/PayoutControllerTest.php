@@ -21,38 +21,59 @@ class PayoutControllerTest extends PHPUnit_Framework_TestCase
 
     public function test_payout()
     {
+        // $payumToken = uniqid();
+        //
+        // $token = m::mock(TokenInterface::class)
+        //     ->shouldReceive('getGatewayName')->andReturn('test')
+        //     ->shouldReceive('getAfterUrl')->andReturn('test')
+        //     ->mock();
+        //
+        // $request = m::mock(Request::class)
+        //     ->shouldReceive('merge')->with([
+        //         'payum_token' => $payumToken,
+        //     ])->once()
+        //     ->mock();
+        //
+        // $httpRequestVerifier = m::mock(HttpRequestVerifier::class)
+        //     ->shouldReceive('invalidate')->with($token)->once()
+        //     ->shouldReceive('verify')->with($request)->once()->andReturn($token)
+        //     ->mock();
+        //
+        // $gateway = m::mock(GatewayInterface::class)
+        //     ->shouldReceive('execute')->with(m::type(Payout::class))->once()
+        //     ->mock();
+        //
+        // $payum = m::mock(Payum::class)
+        //     ->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
+        //     ->shouldReceive('getGateway')->once()->andReturn($gateway)
+        //     ->mock();
+        //
+        // $sessionManager = m::mock(SessionManager::class);
+        //
+        // $converter = m::mock(ReplyToSymfonyResponseConverter::class);
+        //
+        // $payment = new Payment($payum, $sessionManager, $converter);
+        // $controller = new PaymentController();
+        // $controller->payout($payment, $request, $payumToken);
+        $request = m::mock(Request::class);
         $payumToken = uniqid();
+        $payment = m::mock(Payment::class)
+            ->shouldReceive('doAction')->with($request, $payumToken, m::type(Closure::class))->once()->andReturnUsing(function ($request, $payumToken, $closure) {
+                $token = m::mock(TokenInterface::class)
+                    ->shouldReceive('getAfterUrl')->once()->andReturn('test')
+                    ->mock();
 
-        $token = m::mock(TokenInterface::class)
-            ->shouldReceive('getGatewayName')->andReturn('test')
-            ->shouldReceive('getAfterUrl')->andReturn('test')
+                $httpRequestVerifier = m::mock(HttpRequestVerifier::class)
+                    ->shouldReceive('invalidate')->with($token)->once()
+                    ->mock();
+
+                $gateway = m::mock(GatewayInterface::class)
+                    ->shouldReceive('execute')->with(m::type(Payout::class))->once()
+                    ->mock();
+
+                return $closure($httpRequestVerifier, $gateway, $token);
+            })
             ->mock();
-
-        $request = m::mock(Request::class)
-            ->shouldReceive('merge')->with([
-                'payum_token' => $payumToken,
-            ])->once()
-            ->mock();
-
-        $httpRequestVerifier = m::mock(HttpRequestVerifier::class)
-            ->shouldReceive('invalidate')->with($token)->once()
-            ->shouldReceive('verify')->with($request)->once()->andReturn($token)
-            ->mock();
-
-        $gateway = m::mock(GatewayInterface::class)
-            ->shouldReceive('execute')->with(m::type(Payout::class))->once()
-            ->mock();
-
-        $payum = m::mock(Payum::class)
-            ->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->once()->andReturn($gateway)
-            ->mock();
-
-        $sessionManager = m::mock(SessionManager::class);
-
-        $converter = m::mock(ReplyToSymfonyResponseConverter::class);
-
-        $payment = new Payment($payum, $sessionManager, $converter);
         $controller = new PaymentController();
         $controller->payout($payment, $request, $payumToken);
     }
