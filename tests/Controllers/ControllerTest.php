@@ -60,8 +60,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->authorize($request, $payumToken);
+        $controller = new PaymentController();
+        $controller->authorize($payment, $request, $payumToken);
     }
 
     public function test_capture()
@@ -98,8 +98,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->capture($request, $payumToken);
+        $controller = new PaymentController();
+        $controller->capture($payment, $request, $payumToken);
     }
 
     public function test_notify()
@@ -135,8 +135,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->notify($request, $payumToken);
+        $controller = new PaymentController();
+        $controller->notify($payment, $request, $payumToken);
     }
 
     public function test_notify_unsafe()
@@ -157,8 +157,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->notifyUnsafe($gatewayName);
+        $controller = new PaymentController();
+        $controller->notifyUnsafe($payment, $gatewayName);
     }
 
     public function test_payout()
@@ -195,8 +195,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->payout($request, $payumToken);
+        $controller = new PaymentController();
+        $controller->payout($payment, $request, $payumToken);
     }
 
     public function test_refund()
@@ -233,8 +233,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->refund($request, $payumToken);
+        $controller = new PaymentController();
+        $controller->refund($payment, $request, $payumToken);
     }
 
     public function test_sync()
@@ -271,8 +271,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->sync($request, $payumToken);
+        $controller = new PaymentController();
+        $controller->sync($payment, $request, $payumToken);
     }
 
     public function test_capture_without_payum_token()
@@ -312,8 +312,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->capture($request, null);
+        $controller = new PaymentController();
+        $controller->capture($payment, $request, null);
     }
 
     public function test_throw_reply_interface()
@@ -355,8 +355,8 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             ->mock();
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $controller = new PaymentController($payment);
-        $controller->capture($request, $payumToken);
+        $controller = new PaymentController();
+        $controller->capture($payment, $request, $payumToken);
     }
 }
 
