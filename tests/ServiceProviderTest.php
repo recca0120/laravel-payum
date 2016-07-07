@@ -5,15 +5,19 @@ use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Routing\Router;
 use Mockery as m;
-use Payum\Core\GatewayFactoryInterface;
+use Payum\Core\Model\ArrayObject;
+use Payum\Core\Model\Payment as PayumPayment;
+use Payum\Core\Model\Token;
 use Payum\Core\Payum;
-use Payum\Core\Registry\StorageRegistryInterface;
 use Payum\Core\Storage\StorageInterface;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
+use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
+use Recca0120\LaravelPayum\Model\Token as EloquentToken;
 use Recca0120\LaravelPayum\Payment;
 use Recca0120\LaravelPayum\PayumBuilder;
 use Recca0120\LaravelPayum\ServiceProvider;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
+use Recca0120\LaravelPayum\Storage\FilesystemStorage;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
 {
@@ -24,9 +28,11 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
     public function test_register()
     {
-        $tokenStorage = m::mock(StorageInterface::class);
+        $payumBuilder = m::mock(PayumBuilder::class)
+            ->shouldReceive('getPayum')->once()
+            ->mock();
 
-        $registry = m::mock(StorageRegistryInterface::class);
+        $storage = m::mock(StorageInterface::class);
 
         $config = m::mock(ConfigContract::class)
             ->shouldReceive('get')->andReturn([])
@@ -34,50 +40,39 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->mock();
 
         $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
-            ->shouldReceive('singleton')->with(PayumBuilder::class, m::type(Closure::class))->andReturnUsing(function ($className, $closure) {
-                $closure(m::self());
-            })
-            ->shouldReceive('singleton')->with(Payum::class, m::type(Closure::class))
-            ->shouldReceive('singleton')->with(Payment::class, Payment::class)
-            ->shouldReceive('make')->with(PayumBuilder::class)
             ->shouldReceive('offsetGet')->with('config')->andReturn($config)
+            ->shouldReceive('singleton')->with(PayumBuilder::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) {
+                return $closure(m::self());
+            })
+            ->shouldReceive('singleton')->with(Payum::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) {
+                return $closure(m::self());
+            })
+            ->shouldReceive('singleton')->with(Payment::class, Payment::class)->once()
+            ->shouldReceive('make')->with(FilesystemStorage::class, [
+                'modelClass' => Token::class,
+                'idProperty' => 'hash',
+            ])->once()->andReturn($storage)
+            ->shouldReceive('make')->with(FilesystemStorage::class, [
+                'modelClass' => PayumPayment::class,
+                'idProperty' => 'number',
+            ])->once()->andReturn($storage)
+            ->shouldReceive('make')->with(FilesystemStorage::class, [
+                'modelClass' => ArrayObject::class,
+            ])->once()->andReturn($storage)
+            ->shouldReceive('make')->with(PayumBuilder::class)->andReturn($payumBuilder)
             ->mock();
 
         $serviceProvider = new ServiceProvider($app);
         $serviceProvider->register();
-        $serviceProvider->provides();
     }
 
-    public function test_boot()
+    public function test_register_with_eloquent()
     {
-        $config = m::mock(ConfigContract::class)
-            ->shouldReceive('get')->andReturn([])
-            ->shouldReceive('set')
-            ->mock();
-
-        $viewFactory = m::mock(ViewFactory::class)
-            ->shouldReceive('addNamespace')->with('payum', m::any())
-            ->mock();
-
-        $router = m::mock(Router::class)
-            ->shouldReceive('group')->with(m::any(), m::type(Closure::class))
-            ->mock();
-
         $payumBuilder = m::mock(PayumBuilder::class)
-            ->shouldReceive('addDefaultStorages')->once()->andReturnSelf()
+            ->shouldReceive('getPayum')->once()
             ->mock();
 
-        $app = m::mock(ApplicationContract::class)
-            ->shouldReceive('routesAreCached')->andReturn(false)
-            ->mock();
-
-        $serviceProvider = new ServiceProvider($app);
-        $serviceProvider->boot($payumBuilder, $viewFactory, $router, $config);
-    }
-
-    public function test_boot_with_eloquent()
-    {
-        $gatewayFactoryInterface = m::mock(GatewayFactoryInterface::class);
+        $storage = m::mock(StorageInterface::class);
 
         $config = m::mock(ConfigContract::class)
             ->shouldReceive('get')->with('payum.storage.token')->andReturn('database')
@@ -91,10 +86,37 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('get')->with('payum.gatewayFactories')->andReturn([
                 'customFactoryName' => 'customFactoryClass',
             ])
-            ->shouldReceive('get')
+            ->shouldReceive('get')->andReturn([])
             ->shouldReceive('set')
             ->mock();
 
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class)
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
+            ->shouldReceive('singleton')->with(PayumBuilder::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) {
+                return $closure(m::self());
+            })
+            ->shouldReceive('singleton')->with(Payum::class, m::type(Closure::class))->once()->andReturnUsing(function ($className, $closure) {
+                return $closure(m::self());
+            })
+            ->shouldReceive('singleton')->with(Payment::class, Payment::class)->once()
+            ->shouldReceive('make')->with(EloquentStorage::class, [
+                'modelClass' => EloquentToken::class,
+            ])->once()->andReturn($storage)
+            ->shouldReceive('make')->with(EloquentStorage::class, [
+                'modelClass' => EloquentPayment::class,
+            ])->once()->andReturn($storage)
+            ->shouldReceive('make')->with(EloquentStorage::class, [
+                'modelClass' => GatewayConfig::class,
+            ])->once()->andReturn($storage)
+            ->shouldReceive('make')->with(PayumBuilder::class)->andReturn($payumBuilder)
+            ->mock();
+
+        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider->register();
+    }
+
+    public function test_boot()
+    {
         $viewFactory = m::mock(ViewFactory::class)
             ->shouldReceive('addNamespace')->with('payum', m::any())
             ->mock();
@@ -103,25 +125,12 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('group')->with(m::any(), m::type(Closure::class))
             ->mock();
 
-        $payumBuilder = m::mock(PayumBuilder::class)
-            ->shouldReceive('addEloquentStorages')->once()->andReturnSelf()
-            ->shouldReceive('setGatewayConfigStorage')->once()->andReturnSelf()
-            ->shouldReceive('addGatewayFactory')->with('customFactoryName', m::type(Closure::class))->once()->andReturnUsing(function ($gatewayName, $closure) use ($gatewayFactoryInterface) {
-                $closure([], $gatewayFactoryInterface);
-            })
-            ->shouldReceive('addGateway')
-            ->mock();
-
         $app = m::mock(ApplicationContract::class)
             ->shouldReceive('routesAreCached')->andReturn(false)
-            ->shouldReceive('make')->with(EloquentStorage::class, [
-                'modelClass' => GatewayConfig::class,
-            ])
-            ->shouldReceive('make')->with('customFactoryClass', m::any())
             ->mock();
 
         $serviceProvider = new ServiceProvider($app);
-        $serviceProvider->boot($payumBuilder, $viewFactory, $router, $config);
+        $serviceProvider->boot($viewFactory, $router);
     }
 }
 
