@@ -31,13 +31,6 @@ class ServiceProvider extends BaseServiceProvider
     protected $namespace = 'Recca0120\LaravelPayum\Http\Controllers';
 
     /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
-    protected $defer = false;
-
-    /**
      * boot.
      *
      * @method boot

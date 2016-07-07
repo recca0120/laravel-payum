@@ -120,13 +120,13 @@ class Payment
      *
      * @return mixed
      */
-    public function done($request, $payumToken, Closure $closure)
+    public function done(Request $request, $payumToken, Closure $closure)
     {
         return $this->doAction($request, $payumToken, function ($httpRequestVerifier, $gateway, $token) use ($closure) {
             $gateway->execute($status = new GetHumanStatus($token));
             $payment = $status->getFirstModel();
 
-            return $closure($status, $payment);
+            return $closure($payment, $status);
         });
     }
 

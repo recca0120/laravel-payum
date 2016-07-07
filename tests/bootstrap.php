@@ -25,3 +25,15 @@ use Carbon\Carbon;
 */
 date_default_timezone_set('UTC');
 Carbon::setTestNow(Carbon::now());
+
+if (function_exists('redirect') === false) {
+    function redirect()
+    {
+    }
+}
+
+if (function_exists('response') === false) {
+    function response()
+    {
+    }
+}

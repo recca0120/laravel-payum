@@ -3,19 +3,19 @@
 namespace Recca0120\LaravelPayum\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
-use Recca0120\LaravelPayum\Http\Controllers\Traits\AuthorizeTrait;
-use Recca0120\LaravelPayum\Http\Controllers\Traits\CaptureTrait;
-use Recca0120\LaravelPayum\Http\Controllers\Traits\NotifyTrait;
-use Recca0120\LaravelPayum\Http\Controllers\Traits\PayoutTrait;
-use Recca0120\LaravelPayum\Http\Controllers\Traits\RefundTrait;
-use Recca0120\LaravelPayum\Http\Controllers\Traits\SyncTrait;
+use Recca0120\LaravelPayum\Traits\PaymentAuthorize;
+use Recca0120\LaravelPayum\Traits\PaymentCapture;
+use Recca0120\LaravelPayum\Traits\PaymentNotify;
+use Recca0120\LaravelPayum\Traits\PaymentPayout;
+use Recca0120\LaravelPayum\Traits\PaymentRefund;
+use Recca0120\LaravelPayum\Traits\PaymentSync;
 
 class PaymentController extends BaseController
 {
-    use AuthorizeTrait,
-        CaptureTrait,
-        NotifyTrait,
-        PayoutTrait,
-        RefundTrait,
-        SyncTrait;
+    use PaymentAuthorize,
+        PaymentCapture,
+        PaymentNotify,
+        PaymentPayout,
+        PaymentRefund,
+        PaymentSync;
 }

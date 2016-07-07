@@ -1,28 +1,28 @@
 <?php
 
-namespace Recca0120\LaravelPayum\Http\Controllers\Traits;
+namespace Recca0120\LaravelPayum\Traits;
 
 use Illuminate\Http\Request;
-use Payum\Core\Request\Payout;
+use Payum\Core\Request\Authorize;
 use Recca0120\LaravelPayum\Payment;
 
-trait PayoutTrait
+trait PaymentAuthorize
 {
     /**
-     * payout.
+     * authorize.
      *
-     * @method payout
+     * @method authorize
      *
      * @param \Recca0120\LaravelPayum\Payment $payment
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param \Illuminate\Http\Request        $request
+     * @param string                          $payumToken
      *
      * @return mixed
      */
-    public function payout(Payment $payment, Request $request, $payumToken)
+    public function authorize(Payment $payment, Request $request, $payumToken)
     {
         return $payment->doAction($request, $payumToken, function ($httpRequestVerifier, $gateway, $token) {
-            $gateway->execute(new Payout($token));
+            $gateway->execute(new Authorize($token));
             $httpRequestVerifier->invalidate($token);
 
             return redirect($token->getAfterUrl());

@@ -1,12 +1,12 @@
 <?php
 
-namespace Recca0120\LaravelPayum\Http\Controllers\Traits;
+namespace Recca0120\LaravelPayum\Traits;
 
 use Illuminate\Http\Request;
 use Payum\Core\Request\Notify;
 use Recca0120\LaravelPayum\Payment;
 
-trait NotifyTrait
+trait PaymentNotify
 {
     /**
      * notify.

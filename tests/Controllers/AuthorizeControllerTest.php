@@ -7,21 +7,19 @@ use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
 use Payum\Core\GatewayInterface;
 use Payum\Core\Payum;
-use Payum\Core\Reply\HttpResponse;
-use Payum\Core\Reply\ReplyInterface;
-use Payum\Core\Request\Capture;
+use Payum\Core\Request\Authorize;
 use Payum\Core\Security\TokenInterface;
 use Recca0120\LaravelPayum\Http\Controllers\PaymentController;
 use Recca0120\LaravelPayum\Payment;
 
-class ControllerTest extends PHPUnit_Framework_TestCase
+class AuthorizeControllerTest extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_throw_reply_interface()
+    public function test_authorize()
     {
         $payumToken = uniqid();
 
@@ -38,12 +36,11 @@ class ControllerTest extends PHPUnit_Framework_TestCase
 
         $httpRequestVerifier = m::mock(HttpRequestVerifier::class)
             ->shouldReceive('verify')->with($request)->once()->andReturn($token)
+            ->shouldReceive('invalidate')->with($token)->once()
             ->mock();
 
         $gateway = m::mock(GatewayInterface::class)
-            ->shouldReceive('execute')->with(m::type(Capture::class))->once()->andReturnUsing(function ($capture) {
-                throw new HttpResponse('test');
-            })
+            ->shouldReceive('execute')->with(m::type(Authorize::class))->once()
             ->mock();
 
         $payum = m::mock(Payum::class)
@@ -51,16 +48,12 @@ class ControllerTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getGateway')->once()->andReturn($gateway)
             ->mock();
 
-        $sessionManager = m::mock(SessionManager::class)
-            ->shouldReceive('set')->with('payum_token', $payumToken)->once()
-            ->mock();
+        $sessionManager = m::mock(SessionManager::class);
 
-        $converter = m::mock(ReplyToSymfonyResponseConverter::class)
-            ->shouldReceive('convert')->with(m::type(ReplyInterface::class))->once()
-            ->mock();
+        $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
         $controller = new PaymentController();
-        $controller->capture($payment, $request, $payumToken);
+        $controller->authorize($payment, $request, $payumToken);
     }
 }
