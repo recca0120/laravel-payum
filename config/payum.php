@@ -1,6 +1,13 @@
 <?php
 
 return [
+    'router' => [
+        'prefix'     => 'payment',
+        'as'         => 'payment.',
+        // don't remove web
+        'middleware' => 'web',
+    ],
+
     'storage' => [
         // optioins: database, filesystem
         'token' => 'eloquent',

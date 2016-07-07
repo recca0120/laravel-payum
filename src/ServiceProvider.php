@@ -44,12 +44,56 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @param \Illuminate\Contracts\View\Factory      $viewFactory
      * @param \Illuminate\Routing\Router              $router
+     * @param \Illuminate\Contracts\Config\Repository $config
      */
-    public function boot(ViewFactory $viewFactory, Router $router)
+    public function boot(ViewFactory $viewFactory, Router $router, ConfigContract $config)
     {
         $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
-        $this->handleRoutes($router);
-        $this->handlePublishes();
+        $this->handleRoutes($router, $config)
+            ->handlePublishes();
+    }
+
+    /**
+     * register routes.
+     *
+     * @param Illuminate\Routing\Router $router
+     * @param \Illuminate\Contracts\Config\Repository $config
+     *
+     * @return static
+     */
+    protected function handleRoutes(Router $router, ConfigContract $config)
+    {
+        if ($this->app->routesAreCached() === false) {
+            $router->group(array_merge($config->get('payum.router'), [
+                'namespace'  => $this->namespace,
+            ]), function (Router $router) {
+                require __DIR__.'/Http/routes.php';
+            });
+        }
+
+        return $this;
+    }
+
+    /**
+     * handle publishes.
+     *
+     * @return static
+     */
+    protected function handlePublishes()
+    {
+        $this->publishes([
+            __DIR__.'/../config/payum.php' => config_path('payum.php'),
+        ], 'config');
+
+        $this->publishes([
+            __DIR__.'/../resources/views' => base_path('resources/views/vendor/payum'),
+        ], 'views');
+
+        $this->publishes([
+            __DIR__.'/../database/migrations' => base_path('database/migrations'),
+        ], 'public');
+
+        return $this;
     }
 
     /**
@@ -61,7 +105,6 @@ class ServiceProvider extends BaseServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
         $this->app->singleton(PayumBuilder::class, function ($app) {
-            $config = $app['config'];
             $payumBuilder = (new PayumBuilder($app))
                 ->setTokenFactory(function (StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($app) {
                     return $app->make(TokenFactory::class, [$tokenStorage, $registry]);
@@ -91,6 +134,7 @@ class ServiceProvider extends BaseServiceProvider
                     'done'      => 'payment.done',
                 ]);
 
+            $config = $app['config']->get('payum');
             $this->registerGatewayStorage($payumBuilder, $config)
                 ->registerGatewayFactory($payumBuilder, $config)
                 ->registerGatewayFactoryConfig($payumBuilder, $config)
@@ -121,9 +165,9 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return static
      */
-    protected function registerGatewayStorage(PayumBuilder $payumBuilder, ConfigContract $config)
+    protected function registerGatewayStorage(PayumBuilder $payumBuilder, array $config)
     {
-        if ($config->get('payum.storage.token') === 'database') {
+        if (array_get($config, 'storage.token') === 'database') {
             $payumBuilder->addEloquentStorages();
         } else {
             $payumBuilder->addDefaultStorages();
@@ -142,9 +186,9 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return static
      */
-    protected function registerGatewayFactory(PayumBuilder $payumBuilder, ConfigContract $config)
+    protected function registerGatewayFactory(PayumBuilder $payumBuilder, array $config)
     {
-        $gatewayFactories = $config->get('payum.gatewayFactories');
+        $gatewayFactories = array_get($config, 'gatewayFactories', []);
         foreach ($gatewayFactories as $factoryName => $factoryClass) {
             $payumBuilder->addGatewayFactory($factoryName, function (array $config, GatewayFactoryInterface $coreGatewayFactory) use ($factoryClass) {
                 return $this->app->make($factoryClass, [$config, $coreGatewayFactory]);
@@ -164,9 +208,9 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return static
      */
-    protected function registerGatewayFactoryConfig(PayumBuilder $payumBuilder, ConfigContract $config)
+    protected function registerGatewayFactoryConfig(PayumBuilder $payumBuilder, array $config)
     {
-        $gatewayConfigs = $config->get('payum.gatewayConfigs');
+        $gatewayConfigs = array_get($config, 'gatewayConfigs', []);
         foreach ($gatewayConfigs as $factoryName => $options) {
             $gatewayName = array_get($options, 'gatewayName');
             $gatewayConfig = array_get($options, 'config', []);
@@ -188,56 +232,14 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return static
      */
-    protected function registerGatewayFactoryConfigStorage(PayumBuilder $payumBuilder, ConfigContract $config)
+    protected function registerGatewayFactoryConfigStorage(PayumBuilder $payumBuilder, array $config)
     {
-        if ($config->get('payum.storage.gatewayConfig') === 'database') {
+        if (array_get($config, 'storage.gatewayConfig') === 'database') {
             $payumBuilder->setGatewayConfigStorage($this->app->make(EloquentStorage::class, [
                 'modelClass' => GatewayConfig::class,
             ]));
         }
 
         return $this;
-    }
-
-    /**
-     * register routes.
-     *
-     * @param Illuminate\Routing\Router $router
-     *
-     * @return void
-     */
-    protected function handleRoutes(Router $router)
-    {
-        if ($this->app->routesAreCached() === false) {
-            $prefix = 'payment';
-            $router->group([
-                'as'         => 'payment.',
-                'middleware' => 'web',
-                'namespace'  => $this->namespace,
-                'prefix'     => $prefix,
-            ], function (Router $router) {
-                require __DIR__.'/Http/routes.php';
-            });
-        }
-    }
-
-    /**
-     * handle publishes.
-     *
-     * @return void
-     */
-    protected function handlePublishes()
-    {
-        $this->publishes([
-            __DIR__.'/../config/payum.php' => config_path('payum.php'),
-        ], 'config');
-
-        $this->publishes([
-            __DIR__.'/../resources/views' => base_path('resources/views/vendor/payum'),
-        ], 'views');
-
-        $this->publishes([
-            __DIR__.'/../database/migrations' => base_path('database/migrations'),
-        ], 'public');
     }
 }

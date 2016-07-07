@@ -75,16 +75,20 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $storage = m::mock(StorageInterface::class);
 
         $config = m::mock(ConfigContract::class)
-            ->shouldReceive('get')->with('payum.storage.token')->andReturn('database')
-            ->shouldReceive('get')->with('payum.storage.gatewayConfig')->andReturn('database')
-            ->shouldReceive('get')->with('payum.gatewayConfigs')->andReturn([
-                'customFactoryName' => [
-                    'gatewayName' => 'customGatewayName',
-                    'config'      => [],
+            ->shouldReceive('get')->with('payum')->once()->andReturn([
+                'storage' => [
+                    'token'         => 'database',
+                    'gatewayConfig' => 'database',
                 ],
-            ])
-            ->shouldReceive('get')->with('payum.gatewayFactories')->andReturn([
-                'customFactoryName' => 'customFactoryClass',
+                'gatewayConfigs' => [
+                    'customFactoryName' => [
+                        'gatewayName' => 'customGatewayName',
+                        'config'      => [],
+                    ],
+                ],
+                'gatewayFactories' => [
+                    'customFactoryName' => 'customFactoryClass',
+                ],
             ])
             ->shouldReceive('get')->andReturn([])
             ->shouldReceive('set')
@@ -117,6 +121,10 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
     public function test_boot()
     {
+        $config = m::mock(ConfigContract::class)
+            ->shouldReceive('get')->with('payum.router')->andReturn([])
+            ->mock();
+
         $viewFactory = m::mock(ViewFactory::class)
             ->shouldReceive('addNamespace')->with('payum', m::any())
             ->mock();
@@ -130,7 +138,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->mock();
 
         $serviceProvider = new ServiceProvider($app);
-        $serviceProvider->boot($viewFactory, $router);
+        $serviceProvider->boot($viewFactory, $router, $config);
     }
 }
 
