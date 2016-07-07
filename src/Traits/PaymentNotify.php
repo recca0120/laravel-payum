@@ -14,8 +14,8 @@ trait PaymentNotify
      * @method notify
      *
      * @param \Recca0120\LaravelPayum\Payment $payment
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param \Illuminate\Http\Request        $request
+     * @param string                          $payumToken
      *
      * @return mixed
      */
@@ -34,7 +34,7 @@ trait PaymentNotify
      * @method notifyUnsafe
      *
      * @param \Recca0120\LaravelPayum\Payment $payment
-     * @param string $gatewayName
+     * @param string                          $gatewayName
      *
      * @return mixed
      */

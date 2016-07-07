@@ -14,8 +14,8 @@ trait PaymentPayout
      * @method payout
      *
      * @param \Recca0120\LaravelPayum\Payment $payment
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param \Illuminate\Http\Request        $request
+     * @param string                          $payumToken
      *
      * @return mixed
      */

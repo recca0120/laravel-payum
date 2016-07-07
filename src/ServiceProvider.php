@@ -49,7 +49,7 @@ class ServiceProvider extends BaseServiceProvider
     /**
      * register routes.
      *
-     * @param Illuminate\Routing\Router $router
+     * @param Illuminate\Routing\Router               $router
      * @param \Illuminate\Contracts\Config\Repository $config
      *
      * @return static

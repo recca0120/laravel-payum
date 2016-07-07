@@ -35,7 +35,7 @@ trait PaymentPrepare
      *
      * @method preparePayment
      *
-     * @param \Payum\Core\Model\PaymentInterface $payment
+     * @param \Payum\Core\Model\PaymentInterface   $payment
      * @param \Payum\Core\Storage\StorageInterface $storage
      * @param \Payum\Core\Payum
      *
