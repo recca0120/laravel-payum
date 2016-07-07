@@ -3,18 +3,32 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
-use Recca0120\LaravelPayum\Traits\PaymentDone;
-use Recca0120\LaravelPayum\Traits\PaymentPrepare;
+use Recca0120\LaravelPayum\Traits\DonePayment;
+use Recca0120\LaravelPayum\Traits\PreparePayment;
 
 class PrepareDoneController extends BaseController
 {
-    use PaymentPrepare, PaymentDone;
+    use PreparePayment, DonePayment;
 
-    // gateway name
-    protected $gatewayName = 'esunbank';
+    /**
+     * Set payment gateway name.
+     *
+     * @var string
+     */
+    protected $gatewayName = 'offline';
 
-    // prepare payment
-    protected function preparePayment($payment)
+    /**
+     * Prepare you payment.
+     *
+     * @method onPrepare
+     *
+     * @param \Payum\Core\Model\PaymentInterface   $payment
+     * @param \Payum\Core\Storage\StorageInterface $storage
+     * @param \Payum\Core\Payum
+     *
+     * @return \Payum\Core\Model\PaymentInterface
+     */
+    protected function onPrepare($payment)
     {
         $payment->setNumber(uniqid());
         $payment->setCurrencyCode('TWD');
@@ -27,8 +41,19 @@ class PrepareDoneController extends BaseController
         return $payment;
     }
 
-    // show payment
-    protected function showPayment($payment, $status)
+    /**
+     * onDone.
+     *
+     * @method onDone
+     *
+     * @param \Payum\Core\Request\GetHumanStatus  $status
+     * @param \Payum\Core\Model\PaymentInterface  $payment
+     * @param \Payum\Core\GatewayInterface        $payment
+     * @param \Payum\Core\Security\TokenInterface $token
+     *
+     * @return mixed
+     */
+    protected function onDone($status, $payment, $gateway, $token)
     {
         return response()->json([
             'status'  => $status->getValue(),

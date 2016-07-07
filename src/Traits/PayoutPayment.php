@@ -3,15 +3,15 @@
 namespace Recca0120\LaravelPayum\Traits;
 
 use Illuminate\Http\Request;
-use Payum\Core\Request\Capture;
+use Payum\Core\Request\Payout;
 use Recca0120\LaravelPayum\Payment;
 
-trait PaymentCapture
+trait PayoutPayment
 {
     /**
-     * capture.
+     * payout.
      *
-     * @method capture
+     * @method payout
      *
      * @param \Recca0120\LaravelPayum\Payment $payment
      * @param \Illuminate\Http\Request        $request
@@ -19,10 +19,10 @@ trait PaymentCapture
      *
      * @return mixed
      */
-    public function capture(Payment $payment, Request $request, $payumToken = null)
+    public function payout(Payment $payment, Request $request, $payumToken)
     {
-        return $payment->doAction($request, $payumToken, function ($httpRequestVerifier, $gateway, $token) {
-            $gateway->execute(new Capture($token));
+        return $payment->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+            $gateway->execute(new Payout($token));
             $httpRequestVerifier->invalidate($token);
 
             return redirect($token->getAfterUrl());

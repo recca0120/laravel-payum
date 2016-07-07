@@ -5,7 +5,7 @@ use Mockery as m;
 use Payum\Core\Model\Payment as PayumPayment;
 use Payum\Core\Request\GetHumanStatus;
 use Recca0120\LaravelPayum\Payment;
-use Recca0120\LaravelPayum\Traits\PaymentDone;
+use Recca0120\LaravelPayum\Traits\DonePayment;
 
 class DoneControllerTest extends PHPUnit_Framework_TestCase
 {
@@ -22,8 +22,11 @@ class DoneControllerTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('done')->with($request, $payumToken, m::type(Closure::class))->once()->andReturnUsing(function ($request, $payumToken, $closure) {
                 $status = m::mock(GetHumanStatus::class);
                 $payment = m::mock(PayumPayment::class);
+                $token = m::mock(TokenInterface::class);
+                $httpRequestVerifier = m::mock(HttpRequestVerifier::class);
+                $gateway = m::mock(GatewayInterface::class);
 
-                return $closure($status, $payment);
+                return $closure($status, $payment, $gateway, $token, $httpRequestVerifier);
             })
             ->mock();
         $controller = new DoneController();
@@ -33,9 +36,9 @@ class DoneControllerTest extends PHPUnit_Framework_TestCase
 
 class DoneController
 {
-    use PaymentDone;
+    use DonePayment;
 
-    protected function showPayment($payment, $status)
+    protected function onDone($payment, $status)
     {
     }
 }

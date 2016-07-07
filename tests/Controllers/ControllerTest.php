@@ -25,7 +25,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $payumToken = uniqid();
         $request = m::mock(Request::class);
         $payment = m::mock(Payment::class)
-            ->shouldReceive('doAction')->with($request, $payumToken, m::type(Closure::class))->once()->andReturnUsing(function ($request, $payumToken, $closure) {
+            ->shouldReceive('send')->with($request, $payumToken, m::type(Closure::class))->once()->andReturnUsing(function ($request, $payumToken, $closure) {
                 $token = m::mock(TokenInterface::class);
 
                 $httpRequestVerifier = m::mock(HttpRequestVerifier::class);
@@ -36,7 +36,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
                     })
                     ->mock();
 
-                return $closure($httpRequestVerifier, $gateway, $token);
+                return $closure($gateway, $token, $httpRequestVerifier);
             })
             ->mock();
         $controller = new PaymentController();

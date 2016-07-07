@@ -122,18 +122,18 @@ class Payment
      */
     public function done(Request $request, $payumToken, Closure $closure)
     {
-        return $this->doAction($request, $payumToken, function ($httpRequestVerifier, $gateway, $token) use ($closure) {
+        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) use ($closure) {
             $gateway->execute($status = new GetHumanStatus($token));
             $payment = $status->getFirstModel();
 
-            return $closure($payment, $status);
+            return $closure($status, $payment, $gateway, $token, $httpRequestVerifier);
         });
     }
 
     /**
-     * doAction.
+     * send.
      *
-     * @method doAction
+     * @method send
      *
      * @param \Illuminate\Http\Request $request
      * @param string                   $payumToken
@@ -141,13 +141,13 @@ class Payment
      *
      * @return mixed
      */
-    public function doAction(Request $request, $payumToken, Closure $closure)
+    public function send(Request $request, $payumToken, Closure $closure)
     {
         $httpRequestVerifier = $this->payum->getHttpRequestVerifier();
         $token = $this->getToken($httpRequestVerifier, $request, $payumToken);
         $gateway = $this->payum->getGateway($token->getGatewayName());
         try {
-            return $closure($httpRequestVerifier, $gateway, $token);
+            return $closure($gateway, $token, $httpRequestVerifier);
         } catch (ReplyInterface $reply) {
             return $this->convertReply($reply, $payumToken);
         }

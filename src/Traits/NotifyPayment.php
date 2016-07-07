@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Payum\Core\Request\Notify;
 use Recca0120\LaravelPayum\Payment;
 
-trait PaymentNotify
+trait NotifyPayment
 {
     /**
      * notify.
@@ -21,7 +21,7 @@ trait PaymentNotify
      */
     public function notify(Payment $payment, Request $request, $payumToken)
     {
-        return $payment->doAction($request, $payumToken, function ($httpRequestVerifier, $gateway, $token) {
+        return $payment->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Notify($token));
 
             return response(null, 204);

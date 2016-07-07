@@ -130,10 +130,10 @@ class PaymentServiceTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $payment->doAction($request, $payumToken, function ($p1, $p2, $p3) use ($httpRequestVerifier, $gateway, $token) {
-            $this->assertSame($p1, $httpRequestVerifier);
-            $this->assertSame($p2, $gateway);
-            $this->assertSame($p3, $token);
+        $payment->send($request, $payumToken, function ($p1, $p2, $p3) use ($gateway, $token, $httpRequestVerifier) {
+            $this->assertSame($p1, $gateway);
+            $this->assertSame($p2, $token);
+            $this->assertSame($p3, $httpRequestVerifier);
         });
     }
 
@@ -170,10 +170,10 @@ class PaymentServiceTest extends PHPUnit_Framework_TestCase
         $converter = m::mock(ReplyToSymfonyResponseConverter::class);
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $payment->doAction($request, null, function ($p1, $p2, $p3) use ($httpRequestVerifier, $gateway, $token) {
-            $this->assertSame($p1, $httpRequestVerifier);
-            $this->assertSame($p2, $gateway);
-            $this->assertSame($p3, $token);
+        $payment->send($request, null, function ($p1, $p2, $p3) use ($gateway, $token, $httpRequestVerifier) {
+            $this->assertSame($p1, $gateway);
+            $this->assertSame($p2, $token);
+            $this->assertSame($p3, $httpRequestVerifier);
         });
     }
 
@@ -213,7 +213,7 @@ class PaymentServiceTest extends PHPUnit_Framework_TestCase
             ->mock();
 
         $payment = new Payment($payum, $sessionManager, $converter);
-        $payment->doAction($request, $payumToken, function () {
+        $payment->send($request, $payumToken, function () {
             throw new HttpResponse('testing');
         });
     }

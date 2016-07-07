@@ -3,31 +3,43 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
-use Recca0120\LaravelPayum\Traits\PaymentAuthorize;
-use Recca0120\LaravelPayum\Traits\PaymentCapture;
-use Recca0120\LaravelPayum\Traits\PaymentDone;
-use Recca0120\LaravelPayum\Traits\PaymentNotify;
-use Recca0120\LaravelPayum\Traits\PaymentPayout;
-use Recca0120\LaravelPayum\Traits\PaymentPrepare;
-use Recca0120\LaravelPayum\Traits\PaymentRefund;
-use Recca0120\LaravelPayum\Traits\PaymentSync;
+use Recca0120\LaravelPayum\Traits\AuthorizePayment;
+use Recca0120\LaravelPayum\Traits\CapturePayment;
+use Recca0120\LaravelPayum\Traits\NotifyPayment;
+use Recca0120\LaravelPayum\Traits\PayoutPayment;
+use Recca0120\LaravelPayum\Traits\RefundPayment;
+use Recca0120\LaravelPayum\Traits\SyncPayment;
 
 class FullPaymentController extends BaseController
 {
-    use PaymentAuthorize,
-        PaymentCapture,
-        PaymentNotify,
-        PaymentPayout,
-        PaymentRefund,
-        PaymentSync,
-        PaymentPrepare,
-        PaymentDone;
+    use AuthorizePayment,
+        CapturePayment,
+        NotifyPayment,
+        PayoutPayment,
+        RefundPayment,
+        SyncPayment,
+        PreparePayment,
+        DonePayment;
 
-    // gateway name
-    protected $gatewayName = 'esunbank';
+    /**
+     * Set payment gateway name.
+     *
+     * @var string
+     */
+    protected $gatewayName = 'offline';
 
-    // prepare payment
-    protected function preparePayment($payment)
+    /**
+     * Prepare you payment.
+     *
+     * @method onPrepare
+     *
+     * @param \Payum\Core\Model\PaymentInterface   $payment
+     * @param \Payum\Core\Storage\StorageInterface $storage
+     * @param \Payum\Core\Payum
+     *
+     * @return \Payum\Core\Model\PaymentInterface
+     */
+    protected function onPrepare($payment, $storage, $payum)
     {
         $payment->setNumber(uniqid());
         $payment->setCurrencyCode('TWD');
@@ -40,8 +52,19 @@ class FullPaymentController extends BaseController
         return $payment;
     }
 
-    // show payment
-    protected function showPayment($payment, $status)
+    /**
+     * onDone.
+     *
+     * @method onDone
+     *
+     * @param \Payum\Core\Request\GetHumanStatus  $status
+     * @param \Payum\Core\Model\PaymentInterface  $payment
+     * @param \Payum\Core\GatewayInterface        $payment
+     * @param \Payum\Core\Security\TokenInterface $token
+     *
+     * @return mixed
+     */
+    protected function onDone($status, $payment, $gateway, $token)
     {
         return response()->json([
             'status'  => $status->getValue(),

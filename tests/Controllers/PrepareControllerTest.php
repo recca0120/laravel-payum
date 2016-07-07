@@ -4,7 +4,7 @@ use Mockery as m;
 use Payum\Core\Payum;
 use Payum\Core\Storage\StorageInterface;
 use Recca0120\LaravelPayum\Payment;
-use Recca0120\LaravelPayum\Traits\PaymentPrepare;
+use Recca0120\LaravelPayum\Traits\PreparePayment;
 
 class PrepareControllerTest extends PHPUnit_Framework_TestCase
 {
@@ -16,7 +16,7 @@ class PrepareControllerTest extends PHPUnit_Framework_TestCase
     public function test_prepare()
     {
         $payment = m::mock(Payment::class)
-            ->shouldReceive('prepare')->andReturnUsing(function ($gatewanName, $closure) {
+            ->shouldReceive('prepare')->with('testing', m::type(Closure::class))->andReturnUsing(function ($gatewanName, $closure) {
                 $storage = m::mock(StorageInterface::class);
                 $payum = m::mock(Payum::class);
 
@@ -27,33 +27,105 @@ class PrepareControllerTest extends PHPUnit_Framework_TestCase
         $controller->prepare($payment);
     }
 
+    public function test_prepare_change_gatewayname_using_method()
+    {
+        $payment = m::mock(Payment::class)
+            ->shouldReceive('prepare')->with('testing', m::type(Closure::class))->andReturnUsing(function ($gatewanName, $closure) {
+                $storage = m::mock(StorageInterface::class);
+                $payum = m::mock(Payum::class);
+
+                return $closure(m::self(), $storage, $payum);
+            })
+            ->mock();
+        $controller = new PrepareController();
+        $controller->prepare($payment, 'testing');
+    }
+
+    public function test_prepare_set_gatewayname_using_construct()
+    {
+        $payment = m::mock(Payment::class)
+            ->shouldReceive('prepare')->with('testing', m::type(Closure::class))->andReturnUsing(function ($gatewanName, $closure) {
+                $storage = m::mock(StorageInterface::class);
+                $payum = m::mock(Payum::class);
+
+                return $closure(m::self(), $storage, $payum);
+            })
+            ->mock();
+        $controller = new PrepareSetGatewayNameController('testing');
+        $controller->prepare($payment);
+    }
+
+    public function test_prepare_set_gatewayname_using_property()
+    {
+        $payment = m::mock(Payment::class)
+            ->shouldReceive('prepare')->with('testing', m::type(Closure::class))->andReturnUsing(function ($gatewanName, $closure) {
+                $storage = m::mock(StorageInterface::class);
+                $payum = m::mock(Payum::class);
+
+                return $closure(m::self(), $storage, $payum);
+            })
+            ->mock();
+        $controller = new PrepareSetGatewayNameUsingPropertyController('testing');
+        $controller->prepare($payment);
+    }
+
     /**
      * @expectedException \InvalidArgumentException
      */
     public function test_throw_invalid_argumentException()
     {
         $payment = m::mock(Payment::class);
-        $controller = new PrepareController2();
+        $controller = new InvalidArgumentPrepareController();
         $controller->prepare($payment);
     }
 }
 
 class PrepareController
 {
-    use PaymentPrepare;
+    use PreparePayment;
 
     protected $gatewayName = 'testing';
 
-    protected function preparePayment()
+    protected function onPrepare()
     {
     }
 }
 
-class PrepareController2
+class PrepareSetGatewayNameController
 {
-    use PaymentPrepare;
+    use PreparePayment;
 
-    protected function preparePayment()
+    public function __construct($gatewayName)
+    {
+        $this->setGatewayName($gatewayName);
+    }
+
+    protected function onPrepare()
+    {
+    }
+}
+
+class PrepareSetGatewayNameUsingPropertyController
+{
+    use PreparePayment;
+
+    protected $gatewayName;
+
+    public function __construct($gatewayName)
+    {
+        $this->gatewayName = $gatewayName;
+    }
+
+    protected function onPrepare()
+    {
+    }
+}
+
+class InvalidArgumentPrepareController
+{
+    use PreparePayment;
+
+    protected function onPrepare()
     {
     }
 }
