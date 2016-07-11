@@ -29,12 +29,20 @@ class ObtainCreditCardAction implements ActionInterface
     protected $request;
 
     /**
+     * $templateName.
+     *
+     * @var string
+     */
+    protected $templateName = 'payum::creditcard';
+
+    /**
      * __construct.
      *
      * @method __construct
      *
      * @param \Illuminate\Contracts\View\Factory $viewFactory
      * @param \Illuminate\Http\Request           $request
+     * @param string           $templateName
      */
     public function __construct(ViewFactory $viewFactory, Request $request)
     {
@@ -64,14 +72,34 @@ class ObtainCreditCardAction implements ActionInterface
             return;
         }
 
-        $content = $this->viewFactory
-            ->make('payum::creditcard')
-            ->render();
+        $form = $this->viewFactory->make($this->templateName, [
+            'model'      => $request->getModel(),
+            'firstModel' => $request->getFirstModel(),
+            'actionUrl'  => $request->getToken() ? $request->getToken()->getTargetUrl() : null,
+        ]);
 
-        throw new HttpResponse(new Response($content, 200, [
+        throw new HttpResponse(new Response($form->render(), 200, [
             'Cache-Control' => 'no-store, no-cache, max-age=0, post-check=0, pre-check=0',
+            'X-Status-Code' => 200,
             'Pragma'        => 'no-cache',
         ]));
+
+        /*
+            $content = $this->viewFactory->make($this->templateName, [
+                'model'      => $request->getModel(),
+                'firstModel' => $request->getFirstModel(),
+                'form'       => $form->render(),
+                'actionUrl'  => $request->getToken() ? $request->getToken()->getTargetUrl() : null,
+            ]);
+
+            $this->gateway->execute($renderTemplate);
+
+            throw new HttpResponse(new Response($renderTemplate->getResult(), 200, [
+                'Cache-Control' => 'no-store, no-cache, max-age=0, post-check=0, pre-check=0',
+                'X-Status-Code' => 200,
+                'Pragma'        => 'no-cache',
+            ]));
+        */
     }
 
     /**

@@ -67,13 +67,18 @@ class FullPaymentController extends BaseController
     protected function onDone($status, $payment, $gateway, $token)
     {
         return response()->json([
-            'status'  => $status->getValue(),
-            'order'   => [
+            return response()->json([
+                'status' => $status->getValue(),
+                'client' => [
+                    'id'    => $payment->getClientId(),
+                    'email' => $payment->getClientEmail(),
+                ],
                 'number'        => $payment->getNumber(),
+                'description'   => $payment->getCurrencyCode(),
                 'total_amount'  => $payment->getTotalAmount(),
                 'currency_code' => $payment->getCurrencyCode(),
                 'details'       => $payment->getDetails(),
-            ],
+            ]);
         ]);
     }
 }

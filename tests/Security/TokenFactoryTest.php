@@ -13,39 +13,41 @@ class TokenFactoryTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_generate_url()
+    public function testGenerateUrl()
     {
-        $gatewayName = 'gateway';
-        $model = $model = '';
-        $trargetPath = 'target';
-        $targetParameters = ['target'];
-        $hash = 'hash';
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-        $token = m::mock(stdClass::class)
-            ->shouldReceive('getHash')->twice()->andReturn($hash)
-            ->shouldReceive('setHash')->once()->andReturnSelf()
-            ->shouldReceive('setGatewayName')->once()->andReturnSelf()
-            ->shouldReceive('setDetails')->andReturnSelf()
-            ->shouldReceive('setTargetUrl')
-            ->mock();
+        $storage = m::mock(StorageInterface::class);
+        $registry = m::mock(StorageRegistryInterface::class);
+        $urlGenerator = m::mock(UrlGeneratorContract::class);
+        $tokenFactory = m::mock(new TokenFactory($storage, $registry, $urlGenerator))
+            ->shouldAllowMockingProtectedMethods();
 
-        $storage = m::mock(StorageInterface::class)
-            ->shouldReceive('create')->once()->andReturn($token)
-            ->shouldReceive('update')->andReturnSelf()
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
 
-        $registry = m::mock(StorageRegistryInterface::class)
-            ->shouldReceive('getStorage')->andReturnSelf()
-            ->shouldReceive('identify')->andReturnSelf()
-            ->mock();
+        $exceptedPath = 'foo.bar';
+        $exceptedParameters = [
+            'buzz',
+            'fuzz',
+        ];
+        $exceptedUrl = 'fooUrl';
 
-        $urlGenerator = m::mock(UrlGeneratorContract::class)
-            ->shouldReceive('route')->with($trargetPath, array_replace([
-                'payum_token' => $hash,
-            ], $targetParameters))->once()
-            ->mock();
+        $urlGenerator->shouldReceive('route')->with($exceptedPath, $exceptedParameters)->andReturn($exceptedUrl);
 
-        $tokenFactory = new TokenFactory($storage, $registry, $urlGenerator);
-        $tokenFactory->createToken($gatewayName, $model, $trargetPath, $targetParameters);
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($exceptedUrl, $tokenFactory->generateUrl($exceptedPath, $exceptedParameters));
     }
 }

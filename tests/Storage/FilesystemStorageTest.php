@@ -12,16 +12,40 @@ class FilesystemStorageTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_storage()
+    public function testConstruct()
     {
-        $app = m::mock(ApplicationContract::class)
-            ->shouldReceive('storagePath')->once()->andReturn(__DIR__)
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-        $filesystem = m::mock(Filesystem::class)
-            ->shouldReceive('isDirectory')->with(__DIR__.'/payum/')->once()->andReturn(false)
-            ->shouldReceive('makeDirectory')->with(__DIR__.'/payum/', 0777, true)->once()->andReturn(false)
-            ->mock();
-        $storage = new FilesystemStorage($app, $filesystem, stdClass::class, 'test');
+        $exceptedModelClass = 'fooModelClass';
+        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $filesystem = m::mock(Filesystem::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $storagePath = 'fooStoragePath';
+        $exceptedPath = $storagePath.'/payum/';
+
+        $app->shouldReceive('storagePath')->andReturn($storagePath);
+
+        $filesystem->shouldReceive('isDirectory')->with($exceptedPath)->andReturn(false)
+            ->shouldReceive('makeDirectory')->with($exceptedPath, 0777, true);
+
+        $filesystemStorage = new FilesystemStorage($app, $filesystem, $exceptedModelClass);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertAttributeSame($exceptedPath, 'storageDir', $filesystemStorage);
     }
 }

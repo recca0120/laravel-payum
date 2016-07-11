@@ -36,7 +36,10 @@ class RenderTemplateAction implements ActionInterface
         /* @var $request RenderTemplate */
         RequestNotSupportedException::assertSupports($this, $request);
 
-        $request->setResult($this->viewFactory->make($request->getTemplateName(), $request->getParameters())->render());
+        $request->setResult($this->viewFactory->make(
+            $request->getTemplateName(),
+            $request->getParameters()
+        )->render());
     }
 
     /**

@@ -3,7 +3,7 @@
 return [
     'router' => [
         'prefix'     => 'payment',
-        'as'         => 'payment.',
+        'as'         => 'payment',
         // don't remove web
         'middleware' => 'web',
     ],

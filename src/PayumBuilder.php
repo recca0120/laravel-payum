@@ -5,7 +5,7 @@ namespace Recca0120\LaravelPayum;
 use Illuminate\Contracts\Foundation\Application as ApplicationContract;
 use Payum\Core\Model\ArrayObject;
 use Payum\Core\Model\Payment as PayumPayment;
-use Payum\Core\Model\Token;
+use Payum\Core\Model\Token as PayumToken;
 use Payum\Core\PayumBuilder as CorePayumBuilder;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 use Recca0120\LaravelPayum\Model\Token as EloquentToken;
@@ -32,7 +32,6 @@ class PayumBuilder extends CorePayumBuilder
     {
         $this->app = $app;
     }
-
     /**
      * addDefaultStorages.
      *
@@ -42,8 +41,7 @@ class PayumBuilder extends CorePayumBuilder
      */
     public function addDefaultStorages()
     {
-        $this
-            ->setTokenStorage($this->app->make(FilesystemStorage::class, ['modelClass' => Token::class, 'idProperty' => 'hash']))
+        $this->setTokenStorage($this->app->make(FilesystemStorage::class, ['modelClass' => PayumToken::class, 'idProperty' => 'hash']))
             ->addStorage(PayumPayment::class, $this->app->make(FilesystemStorage::class, ['modelClass' => PayumPayment::class, 'idProperty' => 'number']))
             ->addStorage(ArrayObject::class, $this->app->make(FilesystemStorage::class, ['modelClass' => ArrayObject::class]));
 
@@ -59,13 +57,8 @@ class PayumBuilder extends CorePayumBuilder
      */
     public function addEloquentStorages()
     {
-        $this
-            ->setTokenStorage($this->app->make(EloquentStorage::class, [
-                'modelClass' => EloquentToken::class,
-            ]))
-            ->addStorage(EloquentPayment::class, $this->app->make(EloquentStorage::class, [
-                'modelClass' => EloquentPayment::class,
-            ]));
+        $this->setTokenStorage($this->app->make(EloquentStorage::class, ['modelClass' => EloquentToken::class]))
+            ->addStorage(EloquentPayment::class, $this->app->make(EloquentStorage::class, ['modelClass' => EloquentPayment::class]));
 
         return $this;
     }

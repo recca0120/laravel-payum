@@ -1,10 +1,10 @@
 <?php
 
-use Illuminate\Contracts\View\Factory as ViewFactory;
-use Illuminate\Contracts\View\View;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Mockery as m;
 use Payum\Core\Model\CreditCard;
+use Payum\Core\Reply\ReplyInterface;
 use Payum\Core\Request\ObtainCreditCard;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 
@@ -15,57 +15,112 @@ class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_execute_with_card_data()
+    public function testExecute()
     {
-        $viewFactory = m::mock(ViewFactory::class);
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-        $request = m::mock(Request::class)
-            ->shouldReceive('isMethod')->with('POST')->andReturn(true)
-            ->shouldReceive('get')->with('card_holder')->andReturn('name')
-            ->shouldReceive('get')->with('card_number')->andReturn('12345')
-            ->shouldReceive('get')->with('card_cvv')->andReturn('111')
-            ->shouldReceive('get')->with('card_expire_at')->andReturn(date('Y-m'))
-            ->mock();
-
-        $obtainCreditCard = m::mock(ObtainCreditCard::class)
-            ->shouldReceive('set')->with(m::type(CreditCard::class))
-            ->mock();
-
-        $httpRequestAction = new ObtainCreditCardAction($viewFactory, $request);
-        $httpRequestAction->execute($obtainCreditCard);
-    }
-
-    /**
-     * @expectedException \Payum\Core\Bridge\Symfony\Reply\HttpResponse
-     */
-    public function test_execute_without_card_data()
-    {
-        $view = m::mock(View::class)
-            ->shouldReceive('render')->andReturn('')
-            ->mock();
-
-        $viewFactory = m::mock(ViewFactory::class)
-            ->shouldReceive('make')->with('payum::creditcard')->andReturn($view)
-            ->mock();
-
-        $request = m::mock(Request::class)
-            ->shouldReceive('isMethod')->with('POST')->andReturn(false)
-            ->mock();
-
+        $viewFactory = m::mock(Factory::class);
+        $request = m::mock(Request::class);
+        $obtainCreditCardAction = new ObtainCreditCardAction($viewFactory, $request);
         $obtainCreditCard = m::mock(ObtainCreditCard::class);
 
-        $httpRequestAction = new ObtainCreditCardAction($viewFactory, $request);
-        $httpRequestAction->execute($obtainCreditCard);
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'foo';
+        $request->shouldReceive('isMethod')->andReturn(false);
+
+        $viewFactory->shouldReceive('make')->andReturnSelf()
+            ->shouldReceive('render')->andReturn($excepted);
+
+        $obtainCreditCard
+            ->shouldReceive('getModel')
+            ->shouldReceive('getFirstModel')
+            ->shouldReceive('getToken');
+
+        try {
+            $obtainCreditCardAction->execute($obtainCreditCard);
+        } catch (ReplyInterface $response) {
+        }
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+        $this->assertSame($excepted, $response->getResponse()->getContent());
+    }
+
+    public function testExecuteWithPost()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $viewFactory = m::mock(Factory::class);
+        $request = m::mock(Request::class);
+        $obtainCreditCardAction = new ObtainCreditCardAction($viewFactory, $request);
+        $obtainCreditCard = new ObtainCreditCard();
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $request->shouldReceive('isMethod')->andReturn(true)
+            ->shouldReceive('get')->with('card_holder')->andReturn('card_holder')
+            ->shouldReceive('get')->with('card_number')->andReturn('card_number')
+            ->shouldReceive('get')->with('card_cvv')->andReturn('111')
+            ->shouldReceive('get')->with('card_expire_at')->andReturn(date('Y-m-d'));
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertNull($obtainCreditCardAction->execute($obtainCreditCard));
+        $this->assertInstanceOf(CreditCard::class, $obtainCreditCard->obtain());
     }
 
     /**
      * @expectedException \Payum\Core\Exception\RequestNotSupportedException
      */
-    public function test_execute_except_not_support()
+    public function testThrowNotSupport()
     {
-        $viewFactory = m::mock(ViewFactory::class);
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $viewFactory = m::mock(Factory::class);
         $request = m::mock(Request::class);
-        $httpRequestAction = new ObtainCreditCardAction($viewFactory, $request);
-        $httpRequestAction->execute([]);
+        $obtainCreditCardAction = new ObtainCreditCardAction($viewFactory, $request);
+        $obtainCreditCard = m::mock(stdClass::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $obtainCreditCardAction->execute($obtainCreditCard);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
     }
 }

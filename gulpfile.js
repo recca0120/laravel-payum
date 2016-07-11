@@ -1,5 +1,6 @@
 require('gulp-util').env.production = false;
 var elixir = require('laravel-elixir');
+var path = require('path');
 
 /*
  |--------------------------------------------------------------------------
@@ -13,6 +14,6 @@ var elixir = require('laravel-elixir');
  */
 
 elixir(function(mix) {
-    mix
-        .phpUnit();
+    elixir.config.batchOptions.timeout = 2000;
+    mix.phpUnit();
 });

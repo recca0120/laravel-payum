@@ -17,6 +17,7 @@ use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
 use Recca0120\LaravelPayum\Security\TokenFactory;
+use Recca0120\LaravelPayum\Service\Payment;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
 
 class ServiceProvider extends BaseServiceProvider
@@ -97,142 +98,87 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
-        $this->app->singleton(PayumBuilder::class, function ($app) {
-            $payumBuilder = (new PayumBuilder($app))
+        $this->registerPayumBuilder();
+        $this->registerPayum();
+        $this->app->singleton(Payment::class, Payment::class);
+    }
+
+    /**
+     * registerPayumBuilder.
+     *
+     * @method registerPayumBuilder
+     *
+     * @return \Payum\Core\PayumBuilder
+     */
+    protected function registerPayumBuilder()
+    {
+        $this->app->bind('payum.converter.reply_to_http_response', ReplyToSymfonyResponseConverter::class);
+        $this->app->bind('payum.action.get_http_request', GetHttpRequestAction::class);
+        $this->app->bind('payum.action.obtain_credit_card', ObtainCreditCardAction::class);
+        $this->app->bind('payum.action.render_template', RenderTemplateAction::class);
+
+        return $this->app->singleton('payum.builder', function ($app) {
+            $config = $app['config']->get('payum');
+            $builder = $app->make(PayumBuilder::class)
                 ->setTokenFactory(function (StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($app) {
                     return $app->make(TokenFactory::class, [$tokenStorage, $registry]);
-                })
-                ->setHttpRequestVerifier(function (StorageInterface $tokenStorage) {
-                    return new HttpRequestVerifier($tokenStorage);
-                })
-                ->setCoreGatewayFactory(function (array $defaultConfig) use ($app) {
+                })->setHttpRequestVerifier(function (StorageInterface $tokenStorage) use ($app) {
+                    return $app->make(HttpRequestVerifier::class, [$tokenStorage]);
+                })->setCoreGatewayFactory(function ($defaultConfig) use ($app) {
                     return $app->make(CoreGatewayFactory::class, [$app, $defaultConfig]);
-                })
-                ->setCoreGatewayFactoryConfig([
-                    'payum.converter.reply_to_http_response' => ReplyToSymfonyResponseConverter::class,
-                    'payum.action.get_http_request'          => GetHttpRequestAction::class,
-                    'payum.action.obtain_credit_card'        => ObtainCreditCardAction::class,
-                    'payum.action.render_template'           => RenderTemplateAction::class,
-                    // ioc
-                    // 'payum.action.get_http_request'   => 'payum.action.get_http_request',
-                    // 'payum.action.obtain_credit_card' => 'payum.action.obtain_credit_card',
-                ])
-                ->setGenericTokenFactoryPaths([
-                    'authorize' => 'payment.authorize',
-                    'capture'   => 'payment.capture',
-                    'notify'    => 'payment.notify',
-                    'payout'    => 'payment.payout',
-                    'refund'    => 'payment.refund',
-                    'sync'      => 'payment.sync',
-                    'done'      => 'payment.done',
+                })->setCoreGatewayFactoryConfig([
+                    'payum.action.obtain_credit_card' => 'payum.action.obtain_credit_card',
+                    'payum.action.render_template'    => 'payum.action.render_template',
+                ])->setGenericTokenFactoryPaths([
+                    'authorize' => array_get($config, 'router.as').'authorize',
+                    'capture'   => array_get($config, 'router.as').'capture',
+                    'notify'    => array_get($config, 'router.as').'notify',
+                    'payout'    => array_get($config, 'router.as').'payout',
+                    'refund'    => array_get($config, 'router.as').'refund',
+                    'sync'      => array_get($config, 'router.as').'sync',
+                    'done'      => array_get($config, 'router.as').'done',
                 ]);
 
-            $config = $app['config']->get('payum');
-            $this->registerGatewayStorage($payumBuilder, $config)
-                ->registerGatewayFactory($payumBuilder, $config)
-                ->registerGatewayFactoryConfig($payumBuilder, $config)
-                ->registerGatewayFactoryConfigStorage($payumBuilder, $config);
+            $addStorages = (array_get($config, 'storage.token') === 'database') ? 'addEloquentStorages' : 'addDefaultStorages';
+            call_user_func([$builder, $addStorages]);
 
-            return $payumBuilder;
+            $gatewayFactories = array_get($config, 'gatewayFactories', []);
+            foreach ($gatewayFactories as $factoryName => $factoryClass) {
+                $builder->addGatewayFactory($factoryName, function ($config, GatewayFactoryInterface $coreGatewayFactory) use ($app, $factoryClass) {
+                    return $app->make($factoryClass, [$config, $coreGatewayFactory]);
+                });
+            }
+
+            $gatewayConfigs = array_get($config, 'gatewayConfigs', []);
+            foreach ($gatewayConfigs as $factoryName => $options) {
+                $gatewayName = array_get($options, 'gatewayName');
+                $gatewayConfig = array_get($options, 'config', []);
+                $builder->addGateway($gatewayName, array_merge([
+                    'factory' => $factoryName,
+                ], $gatewayConfig));
+            }
+
+            if (array_get($config, 'storage.gatewayConfig') === 'database') {
+                $builder->setGatewayConfigStorage($app->make(EloquentStorage::class, [
+                    'modelClass' => GatewayConfig::class,
+                ]));
+            }
+
+            return $builder;
         });
+    }
 
-        $this->app->singleton(Payum::class, function ($app) {
-            return $app->make(PayumBuilder::class)->getPayum();
+    /**
+     * registerPayum.
+     *
+     * @method registerPayum
+     *
+     * @return \Payum\Core\Payum
+     */
+    protected function registerPayum()
+    {
+        return $this->app->singleton(Payum::class, function ($app) {
+            return $this->app->make('payum.builder')->getPayum();
         });
-
-        $this->app->singleton(Payment::class, Payment::class);
-        // ioc
-        // $this->app->bind('payum.converter.reply_to_http_response', ReplyToSymfonyResponseConverter::class);
-        // $this->app->bind('payum.action.get_http_request', GetHttpRequestAction::class);
-        // $this->app->bind('payum.action.obtain_credit_card', ObtainCreditCardAction::class);
-        // $this->app->bind('payum.action.render_template', RenderTemplateAction::class);
-    }
-
-    /**
-     * registerGatewayStorage.
-     *
-     * @method registerGatewayStorage
-     *
-     * @param \Recca0120\LaravelPayum\PayumBuilder    $payumBuilder
-     * @param \Illuminate\Contracts\Config\Repository $configRepository
-     *
-     * @return static
-     */
-    protected function registerGatewayStorage(PayumBuilder $payumBuilder, array $config)
-    {
-        if (array_get($config, 'storage.token') === 'database') {
-            $payumBuilder->addEloquentStorages();
-        } else {
-            $payumBuilder->addDefaultStorages();
-        }
-
-        return $this;
-    }
-
-    /**
-     * registerGatewayFactory.
-     *
-     * @method registerGatewayFactory
-     *
-     * @param \Recca0120\LaravelPayum\PayumBuilder    $payumBuilder
-     * @param \Illuminate\Contracts\Config\Repository $configRepository
-     *
-     * @return static
-     */
-    protected function registerGatewayFactory(PayumBuilder $payumBuilder, array $config)
-    {
-        $gatewayFactories = array_get($config, 'gatewayFactories', []);
-        foreach ($gatewayFactories as $factoryName => $factoryClass) {
-            $payumBuilder->addGatewayFactory($factoryName, function (array $config, GatewayFactoryInterface $coreGatewayFactory) use ($factoryClass) {
-                return $this->app->make($factoryClass, [$config, $coreGatewayFactory]);
-            });
-        }
-
-        return $this;
-    }
-
-    /**
-     * registerGatewayFactoryConfig.
-     *
-     * @method registerGatewayFactoryConfig
-     *
-     * @param \Recca0120\LaravelPayum\PayumBuilder    $payumBuilder
-     * @param \Illuminate\Contracts\Config\Repository $configRepository
-     *
-     * @return static
-     */
-    protected function registerGatewayFactoryConfig(PayumBuilder $payumBuilder, array $config)
-    {
-        $gatewayConfigs = array_get($config, 'gatewayConfigs', []);
-        foreach ($gatewayConfigs as $factoryName => $options) {
-            $gatewayName = array_get($options, 'gatewayName');
-            $gatewayConfig = array_get($options, 'config', []);
-            $payumBuilder->addGateway($gatewayName, array_merge([
-                'factory' => $factoryName,
-            ], $gatewayConfig));
-        }
-
-        return $this;
-    }
-
-    /**
-     * registerGatewayFactoryConfigStorage.
-     *
-     * @method registerGatewayFactoryConfigStorage
-     *
-     * @param \Recca0120\LaravelPayum\PayumBuilder    $payumBuilder
-     * @param \Illuminate\Contracts\Config\Repository $configRepository
-     *
-     * @return static
-     */
-    protected function registerGatewayFactoryConfigStorage(PayumBuilder $payumBuilder, array $config)
-    {
-        if (array_get($config, 'storage.gatewayConfig') === 'database') {
-            $payumBuilder->setGatewayConfigStorage($this->app->make(EloquentStorage::class, [
-                'modelClass' => GatewayConfig::class,
-            ]));
-        }
-
-        return $this;
     }
 }

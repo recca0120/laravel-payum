@@ -1,7 +1,6 @@
 <?php
 
-use Illuminate\Contracts\View\Factory as ViewFactory;
-use Illuminate\Contracts\View\View;
+use Illuminate\Contracts\View\Factory;
 use Mockery as m;
 use Payum\Core\Request\RenderTemplate;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
@@ -13,33 +12,74 @@ class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_execute()
+    public function testExecute()
     {
-        $view = m::mock(View::class)
-            ->shouldReceive('render')->andReturn('body')
-            ->mock();
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
 
-        $viewFactory = m::mock(ViewFactory::class)
-            ->shouldReceive('make')->with('abc', ['a' => 'b'])->andReturn($view)
-            ->mock();
-
-        $renderTemplate = m::mock(RenderTemplate::class)
-            ->shouldReceive('getTemplateName')->andReturn('abc')
-            ->shouldReceive('getParameters')->andReturn(['a' => 'b'])
-            ->shouldReceive('setResult')->with('body')
-            ->mock();
-
+        $viewFactory = m::mock(Factory::class);
         $renderTemplateAction = new RenderTemplateAction($viewFactory);
-        $renderTemplateAction->execute($renderTemplate);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $exceptedTemplateName = 'foo';
+        $exceptedParameters = [
+            'foo',
+            'bar',
+        ];
+        $excepted = 'foobar';
+        $request = new RenderTemplate($exceptedTemplateName, $exceptedParameters);
+
+        $viewFactory->shouldReceive('make')->with($exceptedTemplateName, $exceptedParameters)->andReturnSelf()
+            ->shouldReceive('render')->andReturn($excepted);
+
+        $renderTemplateAction->execute($request);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($exceptedTemplateName, $request->getTemplateName());
+        $this->assertSame($exceptedParameters, $request->getParameters());
+        $this->assertSame($excepted, $request->getResult());
     }
 
     /**
      * @expectedException \Payum\Core\Exception\RequestNotSupportedException
      */
-    public function test_execute_except_not_support()
+    public function testThrowNotSupport()
     {
-        $viewFactory = m::mock(ViewFactory::class);
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $viewFactory = m::mock(Factory::class);
         $renderTemplateAction = new RenderTemplateAction($viewFactory);
-        $renderTemplateAction->execute([]);
+        $request = m::mock(stdClass::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $renderTemplateAction->execute($request);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
     }
 }

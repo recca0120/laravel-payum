@@ -1,12 +1,11 @@
 <?php
 
-namespace Recca0120\LaravelPayum\Traits;
+namespace Recca0120\LaravelPayum\Http\Controllers\Behavior;
 
 use Illuminate\Http\Request;
-use Payum\Core\Request\Notify;
-use Recca0120\LaravelPayum\Payment;
+use Recca0120\LaravelPayum\Service\Payment;
 
-trait NotifyPayment
+trait NotifyBehavior
 {
     /**
      * notify.
@@ -21,11 +20,7 @@ trait NotifyPayment
      */
     public function notify(Payment $payment, Request $request, $payumToken)
     {
-        return $payment->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
-            $gateway->execute(new Notify($token));
-
-            return response(null, 204);
-        });
+        return $payment->notify($request, $payumToken);
     }
 
     /**
@@ -40,9 +35,6 @@ trait NotifyPayment
      */
     public function notifyUnsafe(Payment $payment, $gatewayName)
     {
-        $gateway = $payment->getPayum()->getGateway($gatewayName);
-        $gateway->execute(new Notify(null));
-
-        return response(null, 204);
+        return $payment->notifyUnsafe($gatewayName);
     }
 }

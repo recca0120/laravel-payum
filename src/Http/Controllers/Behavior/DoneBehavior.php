@@ -1,11 +1,11 @@
 <?php
 
-namespace Recca0120\LaravelPayum\Traits;
+namespace Recca0120\LaravelPayum\Http\Controllers\Behavior;
 
 use Illuminate\Http\Request;
-use Recca0120\LaravelPayum\Payment;
+use Recca0120\LaravelPayum\Service\Payment;
 
-trait DonePayment
+trait DoneBehavior
 {
     /**
      * done.
