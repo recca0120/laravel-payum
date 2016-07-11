@@ -163,11 +163,11 @@ modify config
 ],
 
 'storage' => [
-    // optioins: database, filesystem
+    // optioins: eloquent, filesystem
     'token' => 'eloquent',
 
-    // optioins: database, filesystem
-    'gatewayConfig' => 'eloquent',
+    // optioins: eloquent, filesystem
+    'gatewayConfig' => 'filesystem',
 ],
 
 // [

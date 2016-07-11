@@ -9,10 +9,10 @@ return [
     ],
 
     'storage' => [
-        // optioins: database, filesystem
+        // optioins: eloquent, filesystem
         'token' => 'filesystem',
 
-        // optioins: database, filesystem
+        // optioins: eloquent, filesystem
         'gatewayConfig' => 'filesystem',
     ],
 

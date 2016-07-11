@@ -139,7 +139,7 @@ class ServiceProvider extends BaseServiceProvider
                     'done'      => array_get($config, 'router.as').'done',
                 ]);
 
-            $addStorages = (array_get($config, 'storage.token') === 'database') ? 'addEloquentStorages' : 'addDefaultStorages';
+            $addStorages = (array_get($config, 'storage.token') === 'filesystem') ? 'addDefaultStorages' : 'addEloquentStorages';
             call_user_func([$builder, $addStorages]);
 
             $gatewayFactories = array_get($config, 'gatewayFactories', []);
