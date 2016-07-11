@@ -32,6 +32,7 @@ class PayumBuilder extends CorePayumBuilder
     {
         $this->app = $app;
     }
+
     /**
      * addDefaultStorages.
      *

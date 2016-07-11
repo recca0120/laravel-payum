@@ -165,7 +165,7 @@ class Payment
      *
      * @method create
      *
-     * @param string  $gatewayName
+     * @param string   $gatewayName
      * @param \Closure $closure
      *
      * @return mixed

@@ -10,7 +10,7 @@ return [
 
     'storage' => [
         // optioins: database, filesystem
-        'token' => 'eloquent',
+        'token' => 'filesystem',
 
         // optioins: database, filesystem
         'gatewayConfig' => 'filesystem',
