@@ -3,8 +3,8 @@
 return [
     'router' => [
         'prefix'     => 'payment',
-        'as'         => 'payment',
-        // don't remove web
+        'as'         => 'payment.',
+        // if laravel 5.1 remove web
         'middleware' => 'web',
     ],
 
