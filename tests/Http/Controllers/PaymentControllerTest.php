@@ -144,7 +144,7 @@ class PaymentController2 extends PaymentController
 
     protected $gatewayName = 'offline';
 
-    public function onPrepare($payment, $gatewayName, $storage, $payum)
+    public function onPrepare($request, $payment, $gatewayName, $storage, $payum)
     {
     }
 

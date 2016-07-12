@@ -266,6 +266,7 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         $sessionManager = m::mock(SessionManager::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
         $payment = m::mock(new Payment($payum, $sessionManager, $replyToSymfonyResponseConverter));
+        $request = m::mock(Request::class);
         $gatewayName = 'fooGatewayName';
         $storage = m::mock(stdClass::class);
         $eloquentPayment = m::mock(EloquentPayment::class);
@@ -290,8 +291,7 @@ class PaymentTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getStorage')->once()->andReturn($storage)
             ->shouldReceive('getTokenFactory->createCaptureToken')->andReturn($token);
 
-        $payment->prepare($gatewayName, function () {
-        }, 'payment.done', []);
+        $payment->prepare($gatewayName, function () {}, 'payment.done', []);
 
         /*
         |------------------------------------------------------------

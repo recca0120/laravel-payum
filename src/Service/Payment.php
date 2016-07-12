@@ -120,9 +120,10 @@ class Payment
      */
     public function send(Request $request, $payumToken, Closure $closure)
     {
-        $httpRequestVerifier = $this->payum->getHttpRequestVerifier();
+        $payum = $this->getPayum();
+        $httpRequestVerifier = $payum->getHttpRequestVerifier();
         $token = $this->getToken($httpRequestVerifier, $request, $payumToken);
-        $gateway = $this->payum->getGateway($token->getGatewayName());
+        $gateway = $payum->getGateway($token->getGatewayName());
         try {
             return $closure($gateway, $token, $httpRequestVerifier);
         } catch (ReplyInterface $reply) {
@@ -154,9 +155,9 @@ class Payment
      *
      * @return string
      */
-    protected function getPaymentModelName()
+    protected function getPaymentModelName($payum)
     {
-        return (in_array(EloquentPayment::class, array_keys($this->payum->getStorages())) === true) ?
+        return (in_array(EloquentPayment::class, array_keys($payum->getStorages())) === true) ?
             EloquentPayment::class : PayumPayment::class;
     }
 
@@ -165,14 +166,17 @@ class Payment
      *
      * @method create
      *
-     * @param string   $gatewayName
-     * @param \Closure $closure
+     * @param string                   $gatewayName
+     * @param \Closure                 $closure
+     * @param string                   $afterPath
+     * @param array                    $afterParameters
      *
      * @return mixed
      */
     public function prepare($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
-        $storage = $this->payum->getStorage($this->getPaymentModelName());
+        $payum = $this->getPayum();
+        $storage = $payum->getStorage($this->getPaymentModelName($payum));
         $payment = $storage->create();
         $closure($payment, $gatewayName, $storage, $this->payum);
         $storage->update($payment);
