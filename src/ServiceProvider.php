@@ -142,20 +142,17 @@ class ServiceProvider extends BaseServiceProvider
             $addStorages = (array_get($config, 'storage.token') === 'filesystem') ? 'addDefaultStorages' : 'addEloquentStorages';
             call_user_func([$builder, $addStorages]);
 
-            $gatewayFactories = array_get($config, 'gatewayFactories', []);
-            foreach ($gatewayFactories as $factoryName => $factoryClass) {
-                $builder->addGatewayFactory($factoryName, function ($config, GatewayFactoryInterface $coreGatewayFactory) use ($app, $factoryClass) {
-                    return $app->make($factoryClass, [$config, $coreGatewayFactory]);
-                });
-            }
-
             $gatewayConfigs = array_get($config, 'gatewayConfigs', []);
-            foreach ($gatewayConfigs as $factoryName => $options) {
-                $gatewayName = array_get($options, 'gatewayName');
-                $gatewayConfig = array_get($options, 'config', []);
-                $builder->addGateway($gatewayName, array_merge([
-                    'factory' => $factoryName,
-                ], $gatewayConfig));
+            foreach ($gatewayConfigs as $factoryName => $config) {
+                $factoryClass = array_get($config, 'factory');
+                if (empty($factoryClass) === false && class_exists($factoryClass) === true) {
+                    $builder
+                        ->addGatewayFactory($factoryName, function ($config, GatewayFactoryInterface $coreGatewayFactory) use ($app, $factoryClass) {
+                            return $app->make($factoryClass, [$config, $coreGatewayFactory]);
+                        });
+                }
+                $config['factory'] = $factoryName;
+                $builder->addGateway($factoryName, $config);
             }
 
             if (array_get($config, 'storage.gatewayConfig') === 'database') {

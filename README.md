@@ -47,27 +47,21 @@ return [
     ],
 
     'storage' => [
-        // optioins: database, filesystem
+        // optioins: eloquent, filesystem
         'token' => 'filesystem',
 
-        // optioins: database, filesystem
+        // optioins: eloquent, filesystem
         'gatewayConfig' => 'filesystem',
     ],
 
-    // [
-    //     'customFactoryName' => \GateFactoryClass::class,
-    //     'customFactoryName2' => \GateFactoryClass2::class,
-    // ]
-    'gatewayFactories' => [
-    ],
-
     // 'customFactoryName' => [
-    //     'gatewayName' => 'customGatewayName',
-    //     'config'      => [
-    //         'sandbox' => false
-    //     ],
+    //     'factory'  => 'FactoryClass',
+    //     'username' => 'username',
+    //     'password' => 'password',
+    //     'sandbox'  => false
     // ],
     'gatewayConfigs' => [
+        'offline' => []
     ],
 ];
 ```
@@ -159,34 +153,31 @@ artisan migrate
 modify config
 
 ```php
-'router' => [
-    'prefix'     => 'payment',
-    'as'         => 'payment.',
-    // don't remove web
-    'middleware' => 'web',
-],
 
-'storage' => [
-    // optioins: eloquent, filesystem
-    'token' => 'eloquent',
+return [
+    'router' => [
+        'prefix'     => 'payment',
+        'as'         => 'payment.',
+        // if laravel 5.1 remove web
+        'middleware' => 'web',
+    ],
 
-    // optioins: eloquent, filesystem
-    'gatewayConfig' => 'filesystem',
-],
+    'storage' => [
+        // optioins: eloquent, eloquent
+        'token' => 'filesystem',
 
-// [
-//     'customFactoryName' => \GateFactoryClass::class,
-//     'customFactoryName2' => \GateFactoryClass2::class,
-// ]
-'gatewayFactories' => [
-],
+        // optioins: eloquent, filesystem
+        'gatewayConfig' => 'filesystem',
+    ],
 
-// 'customFactoryName' => [
-//     'gatewayName' => 'customGatewayName',
-//     'config'      => [
-//         'sandbox' => false
-//     ],
-// ],
-'gatewayConfigs' => [
-],
+    // 'customFactoryName' => [
+    //     'factory'  => 'FactoryClass',
+    //     'username' => 'username',
+    //     'password' => 'password',
+    //     'sandbox'  => false
+    // ],
+    'gatewayConfigs' => [
+        'offline' => []
+    ],
+];
 ```

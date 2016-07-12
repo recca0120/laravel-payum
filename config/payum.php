@@ -16,18 +16,11 @@ return [
         'gatewayConfig' => 'filesystem',
     ],
 
-    // [
-    //     'customFactoryName' => \GateFactoryClass::class,
-    //     'customFactoryName2' => \GateFactoryClass2::class,
-    // ]
-    'gatewayFactories' => [
-    ],
-
     // 'customFactoryName' => [
-    //     'gatewayName' => 'customGatewayName',
-    //     'config'      => [
-    //         'sandbox' => false
-    //     ],
+    //     'factory'  => 'FactoryClass',
+    //     'username' => 'username',
+    //     'password' => 'password',
+    //     'sandbox'  => false
     // ],
     'gatewayConfigs' => [
     ],

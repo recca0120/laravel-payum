@@ -46,13 +46,16 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $config = m::mock(ConfigContract::class);
         $configData = require __DIR__.'/../config/payum.php';
         $configData['storage']['token'] = 'database';
-        $configData['gatewayFactories'] = [
-            'fooFactoryName' => 'footFactoryClass',
-        ];
         $configData['gatewayConfigs'] = [
-            'fooFactoryName' => [
-                'gatewayName' => 'fooGatewayName',
-                'config'      => [],
+            'gatewayName' => [
+                'factory'  => 'factory',
+                'username' => 'username',
+                'password' => 'password',
+            ],
+            'gatewayName2' => [
+                'factory'  => stdClass::class,
+                'username' => 'username',
+                'password' => 'password',
             ],
         ];
         $configData['storage']['gatewayConfig'] = 'database';
@@ -96,9 +99,10 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('make')->with(HttpRequestVerifier::class, [$tokenStorage])->once()->andReturn($builder)
             ->shouldReceive('make')->with(CoreGatewayFactory::class, [$app, $defaultConfig])->once()->andReturn($builder);
 
-        $builder->shouldReceive('setTokenFactory')->once()->andReturnUsing(function ($closure) use ($tokenStorage, $registry) {
-            return $closure($tokenStorage, $registry);
-        })
+        $builder
+            ->shouldReceive('setTokenFactory')->once()->andReturnUsing(function ($closure) use ($tokenStorage, $registry) {
+                return $closure($tokenStorage, $registry);
+            })
             ->shouldReceive('setHttpRequestVerifier')->once()->andReturnUsing(function ($closure) use ($tokenStorage) {
                 return $closure($tokenStorage);
             })
@@ -110,23 +114,18 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             // ->shouldReceive('addDefaultStorages')->once()->andReturnSelf()
             ->shouldReceive('addEloquentStorages')->once()->andReturnSelf();
 
-        // gatewayFactories
-        $gatewayFactories = array_get($configData, 'gatewayFactories', []);
-        foreach ($gatewayFactories as $factoryName => $factoryClass) {
-            $builder->shouldReceive('addGatewayFactory')->with($factoryName, m::type(Closure::class))->andReturnUsing(function ($name, $closure) use ($defaultConfig, $gatewayFactory) {
-                return $closure($defaultConfig, $gatewayFactory);
-            });
-            $app->shouldReceive('make')->with($factoryClass, [$defaultConfig, $gatewayFactory])->andReturn($builder);
-        }
-
         // gatewayConfigs
         $gatewayConfigs = array_get($configData, 'gatewayConfigs', []);
-        foreach ($gatewayConfigs as $factoryName => $options) {
-            $gatewayName = array_get($options, 'gatewayName');
-            $gatewayConfig = array_get($options, 'config', []);
-            $builder->shouldReceive('addGateway')->with($gatewayName, array_merge([
-                'factory' => $factoryName,
-            ], $gatewayConfig));
+        foreach ($gatewayConfigs as $factoryName => $config) {
+            if (class_exists($config['factory']) === true) {
+                $builder->shouldReceive('addGatewayFactory')->with($factoryName, m::type(Closure::class))->andReturnUsing(function ($name, $closure) use ($defaultConfig, $gatewayFactory) {
+                    return $closure($defaultConfig, $gatewayFactory);
+                });
+                $app->shouldReceive('make')->with($config['factory'], m::any());
+            }
+
+            $config['factory'] = $factoryName;
+            $builder->shouldReceive('addGateway')->with($factoryName, $config);
         }
 
         // storage gatewayConfig
