@@ -138,8 +138,8 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         // registerPayum
         $builder->shouldReceive('getPayum')->once()->andReturn($payum);
         $app->shouldReceive('singleton')->with(Payum::class, m::type(Closure::class))->once()->andReturnUsing(function ($name, $closure) {
-            return $closure(m::self());
-        })
+                return $closure(m::self());
+            })
             ->shouldReceive('make')->with('payum.builder')->once()->andReturn($builder);
 
         $app->shouldReceive('singleton')->with(Payment::class, Payment::class);
@@ -179,7 +179,10 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $viewFactory->shouldReceive('addNamespace')->with('payum', m::any());
 
-        $app->shouldReceive('routesAreCached')->andReturn(false);
+        $app
+            ->shouldReceive('configPath')->andReturn(__DIR__)
+            ->shouldReceive('basePath')->andReturn(__DIR__)
+            ->shouldReceive('routesAreCached')->andReturn(false);
 
         $router->shouldReceive('group');
 

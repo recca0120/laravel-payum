@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelPayum\Service;
 
 use Closure;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Session\SessionManager;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
@@ -38,6 +39,13 @@ class Payment
     protected $sessionManager;
 
     /**
+     * $responseFactory.
+     *
+     * @var \Illuminate\Contracts\Routing\ResponseFactory
+     */
+    protected $responseFactory;
+
+    /**
      * $converter.
      *
      * @var \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter
@@ -58,16 +66,19 @@ class Payment
      *
      * @param \Payum\Core\Payum                                          $payum
      * @param \Illuminate\Session\SessionManager                         $sessionManager
+     * @param \Illuminate\Contracts\Routing\ResponseFactory              $responseFactory
      * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
      */
     public function __construct(
         Payum $payum,
         SessionManager $sessionManager,
+        ResponseFactory $responseFactory,
         ReplyToSymfonyResponseConverter $converter
     ) {
         $this->payum = $payum;
-        $this->converter = $converter;
         $this->sessionManager = $sessionManager;
+        $this->responseFactory = $responseFactory;
+        $this->converter = $converter;
     }
 
     /**
@@ -98,7 +109,6 @@ class Payment
             if ($this->sessionManager->isStarted() === false) {
                 throw new HttpException(400, 'Session must be started.');
             }
-
             $payumToken = $this->sessionManager->get($this->payumTokenId);
             $this->sessionManager->forget($this->payumTokenId);
         }
@@ -184,7 +194,7 @@ class Payment
             ->getTokenFactory()
             ->createCaptureToken($gatewayName, $payment, $afterPath, $afterParameters);
 
-        return redirect($captureToken->getTargetUrl());
+        return $this->responseFactory->redirectTo($captureToken->getTargetUrl());
     }
 
     /**
@@ -224,7 +234,7 @@ class Payment
             $gateway->execute(new Authorize($token));
             $httpRequestVerifier->invalidate($token);
 
-            return redirect($token->getAfterUrl());
+            return $this->responseFactory->redirectTo($token->getAfterUrl());
         });
     }
 
@@ -244,7 +254,7 @@ class Payment
             $gateway->execute(new Capture($token));
             $httpRequestVerifier->invalidate($token);
 
-            return redirect($token->getAfterUrl());
+            return $this->responseFactory->redirectTo($token->getAfterUrl());
         });
     }
 
@@ -263,7 +273,7 @@ class Payment
         return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Notify($token));
 
-            return response(null, 204);
+            return $this->responseFactory->make(null, 204);
         });
     }
 
@@ -281,7 +291,7 @@ class Payment
         $gateway = $this->getPayum()->getGateway($gatewayName);
         $gateway->execute(new Notify(null));
 
-        return response(null, 204);
+        return $this->responseFactory->make(null, 204);
     }
 
     /**
@@ -300,7 +310,7 @@ class Payment
             $gateway->execute(new Payout($token));
             $httpRequestVerifier->invalidate($token);
 
-            return redirect($token->getAfterUrl());
+            return $this->responseFactory->redirectTo($token->getAfterUrl());
         });
     }
 
@@ -321,10 +331,10 @@ class Payment
             $httpRequestVerifier->invalidate($token);
             $afterUrl = $token->getAfterUrl();
             if (empty($afterUrl) === false) {
-                return redirect($afterUrl);
+                return $this->responseFactory->redirectTo($afterUrl);
             }
 
-            return response(null, 204);
+            return $this->responseFactory->make(null, 204);
         });
     }
 
@@ -344,7 +354,7 @@ class Payment
             $gateway->execute(new Sync($token));
             $httpRequestVerifier->invalidate($token);
 
-            return redirect($token->getAfterUrl());
+            return $this->responseFactory->redirectTo($token->getAfterUrl());
         });
     }
 }
