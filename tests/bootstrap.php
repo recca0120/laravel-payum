@@ -25,7 +25,7 @@ use Carbon\Carbon;
 */
 date_default_timezone_set('UTC');
 Carbon::setTestNow(Carbon::now());
-// 
+//
 // if (function_exists('base_path') === false) {
 //     function base_path()
 //     {

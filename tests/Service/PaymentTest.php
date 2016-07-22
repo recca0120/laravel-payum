@@ -196,7 +196,8 @@ class PaymentTest extends PHPUnit_Framework_TestCase
 
         $sessionManager->shouldReceive('isStarted')->andReturn(false);
 
-        $payment->send($request, $payumToken, function () {});
+        $payment->send($request, $payumToken, function () {
+        });
 
         /*
         |------------------------------------------------------------
@@ -299,7 +300,8 @@ class PaymentTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getStorage')->once()->andReturn($storage)
             ->shouldReceive('getTokenFactory->createCaptureToken')->andReturn($token);
 
-        $payment->prepare($gatewayName, function () {}, 'payment.done', []);
+        $payment->prepare($gatewayName, function () {
+        }, 'payment.done', []);
 
         /*
         |------------------------------------------------------------
