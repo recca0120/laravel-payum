@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelPayum\Service;
 
 use Closure;
+use Illuminate\Contracts\Encryption\Encrypter as EncrypterContract;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Session\SessionManager;
@@ -19,8 +20,6 @@ use Payum\Core\Request\Refund;
 use Payum\Core\Request\Sync;
 use Payum\Core\Security\HttpRequestVerifierInterface;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Payment
 {
@@ -53,6 +52,13 @@ class Payment
     protected $converter;
 
     /**
+     * $encrypter.
+     *
+     * @var \Illuminate\Contracts\Encryption\Encrypter
+     */
+    protected $encrypter;
+
+    /**
      * $payumTokenId.
      *
      * @var string
@@ -68,17 +74,20 @@ class Payment
      * @param \Illuminate\Session\SessionManager                         $sessionManager
      * @param \Illuminate\Contracts\Routing\ResponseFactory              $responseFactory
      * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
+     * @param \Illuminate\Contracts\Encryption\Encrypter                 $encrypter
      */
     public function __construct(
         Payum $payum,
         SessionManager $sessionManager,
         ResponseFactory $responseFactory,
-        ReplyToSymfonyResponseConverter $converter
+        ReplyToSymfonyResponseConverter $converter,
+        EncrypterContract $encrypter
     ) {
         $this->payum = $payum;
         $this->sessionManager = $sessionManager;
         $this->responseFactory = $responseFactory;
         $this->converter = $converter;
+        $this->encrypter = $encrypter;
     }
 
     /**
@@ -94,23 +103,47 @@ class Payment
     }
 
     /**
+     * getSession.
+     *
+     * @method getSession
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Session\Store
+     */
+    protected function getSession($request)
+    {
+        $session = $this->sessionManager->driver();
+        if ($session->isStarted() === false) {
+            $sessionName = $request->cookies->get($session->getName());
+            $sessionName = ($session->isValidId($sessionName) === false) ? $this->encrypter->decrypt($sessionName) : $sessionName;
+            $session->setId($sessionName);
+            $session->setRequestOnHandler($request);
+            $session->start();
+        }
+
+        return $session;
+    }
+
+    /**
      * getToken.
      *
      * @method getToken
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param \Payum\Core\Security\HttpRequestVerifierInterface $httpRequestVerifier
+     * @param \Illuminate\Http\Request                          $request
+     * @param string                                            $payumToken
      *
      * @return \Payum\Core\Model\Token
      */
     protected function getToken(HttpRequestVerifierInterface $httpRequestVerifier, Request $request, $payumToken = null)
     {
         if (empty($payumToken) === true) {
-            if ($this->sessionManager->isStarted() === false) {
-                throw new HttpException(400, 'Session must be started.');
-            }
-            $payumToken = $this->sessionManager->get($this->payumTokenId);
-            $this->sessionManager->forget($this->payumTokenId);
+            $session = $this->getSession($request);
+            $payumToken = $session->get($this->payumTokenId);
+            $session->forget($this->payumTokenId);
+            $session->save();
+            $session->start();
         }
         $request->merge([$this->payumTokenId => $payumToken]);
 
@@ -137,25 +170,12 @@ class Payment
         try {
             return $closure($gateway, $token, $httpRequestVerifier);
         } catch (ReplyInterface $reply) {
-            return $this->convertReply($reply, $payumToken);
+            $session = $this->getSession($request);
+            $session->set('payum_token', $payumToken);
+            $session->save();
+
+            return $this->converter->convert($reply);
         }
-    }
-
-    /**
-     * convertReply.
-     *
-     * @method convertReply
-     *
-     * @param ReplyInterface $reply
-     * @param string         $payumToken
-     *
-     * @return Response
-     */
-    protected function convertReply(ReplyInterface $reply, $payumToken)
-    {
-        $this->sessionManager->set('payum_token', $payumToken);
-
-        return $this->converter->convert($reply);
     }
 
     /**
