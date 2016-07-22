@@ -4,8 +4,12 @@ return [
     'router' => [
         'prefix'     => 'payment',
         'as'         => 'payment.',
-        // if laravel 5.1 remove web
-        'middleware' => 'web',
+        'middleware' => [
+            \Illuminate\Cookie\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+        ],
     ],
 
     'storage' => [
