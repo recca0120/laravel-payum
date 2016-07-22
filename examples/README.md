@@ -12,7 +12,7 @@
 To get the latest version of Laravel Exceptions, simply require the project using [Composer](https://getcomposer.org):
 
 ```bash
-composer require recca0120/laravel-payum
+composer require recca0120/laravel-payum payum-tw/allpay
 ```
 
 Instead, you may of course manually update your require block and run `composer update` if you so choose:
@@ -20,7 +20,8 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-payum": "^0.0.4"
+        "recca0120/laravel-payum": "^0.0.4",
+        "payum-tw/allpay": "^1.0"
     }
 }
 ```
@@ -59,7 +60,13 @@ return [
     //     'sandbox'  => false
     // ],
     'gatewayConfigs' => [
-        'offline' => []
+        'allpay' => [
+            'factory'    => PayumTW\Allpay\AllpayGatewayFactory::class,
+            'MerchantID' => '2000132',
+            'HashKey'    => '5294y06JbISpM5x9',
+            'HashIV'     => 'v77hoKGq4kWxNNIS',
+            'sandbox'    => true,
+        ],
     ],
 ];
 ```
@@ -84,14 +91,24 @@ class PaymentController extends BaseController
 {
     public function prepare(Payment $payment)
     {
-        return $payment->prepare('offline', function (PaymentInterface $payment, $gatewayName, StorageInterface $storage, Payum $payum) {
+        return $payment->prepare('allpay', function (PaymentInterface $payment, $gatewayName, StorageInterface $storage, Payum $payum) {
             $payment->setNumber(uniqid());
             $payment->setCurrencyCode('TWD');
-            $payment->setTotalAmount(100);
+            $payment->setTotalAmount(2000);
             $payment->setDescription('A description');
             $payment->setClientId('anId');
             $payment->setClientEmail('foo@example.com');
-            $payment->setDetails([]);
+            $payment->setDetails([
+                'Items' => [
+                    [
+                        'Name'     => '歐付寶黑芝麻豆漿',
+                        'Price'    => (int) '2000',
+                        'Currency' => '元',
+                        'Quantity' => (int) '1',
+                        'URL'      => 'dedwed',
+                    ],
+                ],
+            ]);
         });
     }
 
@@ -127,53 +144,4 @@ Route::any('payment/done/{payumToken}', [
     'as'   => 'payment.done',
     'uses' => 'PaymentController@done',
 ]);
-```
-
-## Eloquent
-
-If you want use eloquent you need change config.php and create database
-
-
-### Migrate
-
-publish vendor
-
-```bash
-artisan vendor:publish --provider="Recca0120\LaravelPayum\ServiceProvider"
-```
-
-migrate
-
-```bash
-artisan migrate
-```
-
-modify config
-
-```php
-
-return [
-    'router' => [
-        'prefix'     => 'payment',
-        'as'         => 'payment.',
-    ],
-
-    'storage' => [
-        // optioins: eloquent, eloquent
-        'token' => 'filesystem',
-
-        // optioins: eloquent, filesystem
-        'gatewayConfig' => 'filesystem',
-    ],
-
-    // 'customFactoryName' => [
-    //     'factory'  => 'FactoryClass',
-    //     'username' => 'username',
-    //     'password' => 'password',
-    //     'sandbox'  => false
-    // ],
-    'gatewayConfigs' => [
-        'offline' => []
-    ],
-];
 ```
