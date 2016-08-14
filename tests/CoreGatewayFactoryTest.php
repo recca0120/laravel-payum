@@ -15,7 +15,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testBuildAction()
+    public function test_build_action()
     {
         /*
         |------------------------------------------------------------
@@ -54,7 +54,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame([$actionInterface], 'actions', $gateway);
     }
 
-    public function testBuildApi()
+    public function test_build_api()
     {
         /*
         |------------------------------------------------------------
@@ -94,7 +94,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame([$api], 'apis', $gateway);
     }
 
-    public function testbuildExtensions()
+    public function test_build_extensions()
     {
         /*
         |------------------------------------------------------------

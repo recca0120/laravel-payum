@@ -12,7 +12,7 @@ class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testExecute()
+    public function test_execute()
     {
         /*
         |------------------------------------------------------------
@@ -56,7 +56,7 @@ class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException \Payum\Core\Exception\RequestNotSupportedException
      */
-    public function testThrowNotSupport()
+    public function test_throw_not_support()
     {
         /*
         |------------------------------------------------------------

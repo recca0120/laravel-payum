@@ -11,7 +11,7 @@ class TokenEloquentTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testSetAttributes()
+    public function test_set_attributes()
     {
         /*
         |------------------------------------------------------------

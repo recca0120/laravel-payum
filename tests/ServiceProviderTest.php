@@ -33,7 +33,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
     /**
      * @test
      */
-    public function testRegister()
+    public function test_register()
     {
         /*
         |------------------------------------------------------------
@@ -153,7 +153,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
     }
 
-    public function testBoot()
+    public function test_boot()
     {
         /*
         |------------------------------------------------------------
@@ -194,99 +194,4 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
     }
-
-    // public function registerPayumBuilder()
-    // {
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Set
-    //     |------------------------------------------------------------
-    //     */
-    //
-    //     $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
-    //     $serviceProvider = m::mock(new ServiceProvider($app))
-    //         ->shouldAllowMockingProtectedMethods();
-    //     $config = m::mock(ConfigContract::class);
-    //     $builder = m::mock(PayumBuilder::class);
-    //     $tokenStorage = m::mock(StorageInterface::class);
-    //     $registry = m::mock(StorageRegistryInterface::class);
-    //     $defaultConfig = [];
-    //
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Expectation
-    //     |------------------------------------------------------------
-    //     */
-    //
-    //     $config->shouldReceive('get')->andReturn([])
-    //         ->shouldReceive('set')->andReturnSelf();
-    //
-    //     $app->shouldReceive('bind')->with('payum.converter.reply_to_http_response', ReplyToSymfonyResponseConverter::class)
-    //         ->shouldReceive('bind')->with('payum.action.get_http_request', GetHttpRequestAction::class)
-    //         ->shouldReceive('bind')->with('payum.action.obtain_credit_card', m::type(Closure::class))
-    //         ->shouldReceive('bind')->with('payum.action.render_template', RenderTemplateAction::class)
-    //         ->shouldReceive('singleton')->with('payum.builder', m::type(Closure::class))->andReturnUsing(function ($name, $closure) use ($app) {
-    //             return $closure($app);
-    //         })
-    //         ->shouldReceive('offsetGet')->with('config')->andReturn($config)
-    //         ->shouldReceive('make')->with(PayumBuilder::class)->andReturn($builder)
-    //         ->shouldReceive('make')->with(TokenFactory::class, [$tokenStorage, $registry])->andReturn($builder)
-    //         ->shouldReceive('make')->with(HttpRequestVerifier::class, [$tokenStorage])->andReturn($builder)
-    //         ->shouldReceive('make')->with(CoreGatewayFactory::class, [$app, $defaultConfig])->andReturn($builder);
-    //
-    //     $builder->shouldReceive('setTokenFactory')->andReturnUsing(function ($closure) use ($tokenStorage, $registry) {
-    //             return $closure($tokenStorage, $registry);
-    //         })
-    //         ->shouldReceive('setHttpRequestVerifier')->andReturnUsing(function ($closure) use ($tokenStorage) {
-    //             return $closure($tokenStorage);
-    //         })
-    //         ->shouldReceive('setCoreGatewayFactory')->with(m::type(Closure::class))->andReturnUsing(function ($closure) use ($defaultConfig) {
-    //             return $closure($defaultConfig);
-    //         })
-    //         ->shouldReceive('setCoreGatewayFactoryConfig')->andReturnSelf()
-    //         ->shouldReceive('setGenericTokenFactoryPaths')->andReturnSelf()
-    //         ->shouldReceive('addDefaultStorages')->andReturnSelf();
-    //
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Assertion
-    //     |------------------------------------------------------------
-    //     */
-    //     $this->assertSame($builder, $serviceProvider->registerPayumBuilder());
-    // }
-    //
-    // public function testRegisterPayum()
-    // {
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Set
-    //     |------------------------------------------------------------
-    //     */
-    //
-    //     $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
-    //     $serviceProvider = m::mock(new ServiceProvider($app))
-    //         ->shouldAllowMockingProtectedMethods();
-    //     $builder = m::mock(PayumBuilder::class);
-    //     $payum = m::mock(Payum::class);
-    //
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Expectation
-    //     |------------------------------------------------------------
-    //     */
-    //     $app->shouldReceive('singleton')->with('payum', m::type(Closure::class))->andReturnUsing(function ($name, $closure) {
-    //             return $closure(m::self());
-    //         })
-    //         ->shouldReceive('make')->with('payum.builder')->andReturn($builder);
-    //
-    //     $builder
-    //         ->shouldReceive('getPayum')->andReturn($payum);
-    //
-    //     /*
-    //     |------------------------------------------------------------
-    //     | Assertion
-    //     |------------------------------------------------------------
-    //     */
-    //     $this->assertSame($payum, $serviceProvider->registerPayum());
-    // }
 }

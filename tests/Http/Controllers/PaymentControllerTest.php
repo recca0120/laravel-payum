@@ -12,7 +12,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testCommonBehaviors()
+    public function test_common_behaviors()
     {
         /*
         |------------------------------------------------------------
@@ -45,7 +45,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         }
     }
 
-    public function testNotifyUnsafe()
+    public function test_notify_unsafe()
     {
         /*
         |------------------------------------------------------------

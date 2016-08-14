@@ -12,7 +12,7 @@ class FilesystemStorageTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testConstruct()
+    public function test_construct()
     {
         /*
         |------------------------------------------------------------

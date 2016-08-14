@@ -19,7 +19,7 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testAddDefaultStorages()
+    public function test_add_default_storages()
     {
         /*
         |------------------------------------------------------------
@@ -58,7 +58,7 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         ], 'storages', $payumBuilder);
     }
 
-    public function testAddEloquentStorages()
+    public function test_add_eloquent_storages()
     {
         /*
         |------------------------------------------------------------

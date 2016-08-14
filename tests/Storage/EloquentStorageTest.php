@@ -12,7 +12,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testCreate()
+    public function test_create()
     {
         /*
         |------------------------------------------------------------
@@ -40,7 +40,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         $this->assertSame($exceptedModelClass, $eloquentStorage->create());
     }
 
-    public function testDoUpdateModel()
+    public function test_do_update_model()
     {
         /*
         |------------------------------------------------------------
@@ -71,7 +71,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
     }
 
-    public function testDoDeleteModel()
+    public function test_do_delete_model()
     {
         /*
         |------------------------------------------------------------
@@ -102,7 +102,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
     }
 
-    public function testDoGetIdentity()
+    public function test_do_get_identity()
     {
         /*
         |------------------------------------------------------------
@@ -134,7 +134,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         $this->assertSame($exceptedKey, $eloquentStorage->doGetIdentity($model)->getId());
     }
 
-    public function testDoFind()
+    public function test_do_find()
     {
         /*
         |------------------------------------------------------------
@@ -169,7 +169,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         $this->assertSame($exceptedModelClass, $eloquentStorage->doFind($exceptedId));
     }
 
-    public function testFindBy()
+    public function test_find_by()
     {
         /*
         |------------------------------------------------------------

@@ -13,7 +13,7 @@ class TokenFactoryTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testGenerateUrl()
+    public function test_generate_url()
     {
         /*
         |------------------------------------------------------------

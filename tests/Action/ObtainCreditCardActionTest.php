@@ -15,7 +15,7 @@ class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function testExecute()
+    public function test_execute()
     {
         /*
         |------------------------------------------------------------
@@ -58,7 +58,7 @@ class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $response->getResponse()->getContent());
     }
 
-    public function testExecuteWithPost()
+    public function test_execute_with_post()
     {
         /*
         |------------------------------------------------------------
@@ -96,7 +96,7 @@ class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException \Payum\Core\Exception\RequestNotSupportedException
      */
-    public function testThrowNotSupport()
+    public function test_throw_not_support()
     {
         /*
         |------------------------------------------------------------
