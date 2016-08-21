@@ -180,13 +180,14 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $viewFactory->shouldReceive('addNamespace')->with('payum', m::any());
 
         $app
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
             ->shouldReceive('configPath')->andReturn(__DIR__)
             ->shouldReceive('basePath')->andReturn(__DIR__)
             ->shouldReceive('routesAreCached')->andReturn(false);
 
         $router->shouldReceive('group');
 
-        $serviceProvider->boot($viewFactory, $router, $config);
+        $serviceProvider->boot($viewFactory, $router);
 
         /*
         |------------------------------------------------------------
