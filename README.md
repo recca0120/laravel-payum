@@ -153,7 +153,7 @@ modify config
 ```php
 
 return [
-    'router' => [
+    'route' => [
         'prefix'     => 'payment',
         'as'         => 'payment.',
     ],

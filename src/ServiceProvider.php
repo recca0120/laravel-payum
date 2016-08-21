@@ -4,6 +4,7 @@ namespace Recca0120\LaravelPayum;
 
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
@@ -35,13 +36,13 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @method boot
      *
-     * @param \Illuminate\Contracts\View\Factory      $viewFactory
-     * @param \Illuminate\Routing\Router              $router
+     * @param \Illuminate\Contracts\View\Factory $viewFactory
+     * @param \Illuminate\Routing\Router         $router
      */
     public function boot(ViewFactory $viewFactory, Router $router)
     {
         $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
-        $config = $this->app['config']->get('payum.route');
+        $config = $this->app['config']->get('payum', []);
         $this->handleRoutes($router, $config)
             ->handlePublishes();
     }
@@ -54,12 +55,14 @@ class ServiceProvider extends BaseServiceProvider
      *
      * @return static
      */
-    protected function handleRoutes(Router $router, $config)
+    protected function handleRoutes(Router $router, $config = [])
     {
         if ($this->app->routesAreCached() === false) {
-            $router->group(array_merge($config, [
+            $router->group(array_merge([
+                'prefix'     => 'payment',
+                'as'         => 'payment.',
                 'namespace'  => $this->namespace,
-            ]), function (Router $router) {
+            ], Arr::get($config, 'route', [])), function (Router $router) {
                 require __DIR__.'/Http/routes.php';
             });
         }
