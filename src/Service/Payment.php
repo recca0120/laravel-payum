@@ -3,7 +3,6 @@
 namespace Recca0120\LaravelPayum\Service;
 
 use Closure;
-use Illuminate\Contracts\Encryption\Encrypter as EncrypterContract;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Session\SessionManager;
@@ -52,13 +51,6 @@ class Payment
     protected $converter;
 
     /**
-     * $encrypter.
-     *
-     * @var \Illuminate\Contracts\Encryption\Encrypter
-     */
-    protected $encrypter;
-
-    /**
      * $payumTokenId.
      *
      * @var string
@@ -74,20 +66,17 @@ class Payment
      * @param \Illuminate\Session\SessionManager                         $sessionManager
      * @param \Illuminate\Contracts\Routing\ResponseFactory              $responseFactory
      * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
-     * @param \Illuminate\Contracts\Encryption\Encrypter                 $encrypter
      */
     public function __construct(
         Payum $payum,
         SessionManager $sessionManager,
         ResponseFactory $responseFactory,
-        ReplyToSymfonyResponseConverter $converter,
-        EncrypterContract $encrypter
+        ReplyToSymfonyResponseConverter $converter
     ) {
         $this->payum = $payum;
         $this->sessionManager = $sessionManager;
         $this->responseFactory = $responseFactory;
         $this->converter = $converter;
-        $this->encrypter = $encrypter;
     }
 
     /**
@@ -114,20 +103,11 @@ class Payment
     protected function getSession($request)
     {
         $session = $this->sessionManager->driver();
-        $sessionName = $request->cookies->get($session->getName());
-
-        if (is_null($sessionName) === false) {
-            $sessionName = ($session->isValidId($sessionName) === false) ? $this->encrypter->decrypt($sessionName) : $sessionName;
+        if ($session->isStarted() === false) {
+            $session->setId($request->cookies->get($session->getName()));
+            $session->setRequestOnHandler($request);
+            $session->start();
         }
-
-        if (is_null($sessionName) === false) {
-            $session->setId($sessionName);
-            if ($session->isStarted() === false) {
-                $session->start();
-            }
-        }
-
-        $session->setRequestOnHandler($request);
 
         return $session;
     }
