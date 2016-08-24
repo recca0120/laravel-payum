@@ -114,11 +114,19 @@ class Payment
     protected function getSession($request)
     {
         $session = $this->sessionManager->driver();
-        if ($session->isStarted() === false) {
-            $sessionName = $request->cookies->get($session->getName());
+        $sessionName = $request->cookies->get($session->getName());
+
+        if (is_null($sessionName) === false) {
             $sessionName = ($session->isValidId($sessionName) === false) ? $this->encrypter->decrypt($sessionName) : $sessionName;
+        }
+
+        if (is_null($sessionName) === false) {
             $session->setId($sessionName);
-            $session->setRequestOnHandler($request);
+        }
+
+        $session->setRequestOnHandler($request);
+
+        if ($session->isStarted() === false) {
             $session->start();
         }
 
