@@ -213,4 +213,26 @@ class Payment extends Model implements PaymentInterface
     {
         $this->creditCard = $creditCard;
     }
+
+    /**
+     * setStatus.
+     *
+     * @method setStatus
+     *
+     * @param CreditCardInterface $creditCard
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
+
+    /**
+     * getStatus.
+     *
+     * @method getStatus
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 }

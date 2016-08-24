@@ -15,6 +15,7 @@ use Payum\Core\Storage\StorageInterface;
 use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
+use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
 use Recca0120\LaravelPayum\Security\TokenFactory;
 use Recca0120\LaravelPayum\Service\Payment;
@@ -118,6 +119,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->app->bind('payum.action.get_http_request', GetHttpRequestAction::class);
         $this->app->bind('payum.action.obtain_credit_card', ObtainCreditCardAction::class);
         $this->app->bind('payum.action.render_template', RenderTemplateAction::class);
+        $this->app->bind('payum.extension.update_payment_status', UpdatePaymentStatusExtension::class);
 
         return $this->app->singleton('payum.builder', function ($app) {
             $config = $app['config']->get('payum');
@@ -129,8 +131,9 @@ class ServiceProvider extends BaseServiceProvider
                 })->setCoreGatewayFactory(function ($defaultConfig) use ($app) {
                     return $app->make(CoreGatewayFactory::class, [$app, $defaultConfig]);
                 })->setCoreGatewayFactoryConfig([
-                    'payum.action.obtain_credit_card' => 'payum.action.obtain_credit_card',
-                    'payum.action.render_template'    => 'payum.action.render_template',
+                    'payum.action.obtain_credit_card'       => 'payum.action.obtain_credit_card',
+                    'payum.action.render_template'          => 'payum.action.render_template',
+                    'payum.extension.update_payment_status' => 'payum.extension.update_payment_status',
                 ])->setGenericTokenFactoryPaths([
                     'authorize' => array_get($config, 'router.as').'authorize',
                     'capture'   => array_get($config, 'router.as').'capture',

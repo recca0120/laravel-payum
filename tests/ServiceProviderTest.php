@@ -16,6 +16,7 @@ use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 use Recca0120\LaravelPayum\CoreGatewayFactory;
+use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
 use Recca0120\LaravelPayum\PayumBuilder;
 use Recca0120\LaravelPayum\Security\TokenFactory;
@@ -90,6 +91,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('bind')->with('payum.action.get_http_request', GetHttpRequestAction::class)->once()
             ->shouldReceive('bind')->with('payum.action.obtain_credit_card', ObtainCreditCardAction::class)->once()
             ->shouldReceive('bind')->with('payum.action.render_template', RenderTemplateAction::class)->once()
+            ->shouldReceive('bind')->with('payum.extension.update_payment_status', UpdatePaymentStatusExtension::class)->once()
             ->shouldReceive('singleton')->with('payum.builder', m::type(Closure::class))->once()->andReturnUsing(function ($name, $closure) use ($app) {
                 return $closure($app);
             })
