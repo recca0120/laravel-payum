@@ -122,13 +122,12 @@ class Payment
 
         if (is_null($sessionName) === false) {
             $session->setId($sessionName);
+            if ($session->isStarted() === false) {
+                $session->start();
+            }
         }
 
         $session->setRequestOnHandler($request);
-
-        if ($session->isStarted() === false) {
-            $session->start();
-        }
 
         return $session;
     }
