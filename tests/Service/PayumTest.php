@@ -6,7 +6,7 @@ use Illuminate\Session\SessionManager;
 use Mockery as m;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Payum\Core\GatewayInterface;
-use Payum\Core\Payum;
+use Payum\Core\Payum as CorePayum;
 use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Reply\ReplyInterface;
 use Payum\Core\Request\Authorize;
@@ -18,9 +18,9 @@ use Payum\Core\Request\Refund;
 use Payum\Core\Request\Sync;
 use Payum\Core\Security\HttpRequestVerifierInterface;
 use Payum\Core\Security\TokenInterface;
-use Recca0120\LaravelPayum\Service\Payment;
+use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
-class PaymentTest extends PHPUnit_Framework_TestCase
+class PayumTest extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -35,11 +35,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
 
         /*
         |------------------------------------------------------------
@@ -64,11 +64,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
         $token = m::mock(TokenInterface::class);
@@ -116,11 +116,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $request->cookies = m::mock(stdClass::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
@@ -182,11 +182,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $request->cookies = m::mock(stdClass::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
@@ -248,11 +248,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $gatewayName = 'fooGatewayName';
         $storage = m::mock(stdClass::class);
@@ -298,11 +298,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
         $token = m::mock(TokenInterface::class);
@@ -353,11 +353,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
         $token = m::mock(TokenInterface::class);
@@ -407,11 +407,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
         $token = m::mock(TokenInterface::class);
@@ -461,11 +461,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
         $token = m::mock(TokenInterface::class);
@@ -516,11 +516,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $token = m::mock(TokenInterface::class);
         $payumToken = uniqid();
         $gateway = m::mock(GatewayInterface::class);
@@ -556,11 +556,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
         $token = m::mock(TokenInterface::class);
@@ -610,11 +610,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
         $token = m::mock(TokenInterface::class);
@@ -664,11 +664,11 @@ class PaymentTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payum = m::mock(Payum::class);
+        $payum = m::mock(CorePayum::class);
         $sessionManager = m::mock(SessionManager::class);
         $responseFactory = m::mock(ResponseFactory::class);
         $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new Payment($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
         $request = m::mock(Request::class);
         $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
         $token = m::mock(TokenInterface::class);

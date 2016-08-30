@@ -3,7 +3,7 @@
 namespace Recca0120\LaravelPayum\Http\Controllers\Behavior;
 
 use Illuminate\Http\Request;
-use Recca0120\LaravelPayum\Service\Payment;
+use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
 trait NotifyBehavior
 {
@@ -12,15 +12,15 @@ trait NotifyBehavior
      *
      * @method notify
      *
-     * @param \Recca0120\LaravelPayum\Payment $payment
-     * @param \Illuminate\Http\Request        $request
-     * @param string                          $payumToken
+     * @param \Recca0120\LaravelPayum\Service\Payum $payumService
+     * @param \Illuminate\Http\Request              $request
+     * @param string                                $payumToken
      *
      * @return mixed
      */
-    public function notify(Payment $payment, Request $request, $payumToken)
+    public function notify(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payment->notify($request, $payumToken);
+        return $payumService->notify($request, $payumToken);
     }
 
     /**
@@ -28,13 +28,13 @@ trait NotifyBehavior
      *
      * @method notifyUnsafe
      *
-     * @param \Recca0120\LaravelPayum\Payment $payment
-     * @param string                          $gatewayName
+     * @param \Recca0120\LaravelPayum\Service\Payum $payumService
+     * @param string                                $gatewayName
      *
      * @return mixed
      */
-    public function notifyUnsafe(Payment $payment, $gatewayName)
+    public function notifyUnsafe(PayumService $payumService, $gatewayName)
     {
-        return $payment->notifyUnsafe($gatewayName);
+        return $payumService->notifyUnsafe($gatewayName);
     }
 }

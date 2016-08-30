@@ -3,7 +3,7 @@
 namespace Recca0120\LaravelPayum\Http\Controllers\Behavior;
 
 use Illuminate\Http\Request;
-use Recca0120\LaravelPayum\Service\Payment;
+use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
 trait PayoutBehavior
 {
@@ -12,14 +12,14 @@ trait PayoutBehavior
      *
      * @method payout
      *
-     * @param \Recca0120\LaravelPayum\Payment $payment
-     * @param \Illuminate\Http\Request        $request
-     * @param string                          $payumToken
+     * @param \Recca0120\LaravelPayum\Service\Payum $payumService
+     * @param \Illuminate\Http\Request              $request
+     * @param string                                $payumToken
      *
      * @return mixed
      */
-    public function payout(Payment $payment, Request $request, $payumToken)
+    public function payout(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payment->payout($request, $payumToken);
+        return $payumService->payout($request, $payumToken);
     }
 }

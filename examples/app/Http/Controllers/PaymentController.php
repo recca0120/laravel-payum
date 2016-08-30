@@ -10,13 +10,18 @@ use Payum\Core\Payum;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\TokenInterface;
 use Payum\Core\Storage\StorageInterface;
-use Recca0120\LaravelPayum\Service\Payment;
+use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
 class PaymentController extends BaseController
 {
-    public function prepare(Payment $payment)
+    public function prepare(PayumService $payumService)
     {
-        return $payment->prepare('allpay', function (PaymentInterface $payment, $gatewayName, StorageInterface $storage, Payum $payum) {
+        return $payumService->prepare('allpay', function (
+            PaymentInterface $payment,
+            $gatewayName,
+            StorageInterface $storage,
+            Payum $payum
+        ) {
             $payment->setNumber(uniqid());
             $payment->setCurrencyCode('TWD');
             $payment->setTotalAmount(2000);
@@ -37,9 +42,14 @@ class PaymentController extends BaseController
         });
     }
 
-    public function done(Payment $payment, Request $request, $payumToken)
+    public function done(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payment->done($request, $payumToken, function (GetHumanStatus $status, PaymentInterface $payment, GatewayInterface $gateway, TokenInterface $token) {
+        return $payumService->done($request, $payumToken, function (
+            GetHumanStatus $status,
+            PaymentInterface $payment,
+            GatewayInterface $gateway,
+            TokenInterface $token
+        ) {
             return response()->json([
                 'status' => $status->getValue(),
                 'client' => [

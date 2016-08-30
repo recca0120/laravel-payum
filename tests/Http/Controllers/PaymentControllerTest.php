@@ -3,7 +3,7 @@
 use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelPayum\Http\Controllers\PaymentController;
-use Recca0120\LaravelPayum\Service\Payment;
+use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
 class PaymentControllerTest extends PHPUnit_Framework_TestCase
 {
@@ -21,7 +21,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         */
 
         $controller = new PaymentController();
-        $payment = m::mock(Payment::class);
+        $payumService = m::mock(PayumService::class);
         $request = m::mock(Request::class);
 
         /*
@@ -40,8 +40,8 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
 
         foreach ($methods as $method) {
             $exceptedPayumToken = uniqid();
-            $payment->shouldReceive($method)->with($request, $exceptedPayumToken)->andReturn($exceptedPayumToken);
-            $this->assertSame($exceptedPayumToken, call_user_func_array([$controller, $method], [$payment, $request, $exceptedPayumToken]));
+            $payumService->shouldReceive($method)->with($request, $exceptedPayumToken)->andReturn($exceptedPayumToken);
+            $this->assertSame($exceptedPayumToken, call_user_func_array([$controller, $method], [$payumService, $request, $exceptedPayumToken]));
         }
     }
 
@@ -54,7 +54,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         */
 
         $controller = new PaymentController();
-        $payment = m::mock(Payment::class);
+        $payumService = m::mock(PayumService::class);
         $request = m::mock(Request::class);
 
         /*
@@ -64,7 +64,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedGatewayName = 'fooGatewayName';
-        $payment->shouldReceive('notifyUnsafe')->with($exceptedGatewayName)->andReturn($exceptedGatewayName);
+        $payumService->shouldReceive('notifyUnsafe')->with($exceptedGatewayName)->andReturn($exceptedGatewayName);
 
         /*
         |------------------------------------------------------------
@@ -72,6 +72,6 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertSame($exceptedGatewayName, $controller->notifyUnsafe($payment, $exceptedGatewayName));
+        $this->assertSame($exceptedGatewayName, $controller->notifyUnsafe($payumService, $exceptedGatewayName));
     }
 }

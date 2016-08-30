@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Session\SessionManager;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Payum\Core\Model\Payment as PayumPayment;
-use Payum\Core\Payum;
+use Payum\Core\Payum as CorePayum;
 use Payum\Core\Reply\ReplyInterface;
 use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Capture;
@@ -20,7 +20,7 @@ use Payum\Core\Request\Sync;
 use Payum\Core\Security\HttpRequestVerifierInterface;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
-class Payment
+class Payum
 {
     /**
      * $payum.
@@ -68,7 +68,7 @@ class Payment
      * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
      */
     public function __construct(
-        Payum $payum,
+        CorePayum $payum,
         SessionManager $sessionManager,
         ResponseFactory $responseFactory,
         ReplyToSymfonyResponseConverter $converter

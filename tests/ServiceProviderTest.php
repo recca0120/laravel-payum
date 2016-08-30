@@ -20,7 +20,7 @@ use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
 use Recca0120\LaravelPayum\PayumBuilder;
 use Recca0120\LaravelPayum\Security\TokenFactory;
-use Recca0120\LaravelPayum\Service\Payment;
+use Recca0120\LaravelPayum\Service\Payum as PayumService;
 use Recca0120\LaravelPayum\ServiceProvider;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
 
@@ -144,7 +144,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         })
             ->shouldReceive('make')->with('payum.builder')->once()->andReturn($builder);
 
-        $app->shouldReceive('singleton')->with(Payment::class, Payment::class);
+        $app->shouldReceive('singleton')->with(PayumService::class, PayumService::class);
 
         $serviceProvider->register();
 

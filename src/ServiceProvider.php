@@ -18,7 +18,7 @@ use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
 use Recca0120\LaravelPayum\Security\TokenFactory;
-use Recca0120\LaravelPayum\Service\Payment;
+use Recca0120\LaravelPayum\Service\Payum as PayumService;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
 
 class ServiceProvider extends BaseServiceProvider
@@ -103,7 +103,7 @@ class ServiceProvider extends BaseServiceProvider
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
         $this->registerPayumBuilder();
         $this->registerPayum();
-        $this->app->singleton(Payment::class, Payment::class);
+        $this->app->singleton(PayumService::class, PayumService::class);
     }
 
     /**
