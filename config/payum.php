@@ -2,8 +2,8 @@
 
 return [
     'route' => [
-        'prefix'     => 'payment',
-        'as'         => 'payment.',
+        'prefix' => 'payment',
+        'as'     => 'payment.',
     ],
 
     'storage' => [
@@ -14,12 +14,12 @@ return [
         'gatewayConfig' => 'filesystem',
     ],
 
-    // 'customFactoryName' => [
-    //     'factory'  => 'FactoryClass',
-    //     'username' => 'username',
-    //     'password' => 'password',
-    //     'sandbox'  => false
-    // ],
     'gatewayConfigs' => [
+        // 'customFactoryName' => [
+        //     'factory'  => 'FactoryClass',
+        //     'username' => 'username',
+        //     'password' => 'password',
+        //     'sandbox'  => false
+        // ],
     ],
 ];

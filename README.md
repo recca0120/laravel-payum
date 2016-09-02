@@ -39,9 +39,9 @@ Include the service provider within `config/app.php`. The service povider is nee
 
 ```php
 return [
-    'router' => [
-        'prefix'     => 'payment',
-        'as'         => 'payment.',
+    'route' => [
+        'prefix' => 'payment',
+        'as'     => 'payment.',
     ],
 
     'storage' => [
@@ -52,14 +52,13 @@ return [
         'gatewayConfig' => 'filesystem',
     ],
 
-    // 'customFactoryName' => [
-    //     'factory'  => 'FactoryClass',
-    //     'username' => 'username',
-    //     'password' => 'password',
-    //     'sandbox'  => false
-    // ],
     'gatewayConfigs' => [
-        'offline' => []
+        // 'customFactoryName' => [
+        //     'factory'  => 'FactoryClass',
+        //     'username' => 'username',
+        //     'password' => 'password',
+        //     'sandbox'  => false
+        // ],
     ],
 ];
 ```
