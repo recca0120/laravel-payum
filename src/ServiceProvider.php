@@ -60,9 +60,9 @@ class ServiceProvider extends BaseServiceProvider
     {
         if ($this->app->routesAreCached() === false) {
             $router->group(array_merge([
-                'prefix'     => 'payment',
-                'as'         => 'payment.',
-                'namespace'  => $this->namespace,
+                'prefix'    => 'payment',
+                'as'        => 'payment.',
+                'namespace' => $this->namespace,
             ], Arr::get($config, 'route', [])), function (Router $router) {
                 require __DIR__.'/Http/routes.php';
             });
@@ -123,6 +123,8 @@ class ServiceProvider extends BaseServiceProvider
 
         return $this->app->singleton('payum.builder', function ($app) {
             $config = $app['config']->get('payum');
+            $routeAlaisName = Arr::get($config, 'route.as');
+
             $builder = $app->make(PayumBuilder::class)
                 ->setTokenFactory(function (StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($app) {
                     return $app->make(TokenFactory::class, [$tokenStorage, $registry]);
@@ -135,21 +137,21 @@ class ServiceProvider extends BaseServiceProvider
                     'payum.action.render_template'          => 'payum.action.render_template',
                     'payum.extension.update_payment_status' => 'payum.extension.update_payment_status',
                 ])->setGenericTokenFactoryPaths([
-                    'authorize' => array_get($config, 'router.as').'authorize',
-                    'capture'   => array_get($config, 'router.as').'capture',
-                    'notify'    => array_get($config, 'router.as').'notify',
-                    'payout'    => array_get($config, 'router.as').'payout',
-                    'refund'    => array_get($config, 'router.as').'refund',
-                    'sync'      => array_get($config, 'router.as').'sync',
-                    'done'      => array_get($config, 'router.as').'done',
+                    'authorize' => $routeAlaisName.'authorize',
+                    'capture'   => $routeAlaisName.'capture',
+                    'notify'    => $routeAlaisName.'notify',
+                    'payout'    => $routeAlaisName.'payout',
+                    'refund'    => $routeAlaisName.'refund',
+                    'sync'      => $routeAlaisName.'sync',
+                    'done'      => $routeAlaisName.'done',
                 ]);
 
-            $addStorages = (array_get($config, 'storage.token') === 'filesystem') ? 'addDefaultStorages' : 'addEloquentStorages';
+            $addStorages = (Arr::get($config, 'storage.token') === 'filesystem') ? 'addDefaultStorages' : 'addEloquentStorages';
             call_user_func([$builder, $addStorages]);
 
-            $gatewayConfigs = array_get($config, 'gatewayConfigs', []);
+            $gatewayConfigs = Arr::get($config, 'gatewayConfigs', []);
             foreach ($gatewayConfigs as $factoryName => $config) {
-                $factoryClass = array_get($config, 'factory');
+                $factoryClass = Arr::get($config, 'factory');
                 if (empty($factoryClass) === false && class_exists($factoryClass) === true) {
                     $builder
                         ->addGatewayFactory($factoryName, function ($config, GatewayFactoryInterface $coreGatewayFactory) use ($app, $factoryClass) {
@@ -160,7 +162,7 @@ class ServiceProvider extends BaseServiceProvider
                 $builder->addGateway($factoryName, $config);
             }
 
-            if (array_get($config, 'storage.gatewayConfig') === 'database') {
+            if (Arr::get($config, 'storage.gatewayConfig') === 'database') {
                 $builder->setGatewayConfigStorage($app->make(EloquentStorage::class, [
                     'modelClass' => GatewayConfig::class,
                 ]));
