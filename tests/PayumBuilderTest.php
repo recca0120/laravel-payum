@@ -54,7 +54,7 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertAttributeSame($payumTokenStorageInterface, 'tokenStorage', $payumBuilder);
         $this->assertAttributeSame([
             PayumPayment::class => $payumPaymentStorageInterface,
-            ArrayObject::class  => $payumArrayObjectStorageInterface,
+            ArrayObject::class => $payumArrayObjectStorageInterface,
         ], 'storages', $payumBuilder);
     }
 

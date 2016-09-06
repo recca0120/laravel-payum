@@ -49,12 +49,12 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $configData['storage']['token'] = 'database';
         $configData['gatewayConfigs'] = [
             'gatewayName' => [
-                'factory'  => 'factory',
+                'factory' => 'factory',
                 'username' => 'username',
                 'password' => 'password',
             ],
             'gatewayName2' => [
-                'factory'  => stdClass::class,
+                'factory' => stdClass::class,
                 'username' => 'username',
                 'password' => 'password',
             ],

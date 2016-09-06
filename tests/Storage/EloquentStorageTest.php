@@ -190,7 +190,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedCriteria = [
-            'foo'  => 'bar',
+            'foo' => 'bar',
             'fuzz' => 'buzz',
         ];
 

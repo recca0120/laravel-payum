@@ -60,8 +60,8 @@ class ServiceProvider extends BaseServiceProvider
     {
         if ($this->app->routesAreCached() === false) {
             $router->group(array_merge([
-                'prefix'    => 'payment',
-                'as'        => 'payment.',
+                'prefix' => 'payment',
+                'as' => 'payment.',
                 'namespace' => $this->namespace,
             ], Arr::get($config, 'route', [])), function (Router $router) {
                 require __DIR__.'/Http/routes.php';
@@ -133,17 +133,17 @@ class ServiceProvider extends BaseServiceProvider
                 })->setCoreGatewayFactory(function ($defaultConfig) use ($app) {
                     return $app->make(CoreGatewayFactory::class, [$app, $defaultConfig]);
                 })->setCoreGatewayFactoryConfig([
-                    'payum.action.obtain_credit_card'       => 'payum.action.obtain_credit_card',
-                    'payum.action.render_template'          => 'payum.action.render_template',
+                    'payum.action.obtain_credit_card' => 'payum.action.obtain_credit_card',
+                    'payum.action.render_template' => 'payum.action.render_template',
                     'payum.extension.update_payment_status' => 'payum.extension.update_payment_status',
                 ])->setGenericTokenFactoryPaths([
                     'authorize' => $routeAlaisName.'authorize',
-                    'capture'   => $routeAlaisName.'capture',
-                    'notify'    => $routeAlaisName.'notify',
-                    'payout'    => $routeAlaisName.'payout',
-                    'refund'    => $routeAlaisName.'refund',
-                    'sync'      => $routeAlaisName.'sync',
-                    'done'      => $routeAlaisName.'done',
+                    'capture' => $routeAlaisName.'capture',
+                    'notify' => $routeAlaisName.'notify',
+                    'payout' => $routeAlaisName.'payout',
+                    'refund' => $routeAlaisName.'refund',
+                    'sync' => $routeAlaisName.'sync',
+                    'done' => $routeAlaisName.'done',
                 ]);
 
             $addStorages = (Arr::get($config, 'storage.token') === 'filesystem') ? 'addDefaultStorages' : 'addEloquentStorages';

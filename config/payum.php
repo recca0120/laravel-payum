@@ -3,7 +3,7 @@
 return [
     'route' => [
         'prefix' => 'payment',
-        'as'     => 'payment.',
+        'as' => 'payment.',
     ],
 
     'storage' => [

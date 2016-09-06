@@ -73,15 +73,15 @@ class ObtainCreditCardAction implements ActionInterface
         }
 
         $form = $this->viewFactory->make($this->templateName, [
-            'model'      => $request->getModel(),
+            'model' => $request->getModel(),
             'firstModel' => $request->getFirstModel(),
-            'actionUrl'  => $request->getToken() ? $request->getToken()->getTargetUrl() : null,
+            'actionUrl' => $request->getToken() ? $request->getToken()->getTargetUrl() : null,
         ]);
 
         throw new HttpResponse(new Response($form->render(), 200, [
             'Cache-Control' => 'no-store, no-cache, max-age=0, post-check=0, pre-check=0',
             'X-Status-Code' => 200,
-            'Pragma'        => 'no-cache',
+            'Pragma' => 'no-cache',
         ]));
 
         /*

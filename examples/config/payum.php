@@ -2,8 +2,8 @@
 
 return [
     'route' => [
-        'prefix'     => 'payment',
-        'as'         => 'payment.',
+        'prefix' => 'payment',
+        'as' => 'payment.',
     ],
 
     'storage' => [
@@ -22,11 +22,11 @@ return [
     // ],
     'gatewayConfigs' => [
         'allpay' => [
-            'factory'    => PayumTW\Allpay\AllpayGatewayFactory::class,
+            'factory' => PayumTW\Allpay\AllpayGatewayFactory::class,
             'MerchantID' => '2000132',
-            'HashKey'    => '5294y06JbISpM5x9',
-            'HashIV'     => 'v77hoKGq4kWxNNIS',
-            'sandbox'    => true,
+            'HashKey' => '5294y06JbISpM5x9',
+            'HashIV' => 'v77hoKGq4kWxNNIS',
+            'sandbox' => true,
         ],
     ],
 ];

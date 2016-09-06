@@ -42,7 +42,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
 
         $defaultConfig->defaults([
             'payum.prepend_actions' => [],
-            'payum.action.foo1'     => 'payum.action.foo1',
+            'payum.action.foo1' => 'payum.action.foo1',
         ]);
         $coreGateway->buildActions($gateway, $defaultConfig);
 
@@ -81,7 +81,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
 
         $defaultConfig->defaults([
             'payum.prepend_apis' => [],
-            'payum.api.foo1'     => 'payum.api.foo1',
+            'payum.api.foo1' => 'payum.api.foo1',
         ]);
         $coreGateway->buildApis($gateway, $defaultConfig);
 
@@ -121,7 +121,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
 
         $defaultConfig->defaults([
             'payum.prepend_extensions' => [],
-            'payum.extension.foo1'     => 'payum.extension.foo1',
+            'payum.extension.foo1' => 'payum.extension.foo1',
         ]);
         $coreGateway->buildExtensions($gateway, $defaultConfig);
 

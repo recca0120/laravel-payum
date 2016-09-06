@@ -11,11 +11,11 @@
 */
 
 Route::get('payment', [
-    'as'   => 'payment',
+    'as' => 'payment',
     'uses' => 'PaymentController@prepare',
 ]);
 
 Route::any('payment/done/{payumToken}', [
-    'as'   => 'payment.done',
+    'as' => 'payment.done',
     'uses' => 'PaymentController@done',
 ]);
