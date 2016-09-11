@@ -295,10 +295,14 @@ class Payum
      */
     public function notifyUnsafe($gatewayName)
     {
-        $gateway = $this->getPayum()->getGateway($gatewayName);
-        $gateway->execute(new Notify(null));
+        try {
+            $gateway = $this->getPayum()->getGateway($gatewayName);
+            $gateway->execute(new Notify(null));
 
-        return $this->responseFactory->make(null, 204);
+            return $this->responseFactory->make(null, 204);
+        } catch (ReplyInterface $reply) {
+            return $this->converter->convert($reply);
+        }
     }
 
     /**
