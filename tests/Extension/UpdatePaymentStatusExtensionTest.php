@@ -7,7 +7,7 @@ use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\GetStatusInterface;
 use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 use Recca0120\LaravelPayum\Model\Payment;
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
+use Illuminate\Contracts\Events\Dispatcher;
 use Recca0120\LaravelPayum\Event\StatusChanged;
 
 class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
@@ -25,7 +25,7 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = m::mock(DispatcherContract::class);
+        $event = m::mock(Dispatcher::class);
         $extension = new UpdatePaymentStatusExtension($event);
         $context = m::mock(Context::class);
 
@@ -54,7 +54,7 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = m::mock(DispatcherContract::class);
+        $event = m::mock(Dispatcher::class);
         $extension = new UpdatePaymentStatusExtension($event);
         $context = m::mock(Context::class);
         $request = m::mock(stdClass::class);
@@ -86,7 +86,7 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = m::mock(DispatcherContract::class);
+        $event = m::mock(Dispatcher::class);
         $extension = new UpdatePaymentStatusExtension($event);
         $context = m::mock(Context::class);
         $request = m::mock(GetStatusInterface::class.','.Generic::class);
@@ -118,7 +118,7 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = m::mock(DispatcherContract::class);
+        $event = m::mock(Dispatcher::class);
         $extension = new UpdatePaymentStatusExtension($event);
         $context = m::mock(Context::class);
         $request = m::mock(Generic::class);

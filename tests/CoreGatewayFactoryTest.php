@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -24,7 +24,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         */
 
         $actionInterface = m::mock(ActionInterface::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $defaultConfig = new ArrayObject();
         $coreGateway = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();
@@ -63,7 +63,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         */
 
         $api = m::mock(stdClass::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $defaultConfig = new ArrayObject();
         $coreGateway = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();
@@ -103,7 +103,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         */
 
         $extensionInterface = m::mock(ExtensionInterface::class);
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $defaultConfig = new ArrayObject();
         $coreGateway = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();

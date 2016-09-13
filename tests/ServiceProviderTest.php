@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Config\Repository as ConfigContract;
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Config\Repository as Config;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Routing\Router;
 use Mockery as m;
@@ -42,9 +42,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $serviceProvider = m::mock(new ServiceProvider($app));
-        $config = m::mock(ConfigContract::class);
+        $config = m::mock(Config::class);
         $configData = require __DIR__.'/../config/payum.php';
         $configData['storage']['token'] = 'database';
         $configData['gatewayConfigs'] = [
@@ -163,12 +163,12 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $serviceProvider = m::mock(new ServiceProvider($app))
             ->shouldAllowMockingProtectedMethods();
         $viewFactory = m::mock(Factory::class);
         $router = m::mock(Router::class);
-        $config = m::mock(ConfigContract::class);
+        $config = m::mock(Config::class);
 
         /*
         |------------------------------------------------------------

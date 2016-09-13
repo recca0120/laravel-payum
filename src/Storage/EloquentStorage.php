@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelPayum\Storage;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Payum\Core\Model\Identity;
 use Payum\Core\Storage\AbstractStorage;
 
@@ -17,7 +17,7 @@ class EloquentStorage extends AbstractStorage
      * @param \Illuminate\Contracts\Foundation\Application $app
      * @param string                                       $modelClass
      */
-    public function __construct(ApplicationContract $app, $modelClass)
+    public function __construct(Application $app, $modelClass)
     {
         parent::__construct($modelClass);
         $this->app = $app;

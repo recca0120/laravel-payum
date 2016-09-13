@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelPayum;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Payum\Core\Model\ArrayObject;
 use Payum\Core\Model\Payment as PayumPayment;
 use Payum\Core\Model\Token as PayumToken;
@@ -28,7 +28,7 @@ class PayumBuilder extends CorePayumBuilder
      *
      * @param \Illuminate\Contracts\Foundation\Application $app
      */
-    public function __construct(ApplicationContract $app)
+    public function __construct(Application $app)
     {
         $this->app = $app;
     }

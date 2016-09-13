@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
 use Payum\Core\Model\ArrayObject;
 use Payum\Core\Model\Payment as PayumPayment;
@@ -27,7 +27,7 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $payumBuilder = new PayumBuilder($app);
         $payumTokenStorageInterface = m::mock(StorageInterface::class);
         $payumPaymentStorageInterface = m::mock(StorageInterface::class);
@@ -66,7 +66,7 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $payumBuilder = new PayumBuilder($app);
         $payumTokenStorageInterface = m::mock(StorageInterface::class);
         $payumPaymentStorageInterface = m::mock(StorageInterface::class);

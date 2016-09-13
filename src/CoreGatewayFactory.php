@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelPayum;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\CoreGatewayFactory as PayumCoreGatewayFactory;
 use Payum\Core\Gateway;
@@ -24,7 +24,7 @@ class CoreGatewayFactory extends PayumCoreGatewayFactory
      * @param \Illuminate\Contracts\Foundation\Application $app
      * @param array                                        $defaultConfig
      */
-    public function __construct(ApplicationContract $app, array $defaultConfig = [])
+    public function __construct(Application $app, array $defaultConfig = [])
     {
         parent::__construct($defaultConfig);
         $this->app = $app;

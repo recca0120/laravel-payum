@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
 use Mockery as m;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
@@ -20,7 +20,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
         $exceptedModelClass = 'fooModelClass';
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $eloquentStorage = new EloquentStorage($app, $exceptedModelClass);
 
         /*
@@ -49,7 +49,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedModelClass = 'fooModelClass';
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock(Model::class);
@@ -80,7 +80,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedModelClass = 'fooModelClass';
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock(Model::class);
@@ -111,7 +111,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedModelClass = 'fooModelClass';
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock(Model::class);
@@ -143,7 +143,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedModelClass = 'fooModelClass';
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock(Model::class);
@@ -178,7 +178,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedModelClass = 'fooModelClass';
-        $app = m::mock(ApplicationContract::class.','.ArrayAccess::class);
+        $app = m::mock(Application::class.','.ArrayAccess::class);
         $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock(Model::class);

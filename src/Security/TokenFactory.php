@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelPayum\Security;
 
-use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Payum\Core\Registry\StorageRegistryInterface;
 use Payum\Core\Security\AbstractTokenFactory;
 use Payum\Core\Storage\StorageInterface;
@@ -25,7 +25,7 @@ class TokenFactory extends AbstractTokenFactory
      * @param \Payum\Core\Registry\StorageRegistryInterface $storageRegistry
      * @param \Illuminate\Contracts\Routing\UrlGenerator    $urlGenerator
      */
-    public function __construct(StorageInterface $tokenStorage, StorageRegistryInterface $storageRegistry, UrlGeneratorContract $urlGenerator)
+    public function __construct(StorageInterface $tokenStorage, StorageRegistryInterface $storageRegistry, UrlGenerator $urlGenerator)
     {
         $this->tokenStorage = $tokenStorage;
         $this->storageRegistry = $storageRegistry;

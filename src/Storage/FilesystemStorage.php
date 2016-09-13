@@ -2,7 +2,7 @@
 
 namespace Recca0120\LaravelPayum\Storage;
 
-use Illuminate\Contracts\Foundation\Application as ApplicationContract;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
 use Payum\Core\Storage\FilesystemStorage as PayumFilesystemStorage;
 
@@ -18,7 +18,7 @@ class FilesystemStorage extends PayumFilesystemStorage
      * @param mixed                                        $modelClass
      * @param string                                       $idProperty
      */
-    public function __construct(ApplicationContract $app, Filesystem $filesystem, $modelClass, $idProperty = 'payum_id')
+    public function __construct(Application $app, Filesystem $filesystem, $modelClass, $idProperty = 'payum_id')
     {
         $storagePath = $app->storagePath().'/payum/';
         if ($filesystem->isDirectory($storagePath) === false) {

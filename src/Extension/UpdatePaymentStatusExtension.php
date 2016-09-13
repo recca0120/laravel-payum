@@ -8,14 +8,14 @@ use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Generic;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\GetStatusInterface;
-use Illuminate\Contracts\Events\Dispatcher as DispatcherContract;
+use Illuminate\Contracts\Events\Dispatcher;
 use Recca0120\LaravelPayum\Event\StatusChanged;
 
 class UpdatePaymentStatusExtension implements ExtensionInterface
 {
     protected $events;
 
-    public function __construct(DispatcherContract $events)
+    public function __construct(Dispatcher $events)
     {
         $this->events = $events;
     }
