@@ -28,6 +28,6 @@ class CreatePayumGatewayConfigsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('payum_gateway_configs');
+        Schema::dropIfExists('payum_gateway_configs');
     }
 }

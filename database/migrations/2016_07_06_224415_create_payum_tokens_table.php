@@ -29,6 +29,6 @@ class CreatePayumTokensTable extends Migration
      */
     public function down()
     {
-        Schema::drop('payum_tokens');
+        Schema::dropIfExists('payum_tokens');
     }
 }

@@ -33,6 +33,6 @@ class CreatePayumPaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('payum_payments');
+        Schema::dropIfExists('payum_payments');
     }
 }
