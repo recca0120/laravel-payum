@@ -180,9 +180,41 @@ class Payum
     }
 
     /**
-     * create.
+     * prepare.
      *
-     * @method create
+     * @method prepare
+     *
+     * @param string   $gatewayName
+     * @param \Closure $closure
+     * @param string   $afterPath
+     * @param array    $afterParameters
+     * @param string   $tokenType
+     *
+     * @return mixed
+     */
+    public function prepare($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
+    {
+        $payum = $this->getPayum();
+        $storage = $payum->getStorage($this->getPaymentModelName($payum));
+        $payment = $storage->create();
+        $closure($payment, $gatewayName, $storage, $this->payum);
+        $storage->update($payment);
+        $tokenFactory = $this->payum->getTokenFactory();
+        $method = 'create'.ucfirst($tokenType).'Token';
+        $token = call_user_func_array([$tokenFactory, $method], [
+            $gatewayName,
+            $payment,
+            $afterPath,
+            $afterParameters,
+        ]);
+
+        return $this->responseFactory->redirectTo($token->getTargetUrl());
+    }
+
+    /**
+     * prepareCapture.
+     *
+     * @method prepareCapture
      *
      * @param string   $gatewayName
      * @param \Closure $closure
@@ -191,18 +223,94 @@ class Payum
      *
      * @return mixed
      */
-    public function prepare($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    public function prepareCapture($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
-        $payum = $this->getPayum();
-        $storage = $payum->getStorage($this->getPaymentModelName($payum));
-        $payment = $storage->create();
-        $closure($payment, $gatewayName, $storage, $this->payum);
-        $storage->update($payment);
-        $captureToken = $this->payum
-            ->getTokenFactory()
-            ->createCaptureToken($gatewayName, $payment, $afterPath, $afterParameters);
+        return $this->prepare($gatewayName, $closure, $afterPath, $afterParameters, 'Capture');
+    }
 
-        return $this->responseFactory->redirectTo($captureToken->getTargetUrl());
+    /**
+     * prepareAuthorize.
+     *
+     * @method prepareAuthorize
+     *
+     * @param string   $gatewayName
+     * @param \Closure $closure
+     * @param string   $afterPath
+     * @param array    $afterParameters
+     *
+     * @return mixed
+     */
+    public function prepareAuthorize($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    {
+        return $this->prepare($gatewayName, $closure, $afterPath, $afterParameters, 'Authorize');
+    }
+
+    /**
+     * prepareRefund.
+     *
+     * @method prepareRefund
+     *
+     * @param string   $gatewayName
+     * @param \Closure $closure
+     * @param string   $afterPath
+     * @param array    $afterParameters
+     *
+     * @return mixed
+     */
+    public function prepareRefund($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    {
+        return $this->prepare($gatewayName, $closure, $afterPath, $afterParameters, 'Refund');
+    }
+
+    /**
+     * prepareCancel.
+     *
+     * @method prepareCancel
+     *
+     * @param string   $gatewayName
+     * @param \Closure $closure
+     * @param string   $afterPath
+     * @param array    $afterParameters
+     *
+     * @return mixed
+     */
+    public function prepareCancel($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    {
+        return $this->prepare($gatewayName, $closure, $afterPath, $afterParameters, 'Cancel');
+    }
+
+    /**
+     * preparePayout.
+     *
+     * @method preparePayout
+     *
+     * @param string   $gatewayName
+     * @param \Closure $closure
+     * @param string   $afterPath
+     * @param array    $afterParameters
+     *
+     * @return mixed
+     */
+    public function preparePayout($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    {
+        return $this->prepare($gatewayName, $closure, $afterPath, $afterParameters, 'Payout');
+    }
+
+    /**
+     * prepareNotify.
+     *
+     * @method prepareNotify
+     *
+     * @param string   $gatewayName
+     * @param \Closure $closure
+     * @param string   $afterPath
+     * @param array    $afterParameters
+     *
+     * @return mixed
+     */
+    public function prepareNotify($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    {
+        return $this->prepare($gatewayName, $closure, $afterPath, $afterParameters, 'Notify');
     }
 
     /**

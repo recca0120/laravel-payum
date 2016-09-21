@@ -20,6 +20,7 @@ use Payum\Core\Request\Sync;
 use Payum\Core\Security\HttpRequestVerifierInterface;
 use Payum\Core\Security\TokenInterface;
 use Recca0120\LaravelPayum\Service\Payum as PayumService;
+use Payum\Core\Security\TokenFactoryInterface;
 
 class PayumTest extends PHPUnit_Framework_TestCase
 {
@@ -241,7 +242,7 @@ class PayumTest extends PHPUnit_Framework_TestCase
         }));
     }
 
-    public function test_prepare()
+    public function test_prepare_capture()
     {
         /*
         |------------------------------------------------------------
@@ -258,6 +259,7 @@ class PayumTest extends PHPUnit_Framework_TestCase
         $gatewayName = 'fooGatewayName';
         $storage = m::mock(stdClass::class);
         $eloquentPayment = m::mock(EloquentPayment::class);
+        $tokenFactory = m::mock(TokenFactoryInterface::class);
         $token = m::mock(TokenInterface::class);
 
         /*
@@ -268,27 +270,294 @@ class PayumTest extends PHPUnit_Framework_TestCase
 
         $excepted = 'fooTargetUrl';
 
-        $storage->shouldReceive('create')->andReturn($eloquentPayment)
-            ->shouldReceive('update')->andReturn($eloquentPayment);
-
-        $responseFactory->shouldReceive('redirectTo')->once();
-
-        $token->shouldReceive('getTargetUrl')->andReturn($excepted);
+        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
+            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
 
         $payum->shouldReceive('getStorages')->once()->andReturn([
                 EloquentPayment::class => 'storage',
             ])
             ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getTokenFactory->createCaptureToken')->andReturn($token);
+            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
 
-        $payment->prepare($gatewayName, function () {
-        }, 'payment.done', []);
+        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
+
+        $tokenFactory->shouldReceive('createCaptureToken')->once()->andReturn($token);
+
+        $responseFactory->shouldReceive('redirectTo')->once();
 
         /*
         |------------------------------------------------------------
         | Assertion
         |------------------------------------------------------------
         */
+
+        $payment->prepareCapture($gatewayName, function () {
+        }, 'payment.done', []);
+    }
+
+    public function test_prepare_authorize()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $payum = m::mock(CorePayum::class);
+        $sessionManager = m::mock(SessionManager::class);
+        $responseFactory = m::mock(ResponseFactory::class);
+        $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $request = m::mock(Request::class);
+        $gatewayName = 'fooGatewayName';
+        $storage = m::mock(stdClass::class);
+        $eloquentPayment = m::mock(EloquentPayment::class);
+        $tokenFactory = m::mock(TokenFactoryInterface::class);
+        $token = m::mock(TokenInterface::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'fooTargetUrl';
+
+        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
+            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
+
+        $payum->shouldReceive('getStorages')->once()->andReturn([
+                EloquentPayment::class => 'storage',
+            ])
+            ->shouldReceive('getStorage')->once()->andReturn($storage)
+            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
+
+        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
+
+        $tokenFactory->shouldReceive('createAuthorizeToken')->once()->andReturn($token);
+
+        $responseFactory->shouldReceive('redirectTo')->once();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $payment->prepareAuthorize($gatewayName, function () {
+        }, 'payment.done', []);
+    }
+
+    public function test_prepare_refund()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $payum = m::mock(CorePayum::class);
+        $sessionManager = m::mock(SessionManager::class);
+        $responseFactory = m::mock(ResponseFactory::class);
+        $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $request = m::mock(Request::class);
+        $gatewayName = 'fooGatewayName';
+        $storage = m::mock(stdClass::class);
+        $eloquentPayment = m::mock(EloquentPayment::class);
+        $tokenFactory = m::mock(TokenFactoryInterface::class);
+        $token = m::mock(TokenInterface::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'fooTargetUrl';
+
+        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
+            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
+
+        $payum->shouldReceive('getStorages')->once()->andReturn([
+                EloquentPayment::class => 'storage',
+            ])
+            ->shouldReceive('getStorage')->once()->andReturn($storage)
+            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
+
+        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
+
+        $tokenFactory->shouldReceive('createRefundToken')->once()->andReturn($token);
+
+        $responseFactory->shouldReceive('redirectTo')->once();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $payment->prepareRefund($gatewayName, function () {
+        }, 'payment.done', []);
+    }
+
+    public function test_prepare_cancel()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $payum = m::mock(CorePayum::class);
+        $sessionManager = m::mock(SessionManager::class);
+        $responseFactory = m::mock(ResponseFactory::class);
+        $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $request = m::mock(Request::class);
+        $gatewayName = 'fooGatewayName';
+        $storage = m::mock(stdClass::class);
+        $eloquentPayment = m::mock(EloquentPayment::class);
+        $tokenFactory = m::mock(TokenFactoryInterface::class);
+        $token = m::mock(TokenInterface::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'fooTargetUrl';
+
+        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
+            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
+
+        $payum->shouldReceive('getStorages')->once()->andReturn([
+                EloquentPayment::class => 'storage',
+            ])
+            ->shouldReceive('getStorage')->once()->andReturn($storage)
+            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
+
+        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
+
+        $tokenFactory->shouldReceive('createCancelToken')->once()->andReturn($token);
+
+        $responseFactory->shouldReceive('redirectTo')->once();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $payment->prepareCancel($gatewayName, function () {
+        }, 'payment.done', []);
+    }
+
+    public function test_prepare_payout()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $payum = m::mock(CorePayum::class);
+        $sessionManager = m::mock(SessionManager::class);
+        $responseFactory = m::mock(ResponseFactory::class);
+        $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $request = m::mock(Request::class);
+        $gatewayName = 'fooGatewayName';
+        $storage = m::mock(stdClass::class);
+        $eloquentPayment = m::mock(EloquentPayment::class);
+        $tokenFactory = m::mock(TokenFactoryInterface::class);
+        $token = m::mock(TokenInterface::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'fooTargetUrl';
+
+        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
+            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
+
+        $payum->shouldReceive('getStorages')->once()->andReturn([
+                EloquentPayment::class => 'storage',
+            ])
+            ->shouldReceive('getStorage')->once()->andReturn($storage)
+            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
+
+        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
+
+        $tokenFactory->shouldReceive('createPayoutToken')->once()->andReturn($token);
+
+        $responseFactory->shouldReceive('redirectTo')->once();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $payment->preparePayout($gatewayName, function () {
+        }, 'payment.done', []);
+    }
+
+    public function test_prepare_notify()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $payum = m::mock(CorePayum::class);
+        $sessionManager = m::mock(SessionManager::class);
+        $responseFactory = m::mock(ResponseFactory::class);
+        $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $request = m::mock(Request::class);
+        $gatewayName = 'fooGatewayName';
+        $storage = m::mock(stdClass::class);
+        $eloquentPayment = m::mock(EloquentPayment::class);
+        $tokenFactory = m::mock(TokenFactoryInterface::class);
+        $token = m::mock(TokenInterface::class);
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+
+        $excepted = 'fooTargetUrl';
+
+        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
+            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
+
+        $payum->shouldReceive('getStorages')->once()->andReturn([
+                EloquentPayment::class => 'storage',
+            ])
+            ->shouldReceive('getStorage')->once()->andReturn($storage)
+            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
+
+        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
+
+        $tokenFactory->shouldReceive('createNotifyToken')->once()->andReturn($token);
+
+        $responseFactory->shouldReceive('redirectTo')->once();
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $payment->prepareNotify($gatewayName, function () {
+        }, 'payment.done', []);
     }
 
     public function test_done()
