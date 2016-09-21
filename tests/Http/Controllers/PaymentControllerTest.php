@@ -30,7 +30,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $methods = ['authorize', 'capture', 'notify', 'payout', 'refund', 'sync'];
+        $methods = ['authorize', 'capture', 'cancel', 'notify', 'payout', 'refund', 'sync'];
 
         /*
         |------------------------------------------------------------

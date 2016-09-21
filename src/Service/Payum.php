@@ -16,6 +16,7 @@ use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Request\Payout;
 use Payum\Core\Request\Refund;
+use Payum\Core\Request\Cancel;
 use Payum\Core\Request\Sync;
 use Payum\Core\Security\HttpRequestVerifierInterface;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
@@ -322,6 +323,30 @@ class Payum
             $httpRequestVerifier->invalidate($token);
 
             return $this->responseFactory->redirectTo($token->getAfterUrl());
+        });
+    }
+
+    /**
+     * cancel.
+     *
+     * @method cancel
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $payumToken
+     *
+     * @return mixed
+     */
+    public function cancel(Request $request, $payumToken)
+    {
+        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+            $gateway->execute(new Cancel($token));
+            $httpRequestVerifier->invalidate($token);
+            $afterUrl = $token->getAfterUrl();
+            if (empty($afterUrl) === false) {
+                return $this->responseFactory->redirectTo($afterUrl);
+            }
+
+            return $this->responseFactory->make(null, 204);
         });
     }
 

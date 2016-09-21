@@ -4,10 +4,11 @@ namespace Recca0120\LaravelPayum\Http\Controllers\Behavior;
 
 trait PaymentBehavior
 {
-    use AuthorizeBehavior,
-        CaptureBehavior,
-        NotifyBehavior,
-        PayoutBehavior,
-        RefundBehavior,
-        SyncBehavior;
+    use AuthorizeBehavior;
+    use CaptureBehavior;
+    use CancelBehavior;
+    use NotifyBehavior;
+    use PayoutBehavior;
+    use RefundBehavior;
+    use SyncBehavior;
 }

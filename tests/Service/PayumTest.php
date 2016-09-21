@@ -15,6 +15,7 @@ use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Request\Payout;
 use Payum\Core\Request\Refund;
+use Payum\Core\Request\Cancel;
 use Payum\Core\Request\Sync;
 use Payum\Core\Security\HttpRequestVerifierInterface;
 use Payum\Core\Security\TokenInterface;
@@ -600,6 +601,60 @@ class PayumTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertSame($excepted, $payment->payout($request, $payumToken));
+    }
+
+    public function test_cancel()
+    {
+        /*
+        |------------------------------------------------------------
+        | Set
+        |------------------------------------------------------------
+        */
+
+        $payum = m::mock(CorePayum::class);
+        $sessionManager = m::mock(SessionManager::class);
+        $responseFactory = m::mock(ResponseFactory::class);
+        $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
+        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $request = m::mock(Request::class);
+        $httpRequestVerifier = m::mock(HttpRequestVerifierInterface::class);
+        $token = m::mock(TokenInterface::class);
+        $payumToken = uniqid();
+        $gateway = m::mock(GatewayInterface::class);
+        $payumTokenId = 'payum_token';
+        $gatewayName = 'fooGatewayName';
+
+        /*
+        |------------------------------------------------------------
+        | Expectation
+        |------------------------------------------------------------
+        */
+        $excepted = 'fooTargetUrl';
+
+        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
+            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
+
+        $request->shouldReceive('merge')->with([
+            $payumTokenId => $payumToken,
+        ])->once();
+
+        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token)
+            ->shouldReceive('invalidate')->with($token);
+
+        $gateway->shouldReceive('execute')->with(m::type(Cancel::class));
+
+        $responseFactory->shouldReceive('redirectTo')->once()->andReturn($excepted);
+
+        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName)
+            ->shouldReceive('getAfterUrl')->once()->andReturn($excepted);
+
+        /*
+        |------------------------------------------------------------
+        | Assertion
+        |------------------------------------------------------------
+        */
+
+        $this->assertSame($excepted, $payment->cancel($request, $payumToken));
     }
 
     public function test_refund()

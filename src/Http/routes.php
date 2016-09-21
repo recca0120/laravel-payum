@@ -35,6 +35,11 @@ Route::any('payout/{payumToken}', [
     'uses' => 'PaymentController@payout',
 ]);
 
+Route::any('cancel/{payumToken}', [
+    'as' => 'cancel',
+    'uses' => 'PaymentController@cancel',
+]);
+
 Route::any('refund/{payumToken}', [
     'as' => 'refund',
     'uses' => 'PaymentController@refund',
