@@ -192,7 +192,8 @@ class Payum
      *
      * @return mixed
      */
-    public function prepare($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture') {
+    public function prepare($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
+    {
         return $this->request($gatewayName, $closure, $afterPath, $afterParameters, $tokenType);
     }
 

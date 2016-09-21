@@ -89,9 +89,9 @@ use Recca0120\LaravelPayum\Service\Payment;
 
 class PaymentController extends BaseController
 {
-    public function prepare(Payment $payment)
+    public function capture(Payment $payment)
     {
-        return $payment->prepare('allpay', function (PaymentInterface $payment, $gatewayName, StorageInterface $storage, Payum $payum) {
+        return $payment->capture('allpay', function (PaymentInterface $payment, $gatewayName, StorageInterface $storage, Payum $payum) {
             $payment->setNumber(uniqid());
             $payment->setCurrencyCode('TWD');
             $payment->setTotalAmount(2000);
@@ -137,7 +137,7 @@ class PaymentController extends BaseController
 ```php
 Route::get('payment', [
     'as'   => 'payment',
-    'uses' => 'PaymentController@prepare',
+    'uses' => 'PaymentController@capture',
 ]);
 
 Route::any('payment/done/{payumToken}', [

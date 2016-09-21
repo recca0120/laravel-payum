@@ -22,7 +22,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-payum": "^0.0.4"
+        "recca0120/laravel-payum": "^1.0.0"
     }
 }
 ```
@@ -83,9 +83,9 @@ use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
 class PaymentController extends BaseController
 {
-    public function prepare(PayumService $payumService)
+    public function capture(PayumService $payumService)
     {
-        return $payumService->prepare('allpay', function (
+        return $payumService->capture('allpay', function (
             PaymentInterface $payment,
             $gatewayName,
             StorageInterface $storage,
@@ -141,7 +141,7 @@ class PaymentController extends BaseController
 ```php
 Route::get('payment', [
     'as'   => 'payment',
-    'uses' => 'PaymentController@prepare',
+    'uses' => 'PaymentController@capture',
 ]);
 
 Route::any('payment/done/{payumToken}', [

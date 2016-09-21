@@ -14,9 +14,9 @@ use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
 class PaymentController extends BaseController
 {
-    public function prepare(PayumService $payumService)
+    public function capture(PayumService $payumService)
     {
-        return $payumService->prepare('allpay', function (
+        return $payumService->capture('allpay', function (
             PaymentInterface $payment,
             $gatewayName,
             StorageInterface $storage,
