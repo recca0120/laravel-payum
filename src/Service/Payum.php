@@ -315,23 +315,6 @@ class Payum
     }
 
     /**
-     * notify.
-     *
-     * @method notify
-     *
-     * @param string   $gatewayName
-     * @param \Closure $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     *
-     * @return mixed
-     */
-    public function notify($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
-    {
-        return $this->request($gatewayName, $closure, $afterPath, $afterParameters, 'Notify');
-    }
-
-    /**
      * done.
      *
      * @method done

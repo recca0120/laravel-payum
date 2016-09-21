@@ -507,59 +507,6 @@ class PayumTest extends PHPUnit_Framework_TestCase
         }, 'payment.done', []);
     }
 
-    public function test_request_notify()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock(CorePayum::class);
-        $sessionManager = m::mock(SessionManager::class);
-        $responseFactory = m::mock(ResponseFactory::class);
-        $replyToSymfonyResponseConverter = m::mock(ReplyToSymfonyResponseConverter::class);
-        $payment = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock(Request::class);
-        $gatewayName = 'fooGatewayName';
-        $storage = m::mock(stdClass::class);
-        $eloquentPayment = m::mock(EloquentPayment::class);
-        $tokenFactory = m::mock(TokenFactoryInterface::class);
-        $token = m::mock(TokenInterface::class);
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $excepted = 'fooTargetUrl';
-
-        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
-            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
-
-        $payum->shouldReceive('getStorages')->once()->andReturn([
-                EloquentPayment::class => 'storage',
-            ])
-            ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
-
-        $tokenFactory->shouldReceive('createNotifyToken')->once()->andReturn($token);
-
-        $responseFactory->shouldReceive('redirectTo')->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payment->notify($gatewayName, function () {
-        }, 'payment.done', []);
-    }
-
     public function test_done()
     {
         /*
