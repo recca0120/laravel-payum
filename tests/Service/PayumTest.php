@@ -242,7 +242,7 @@ class PayumTest extends PHPUnit_Framework_TestCase
         }));
     }
 
-    public function test_prepare_capture()
+    public function test_request_capture()
     {
         /*
         |------------------------------------------------------------
@@ -291,11 +291,11 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payment->prepareCapture($gatewayName, function () {
+        $payment->capture($gatewayName, function () {
         }, 'payment.done', []);
     }
 
-    public function test_prepare_authorize()
+    public function test_request_authorize()
     {
         /*
         |------------------------------------------------------------
@@ -344,11 +344,11 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payment->prepareAuthorize($gatewayName, function () {
+        $payment->authorize($gatewayName, function () {
         }, 'payment.done', []);
     }
 
-    public function test_prepare_refund()
+    public function test_request_refund()
     {
         /*
         |------------------------------------------------------------
@@ -397,11 +397,11 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payment->prepareRefund($gatewayName, function () {
+        $payment->refund($gatewayName, function () {
         }, 'payment.done', []);
     }
 
-    public function test_prepare_cancel()
+    public function test_request_cancel()
     {
         /*
         |------------------------------------------------------------
@@ -450,11 +450,11 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payment->prepareCancel($gatewayName, function () {
+        $payment->cancel($gatewayName, function () {
         }, 'payment.done', []);
     }
 
-    public function test_prepare_payout()
+    public function test_request_payout()
     {
         /*
         |------------------------------------------------------------
@@ -503,11 +503,11 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payment->preparePayout($gatewayName, function () {
+        $payment->payout($gatewayName, function () {
         }, 'payment.done', []);
     }
 
-    public function test_prepare_notify()
+    public function test_request_notify()
     {
         /*
         |------------------------------------------------------------
@@ -556,7 +556,7 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payment->prepareNotify($gatewayName, function () {
+        $payment->notify($gatewayName, function () {
         }, 'payment.done', []);
     }
 
@@ -615,7 +615,7 @@ class PayumTest extends PHPUnit_Framework_TestCase
         });
     }
 
-    public function test_authorize()
+    public function test_receive_authorize()
     {
         /*
         |------------------------------------------------------------
@@ -666,10 +666,10 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertSame($excepted, $payment->authorize($request, $payumToken));
+        $this->assertSame($excepted, $payment->receiveAuthorize($request, $payumToken));
     }
 
-    public function test_capture()
+    public function test_receive_capture()
     {
         /*
         |------------------------------------------------------------
@@ -720,10 +720,10 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertSame($excepted, $payment->capture($request, $payumToken));
+        $this->assertSame($excepted, $payment->receiveCapture($request, $payumToken));
     }
 
-    public function test_notify()
+    public function test_receive_notify()
     {
         /*
         |------------------------------------------------------------
@@ -773,12 +773,12 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $response = $payment->notify($request, $payumToken);
+        $response = $payment->receiveNotify($request, $payumToken);
         $this->assertNull($response[0]);
         $this->assertSame(204, $response);
     }
 
-    public function test_notify_unsafe()
+    public function test_receive_notify_unsafe()
     {
         /*
         |------------------------------------------------------------
@@ -814,11 +814,11 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $response = $payment->notifyUnsafe($gatewayName);
+        $response = $payment->receiveNotifyUnsafe($gatewayName);
         $this->assertSame(204, $response);
     }
 
-    public function test_payout()
+    public function test_receive_payout()
     {
         /*
         |------------------------------------------------------------
@@ -869,10 +869,10 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertSame($excepted, $payment->payout($request, $payumToken));
+        $this->assertSame($excepted, $payment->receivePayout($request, $payumToken));
     }
 
-    public function test_cancel()
+    public function test_receive_cancel()
     {
         /*
         |------------------------------------------------------------
@@ -923,10 +923,10 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertSame($excepted, $payment->cancel($request, $payumToken));
+        $this->assertSame($excepted, $payment->receiveCancel($request, $payumToken));
     }
 
-    public function test_refund()
+    public function test_receive_refund()
     {
         /*
         |------------------------------------------------------------
@@ -977,10 +977,10 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertSame($excepted, $payment->refund($request, $payumToken));
+        $this->assertSame($excepted, $payment->receiveRefund($request, $payumToken));
     }
 
-    public function test_sync()
+    public function test_receive_sync()
     {
         /*
         |------------------------------------------------------------
@@ -1031,6 +1031,6 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $this->assertSame($excepted, $payment->sync($request, $payumToken));
+        $this->assertSame($excepted, $payment->receiveSync($request, $payumToken));
     }
 }

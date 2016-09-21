@@ -20,6 +20,6 @@ trait CancelBehavior
      */
     public function cancel(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payumService->cancel($request, $payumToken);
+        return $payumService->receiveCancel($request, $payumToken);
     }
 }

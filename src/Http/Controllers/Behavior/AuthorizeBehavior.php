@@ -20,6 +20,6 @@ trait AuthorizeBehavior
      */
     public function authorize(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payumService->authorize($request, $payumToken);
+        return $payumService->receiveAuthorize($request, $payumToken);
     }
 }

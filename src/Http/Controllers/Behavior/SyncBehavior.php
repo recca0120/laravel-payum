@@ -20,6 +20,6 @@ trait SyncBehavior
      */
     public function sync(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payumService->sync($request, $payumToken);
+        return $payumService->receiveSync($request, $payumToken);
     }
 }

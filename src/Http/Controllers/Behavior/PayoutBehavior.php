@@ -20,6 +20,6 @@ trait PayoutBehavior
      */
     public function payout(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payumService->payout($request, $payumToken);
+        return $payumService->receivePayout($request, $payumToken);
     }
 }

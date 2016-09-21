@@ -20,7 +20,7 @@ trait NotifyBehavior
      */
     public function notify(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payumService->notify($request, $payumToken);
+        return $payumService->receiveNotify($request, $payumToken);
     }
 
     /**
@@ -35,6 +35,6 @@ trait NotifyBehavior
      */
     public function notifyUnsafe(PayumService $payumService, $gatewayName)
     {
-        return $payumService->notifyUnsafe($gatewayName);
+        return $payumService->receiveNotifyUnsafe($gatewayName);
     }
 }

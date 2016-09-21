@@ -20,6 +20,6 @@ trait CaptureBehavior
      */
     public function capture(PayumService $payumService, Request $request, $payumToken = null)
     {
-        return $payumService->capture($request, $payumToken);
+        return $payumService->receiveCapture($request, $payumToken);
     }
 }

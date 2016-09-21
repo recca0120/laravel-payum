@@ -40,7 +40,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
 
         foreach ($methods as $method) {
             $exceptedPayumToken = uniqid();
-            $payumService->shouldReceive($method)->with($request, $exceptedPayumToken)->andReturn($exceptedPayumToken);
+            $payumService->shouldReceive('receive'.ucfirst($method))->with($request, $exceptedPayumToken)->andReturn($exceptedPayumToken);
             $this->assertSame($exceptedPayumToken, call_user_func_array([$controller, $method], [$payumService, $request, $exceptedPayumToken]));
         }
     }
@@ -64,7 +64,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedGatewayName = 'fooGatewayName';
-        $payumService->shouldReceive('notifyUnsafe')->with($exceptedGatewayName)->andReturn($exceptedGatewayName);
+        $payumService->shouldReceive('receiveNotifyUnsafe')->with($exceptedGatewayName)->andReturn($exceptedGatewayName);
 
         /*
         |------------------------------------------------------------

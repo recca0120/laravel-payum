@@ -20,6 +20,6 @@ trait RefundBehavior
      */
     public function refund(PayumService $payumService, Request $request, $payumToken)
     {
-        return $payumService->refund($request, $payumToken);
+        return $payumService->receiveRefund($request, $payumToken);
     }
 }
