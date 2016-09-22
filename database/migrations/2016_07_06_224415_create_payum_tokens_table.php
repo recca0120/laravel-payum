@@ -14,8 +14,8 @@ class CreatePayumTokensTable extends Migration
     {
         Schema::create('payum_tokens', function (Blueprint $table) {
             $table->string('hash')->primary();
-            $table->text('details');
-            $table->string('targetUrl');
+            $table->text('details')->nullable();
+            $table->string('targetUrl')->nullable();
             $table->string('afterUrl')->nullable();
             $table->string('gatewayName');
             $table->timestamps();

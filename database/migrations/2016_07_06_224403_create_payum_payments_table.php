@@ -14,13 +14,13 @@ class CreatePayumPaymentsTable extends Migration
     {
         Schema::create('payum_payments', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('details');
+            $table->text('details')->nullable();
             $table->string('number');
-            $table->string('description');
-            $table->string('clientId');
-            $table->string('clientEmail');
-            $table->string('totalAmount');
-            $table->string('currencyCode');
+            $table->string('description')->nullable();
+            $table->string('clientId')->nullable();
+            $table->string('clientEmail')->nullable();
+            $table->string('totalAmount')->nullable();
+            $table->string('currencyCode')->nullable();
             $table->string('status')->nullable();
             $table->timestamps();
         });
