@@ -10,14 +10,14 @@
 |
 */
 
-Route::any('authorize/{payumToken}', [
-    'as' => 'authorize',
-    'uses' => 'PaymentController@authorize',
-]);
-
 Route::any('capture/{payumToken?}', [
     'as' => 'capture',
     'uses' => 'PaymentController@capture',
+]);
+
+Route::any('authorize/{payumToken}', [
+    'as' => 'authorize',
+    'uses' => 'PaymentController@authorize',
 ]);
 
 Route::any('notify/{payumToken}', [
@@ -30,11 +30,6 @@ Route::any('notify/unsafe/{gatewayName}', [
     'uses' => 'PaymentController@notifyUnsafe',
 ]);
 
-Route::any('payout/{payumToken}', [
-    'as' => 'payout',
-    'uses' => 'PaymentController@payout',
-]);
-
 Route::any('cancel/{payumToken}', [
     'as' => 'cancel',
     'uses' => 'PaymentController@cancel',
@@ -43,6 +38,11 @@ Route::any('cancel/{payumToken}', [
 Route::any('refund/{payumToken}', [
     'as' => 'refund',
     'uses' => 'PaymentController@refund',
+]);
+
+Route::any('payout/{payumToken}', [
+    'as' => 'payout',
+    'uses' => 'PaymentController@payout',
 ]);
 
 Route::any('sync/{payumToken}', [

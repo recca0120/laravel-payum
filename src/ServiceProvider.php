@@ -142,6 +142,7 @@ class ServiceProvider extends BaseServiceProvider
                     'notify' => $routeAlaisName.'notify',
                     'payout' => $routeAlaisName.'payout',
                     'refund' => $routeAlaisName.'refund',
+                    'cancel' => $routeAlaisName.'cancel',
                     'sync' => $routeAlaisName.'sync',
                     'done' => $routeAlaisName.'done',
                 ]);
