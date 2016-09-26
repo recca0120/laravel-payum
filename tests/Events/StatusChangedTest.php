@@ -1,8 +1,9 @@
 <?php
 
 use Mockery as m;
-use Recca0120\LaravelPayum\Event\StatusChanged;
+use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\GetStatusInterface;
+use Recca0120\LaravelPayum\Events\StatusChanged;
 
 class StatusChangedTest extends PHPUnit_Framework_TestCase
 {
@@ -25,7 +26,8 @@ class StatusChangedTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $getStatus = m::mock(GetStatusInterface::class);
+        $status = m::mock(GetStatusInterface::class);
+        $payment = m::mock(PaymentInterface::class);
 
         /*
         |------------------------------------------------------------
@@ -33,7 +35,8 @@ class StatusChangedTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = new StatusChanged($getStatus);
-        $this->assertSame($getStatus, $event->status);
+        $event = new StatusChanged($status, $payment);
+        $this->assertSame($status, $event->status);
+        $this->assertSame($payment, $event->payment);
     }
 }

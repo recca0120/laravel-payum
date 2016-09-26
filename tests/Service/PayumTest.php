@@ -10,17 +10,17 @@ use Payum\Core\Payum as CorePayum;
 use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Reply\ReplyInterface;
 use Payum\Core\Request\Authorize;
+use Payum\Core\Request\Cancel;
 use Payum\Core\Request\Capture;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Request\Payout;
 use Payum\Core\Request\Refund;
-use Payum\Core\Request\Cancel;
 use Payum\Core\Request\Sync;
 use Payum\Core\Security\HttpRequestVerifierInterface;
+use Payum\Core\Security\TokenFactoryInterface;
 use Payum\Core\Security\TokenInterface;
 use Recca0120\LaravelPayum\Service\Payum as PayumService;
-use Payum\Core\Security\TokenFactoryInterface;
 
 class PayumTest extends PHPUnit_Framework_TestCase
 {

@@ -1,14 +1,13 @@
 <?php
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Mockery as m;
 use Payum\Core\Extension\Context;
+use Payum\Core\Model\Payment;
 use Payum\Core\Request\Generic;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\GetStatusInterface;
 use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
-use Recca0120\LaravelPayum\Model\Payment;
-use Illuminate\Contracts\Events\Dispatcher;
-use Recca0120\LaravelPayum\Event\StatusChanged;
 
 class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
 {
@@ -122,7 +121,7 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         $extension = new UpdatePaymentStatusExtension($event);
         $context = m::mock(Context::class);
         $request = m::mock(Generic::class);
-        $payment = new Payment();
+        $payment = new PaymentTest();
 
         /*
         |------------------------------------------------------------
@@ -140,7 +139,7 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         $request
             ->shouldReceive('getFirstModel')->andReturn($payment);
 
-        $event->shouldReceive('fire')->with(m::type(StatusChanged::class))->once();
+        $event->shouldReceive('fire')->once();
 
         /*
         |------------------------------------------------------------
@@ -152,5 +151,22 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         $extension->onExecute($context);
         $this->assertNull($extension->onPostExecute($context));
         $this->assertSame(GetHumanStatus::STATUS_PENDING, $payment->getStatus());
+    }
+}
+
+class PaymentTest extends Payment
+{
+    protected $status;
+    
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getStatus()
+    {
+        return $this->status;
     }
 }

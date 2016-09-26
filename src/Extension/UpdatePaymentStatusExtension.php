@@ -2,14 +2,14 @@
 
 namespace Recca0120\LaravelPayum\Extension;
 
+use Illuminate\Contracts\Events\Dispatcher;
 use Payum\Core\Extension\Context;
 use Payum\Core\Extension\ExtensionInterface;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Generic;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\GetStatusInterface;
-use Illuminate\Contracts\Events\Dispatcher;
-use Recca0120\LaravelPayum\Event\StatusChanged;
+use Recca0120\LaravelPayum\Events\StatusChanged;
 
 class UpdatePaymentStatusExtension implements ExtensionInterface
 {
@@ -54,7 +54,7 @@ class UpdatePaymentStatusExtension implements ExtensionInterface
             /* @var Payment $payment */
             $status = new GetHumanStatus($payment);
             $context->getGateway()->execute($status);
-            $this->events->fire(new StatusChanged($status));
+            $this->events->fire(new StatusChanged($status, $payment));
 
             if (method_exists($payment, 'setStatus') === true) {
                 $payment->setStatus($status->getValue());
