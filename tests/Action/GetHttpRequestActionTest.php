@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
 
@@ -19,7 +18,7 @@ class GetHttpRequestActionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $request = m::mock(Request::class);
+        $request = m::mock('Illuminate\Http\Request');
         $getHttpRequestAction = new GetHttpRequestAction($request);
 
         /*

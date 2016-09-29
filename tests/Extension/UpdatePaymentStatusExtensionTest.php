@@ -1,12 +1,8 @@
 <?php
 
-use Illuminate\Contracts\Events\Dispatcher;
 use Mockery as m;
-use Payum\Core\Extension\Context;
 use Payum\Core\Model\Payment;
-use Payum\Core\Request\Generic;
 use Payum\Core\Request\GetHumanStatus;
-use Payum\Core\Request\GetStatusInterface;
 use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 
 class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
@@ -24,9 +20,9 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = m::mock(Dispatcher::class);
+        $event = m::mock('Illuminate\Contracts\Events\Dispatcher');
         $extension = new UpdatePaymentStatusExtension($event);
-        $context = m::mock(Context::class);
+        $context = m::mock('Payum\Core\Extension\Context');
 
         /*
         |------------------------------------------------------------
@@ -53,10 +49,10 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = m::mock(Dispatcher::class);
+        $event = m::mock('Illuminate\Contracts\Events\Dispatcher');
         $extension = new UpdatePaymentStatusExtension($event);
-        $context = m::mock(Context::class);
-        $request = m::mock(stdClass::class);
+        $context = m::mock('Payum\Core\Extension\Context');
+        $request = m::mock('stdClass');
 
         /*
         |------------------------------------------------------------
@@ -85,10 +81,10 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = m::mock(Dispatcher::class);
+        $event = m::mock('Illuminate\Contracts\Events\Dispatcher');
         $extension = new UpdatePaymentStatusExtension($event);
-        $context = m::mock(Context::class);
-        $request = m::mock(GetStatusInterface::class.','.Generic::class);
+        $context = m::mock('Payum\Core\Extension\Context');
+        $request = m::mock('Payum\Core\Request\GetStatusInterface ,Payum\Core\Request\Generic');
 
         /*
         |------------------------------------------------------------
@@ -117,10 +113,10 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $event = m::mock(Dispatcher::class);
+        $event = m::mock('Illuminate\Contracts\Events\Dispatcher');
         $extension = new UpdatePaymentStatusExtension($event);
-        $context = m::mock(Context::class);
-        $request = m::mock(Generic::class);
+        $context = m::mock('Payum\Core\Extension\Context');
+        $request = m::mock('Payum\Core\Request\Generic');
         $payment = new PaymentTest();
 
         /*
@@ -157,7 +153,7 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
 class PaymentTest extends Payment
 {
     protected $status;
-    
+
     public function setStatus($status)
     {
         $this->status = $status;

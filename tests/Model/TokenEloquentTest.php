@@ -1,7 +1,6 @@
 <?php
 
 use Mockery as m;
-use Payum\Core\Model\CreditCardInterface;
 use Recca0120\LaravelPayum\Model\Token;
 
 class TokenEloquentTest extends PHPUnit_Framework_TestCase
@@ -20,7 +19,7 @@ class TokenEloquentTest extends PHPUnit_Framework_TestCase
         */
 
         $token = m::mock(new Token());
-        $creditcard = m::mock(CreditCardInterface::class);
+        $creditcard = m::mock('Payum\Core\Model\CreditCardInterface');
 
         /*
         |------------------------------------------------------------

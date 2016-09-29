@@ -1,10 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
-use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\Extension\ExtensionInterface;
 use Payum\Core\Gateway;
 use Recca0120\LaravelPayum\CoreGatewayFactory;
 
@@ -23,8 +20,8 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $actionInterface = m::mock(ActionInterface::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $actionInterface = m::mock('Payum\Core\Action\ActionInterface');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $defaultConfig = new ArrayObject();
         $coreGateway = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();
@@ -62,8 +59,8 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $api = m::mock(stdClass::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $api = m::mock('stdClass');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $defaultConfig = new ArrayObject();
         $coreGateway = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();
@@ -102,8 +99,8 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $extensionInterface = m::mock(ExtensionInterface::class);
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $extensionInterface = m::mock('Payum\Core\Extension\ExtensionInterface');
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $defaultConfig = new ArrayObject();
         $coreGateway = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();

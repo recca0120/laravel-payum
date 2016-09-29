@@ -1,9 +1,6 @@
 <?php
 
-use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
 use Mockery as m;
-use Payum\Core\Registry\StorageRegistryInterface;
-use Payum\Core\Storage\StorageInterface;
 use Recca0120\LaravelPayum\Security\TokenFactory;
 
 class TokenFactoryTest extends PHPUnit_Framework_TestCase
@@ -21,9 +18,9 @@ class TokenFactoryTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $storage = m::mock(StorageInterface::class);
-        $registry = m::mock(StorageRegistryInterface::class);
-        $urlGenerator = m::mock(UrlGeneratorContract::class);
+        $storage = m::mock('Payum\Core\Storage\StorageInterface');
+        $registry = m::mock('Payum\Core\Registry\StorageRegistryInterface');
+        $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator');
         $tokenFactory = m::mock(new TokenFactory($storage, $registry, $urlGenerator))
             ->shouldAllowMockingProtectedMethods();
 

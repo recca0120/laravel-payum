@@ -1,9 +1,6 @@
 <?php
 
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\Request;
 use Mockery as m;
-use Payum\Core\Model\CreditCard;
 use Payum\Core\Reply\ReplyInterface;
 use Payum\Core\Request\ObtainCreditCard;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
@@ -23,10 +20,10 @@ class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $viewFactory = m::mock(Factory::class);
-        $request = m::mock(Request::class);
+        $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
+        $request = m::mock('Illuminate\Http\Request');
         $obtainCreditCardAction = new ObtainCreditCardAction($viewFactory, $request);
-        $obtainCreditCard = m::mock(ObtainCreditCard::class);
+        $obtainCreditCard = m::mock('Payum\Core\Request\ObtainCreditCard');
 
         /*
         |------------------------------------------------------------
@@ -66,8 +63,8 @@ class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $viewFactory = m::mock(Factory::class);
-        $request = m::mock(Request::class);
+        $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
+        $request = m::mock('Illuminate\Http\Request');
         $obtainCreditCardAction = new ObtainCreditCardAction($viewFactory, $request);
         $obtainCreditCard = new ObtainCreditCard();
 
@@ -90,7 +87,7 @@ class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
         */
 
         $this->assertNull($obtainCreditCardAction->execute($obtainCreditCard));
-        $this->assertInstanceOf(CreditCard::class, $obtainCreditCard->obtain());
+        $this->assertInstanceOf('Payum\Core\Model\CreditCard', $obtainCreditCard->obtain());
     }
 
     /**
@@ -104,10 +101,10 @@ class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $viewFactory = m::mock(Factory::class);
-        $request = m::mock(Request::class);
+        $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
+        $request = m::mock('Illuminate\Http\Request');
         $obtainCreditCardAction = new ObtainCreditCardAction($viewFactory, $request);
-        $obtainCreditCard = m::mock(stdClass::class);
+        $obtainCreditCard = m::mock('stdClass');
 
         /*
         |------------------------------------------------------------

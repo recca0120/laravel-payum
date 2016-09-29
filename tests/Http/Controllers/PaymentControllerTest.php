@@ -1,9 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Mockery as m;
 use Recca0120\LaravelPayum\Http\Controllers\PaymentController;
-use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
 class PaymentControllerTest extends PHPUnit_Framework_TestCase
 {
@@ -21,8 +19,8 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         */
 
         $controller = new PaymentController();
-        $payumService = m::mock(PayumService::class);
-        $request = m::mock(Request::class);
+        $payumService = m::mock('Recca0120\LaravelPayum\Service\Payum');
+        $request = m::mock('Illuminate\Http\Request');
 
         /*
         |------------------------------------------------------------
@@ -54,8 +52,8 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         */
 
         $controller = new PaymentController();
-        $payumService = m::mock(PayumService::class);
-        $request = m::mock(Request::class);
+        $payumService = m::mock('Recca0120\LaravelPayum\Service\Payum');
+        $request = m::mock('Illuminate\Http\Request');
 
         /*
         |------------------------------------------------------------

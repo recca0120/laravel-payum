@@ -1,16 +1,7 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application;
 use Mockery as m;
-use Payum\Core\Model\ArrayObject;
-use Payum\Core\Model\Payment as PayumPayment;
-use Payum\Core\Model\Token as PayumToken;
-use Payum\Core\Storage\StorageInterface;
-use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
-use Recca0120\LaravelPayum\Model\Token as EloquentToken;
 use Recca0120\LaravelPayum\PayumBuilder;
-use Recca0120\LaravelPayum\Storage\EloquentStorage;
-use Recca0120\LaravelPayum\Storage\FilesystemStorage;
 
 class PayumBuilderTest extends PHPUnit_Framework_TestCase
 {
@@ -27,11 +18,11 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $payumBuilder = new PayumBuilder($app);
-        $payumTokenStorageInterface = m::mock(StorageInterface::class);
-        $payumPaymentStorageInterface = m::mock(StorageInterface::class);
-        $payumArrayObjectStorageInterface = m::mock(StorageInterface::class);
+        $payumTokenStorageInterface = m::mock('Payum\Core\Storage\StorageInterface');
+        $payumPaymentStorageInterface = m::mock('Payum\Core\Storage\StorageInterface');
+        $payumArrayObjectStorageInterface = m::mock('Payum\Core\Storage\StorageInterface');
 
         /*
         |------------------------------------------------------------
@@ -39,9 +30,9 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('make')->with(FilesystemStorage::class, ['modelClass' => PayumToken::class, 'idProperty' => 'hash'])->once()->andReturn($payumTokenStorageInterface)
-            ->shouldReceive('make')->with(FilesystemStorage::class, ['modelClass' => PayumPayment::class, 'idProperty' => 'number'])->once()->andReturn($payumPaymentStorageInterface)
-            ->shouldReceive('make')->with(FilesystemStorage::class, ['modelClass' => ArrayObject::class])->once()->andReturn($payumArrayObjectStorageInterface);
+        $app->shouldReceive('make')->with('Recca0120\LaravelPayum\Storage\FilesystemStorage', ['modelClass' => 'Payum\Core\Model\Token', 'idProperty' => 'hash'])->once()->andReturn($payumTokenStorageInterface)
+            ->shouldReceive('make')->with('Recca0120\LaravelPayum\Storage\FilesystemStorage', ['modelClass' => 'Payum\Core\Model\Payment', 'idProperty' => 'number'])->once()->andReturn($payumPaymentStorageInterface)
+            ->shouldReceive('make')->with('Recca0120\LaravelPayum\Storage\FilesystemStorage', ['modelClass' => 'Payum\Core\Model\ArrayObject'])->once()->andReturn($payumArrayObjectStorageInterface);
 
         $payumBuilder->addDefaultStorages();
 
@@ -53,8 +44,8 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertAttributeSame($payumTokenStorageInterface, 'tokenStorage', $payumBuilder);
         $this->assertAttributeSame([
-            PayumPayment::class => $payumPaymentStorageInterface,
-            ArrayObject::class => $payumArrayObjectStorageInterface,
+            'Payum\Core\Model\Payment' => $payumPaymentStorageInterface,
+            'Payum\Core\Model\ArrayObject' => $payumArrayObjectStorageInterface,
         ], 'storages', $payumBuilder);
     }
 
@@ -66,10 +57,10 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app = m::mock(Application::class.','.ArrayAccess::class);
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $payumBuilder = new PayumBuilder($app);
-        $payumTokenStorageInterface = m::mock(StorageInterface::class);
-        $payumPaymentStorageInterface = m::mock(StorageInterface::class);
+        $payumTokenStorageInterface = m::mock('Payum\Core\Storage\StorageInterface');
+        $payumPaymentStorageInterface = m::mock('Payum\Core\Storage\StorageInterface');
 
         /*
         |------------------------------------------------------------
@@ -77,8 +68,8 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('make')->with(EloquentStorage::class, ['modelClass' => EloquentToken::class])->once()->andReturn($payumTokenStorageInterface)
-            ->shouldReceive('make')->with(EloquentStorage::class, ['modelClass' => EloquentPayment::class])->once()->andReturn($payumPaymentStorageInterface);
+        $app->shouldReceive('make')->with('Recca0120\LaravelPayum\Storage\EloquentStorage', ['modelClass' => 'Recca0120\LaravelPayum\Model\Token'])->once()->andReturn($payumTokenStorageInterface)
+            ->shouldReceive('make')->with('Recca0120\LaravelPayum\Storage\EloquentStorage', ['modelClass' => 'Recca0120\LaravelPayum\Model\Payment'])->once()->andReturn($payumPaymentStorageInterface);
 
         $payumBuilder->addEloquentStorages();
 
@@ -90,7 +81,7 @@ class PayumBuilderTest extends PHPUnit_Framework_TestCase
 
         $this->assertAttributeSame($payumTokenStorageInterface, 'tokenStorage', $payumBuilder);
         $this->assertAttributeSame([
-            EloquentPayment::class => $payumPaymentStorageInterface,
+            'Recca0120\LaravelPayum\Model\Payment' => $payumPaymentStorageInterface,
         ], 'storages', $payumBuilder);
     }
 }

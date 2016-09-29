@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Filesystem\Filesystem;
 use Mockery as m;
 use Recca0120\LaravelPayum\Storage\FilesystemStorage;
 
@@ -21,8 +19,8 @@ class FilesystemStorageTest extends PHPUnit_Framework_TestCase
         */
 
         $exceptedModelClass = 'fooModelClass';
-        $app = m::mock(Application::class.','.ArrayAccess::class);
-        $filesystem = m::mock(Filesystem::class);
+        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $filesystem = m::mock('Illuminate\Filesystem\Filesystem');
 
         /*
         |------------------------------------------------------------

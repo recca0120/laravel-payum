@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Contracts\View\Factory;
 use Mockery as m;
 use Payum\Core\Request\RenderTemplate;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
@@ -20,7 +19,7 @@ class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $viewFactory = m::mock(Factory::class);
+        $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
         $renderTemplateAction = new RenderTemplateAction($viewFactory);
 
         /*
@@ -64,9 +63,9 @@ class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $viewFactory = m::mock(Factory::class);
+        $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
         $renderTemplateAction = new RenderTemplateAction($viewFactory);
-        $request = m::mock(stdClass::class);
+        $request = m::mock('stdClass');
 
         /*
         |------------------------------------------------------------
