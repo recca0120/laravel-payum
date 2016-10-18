@@ -51,6 +51,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             'payum.template.obtain_credit_card' => 'foo.payum.template.obtain_credit_card',
         ]);
 
+        $eloquentGatewayConfig = m::mock('GatewayConfigRecca0120\LaravelPayum\Model\GatewayConfig');
         // registerPayum
         $payum = m::mock('Payum\Core\Payum');
 
@@ -96,20 +97,6 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             // ->shouldReceive('addDefaultStorages')->once()->andReturnSelf()
             ->shouldReceive('addEloquentStorages')->once()->andReturnSelf();
 
-        // gatewayConfigs
-        $gatewayConfigs = array_get($configData, 'gatewayConfigs', []);
-        foreach ($gatewayConfigs as $factoryName => $config) {
-            if (class_exists($config['factory']) === true) {
-                $builder->shouldReceive('addGatewayFactory')->with($factoryName, m::type('Closure'))->andReturnUsing(function ($name, $closure) use ($defaultConfig, $gatewayFactory) {
-                    return $closure($defaultConfig, $gatewayFactory);
-                });
-                $app->shouldReceive('make')->with($config['factory'], m::any());
-            }
-
-            $config['factory'] = $factoryName;
-            $builder->shouldReceive('addGateway')->with($factoryName, $config);
-        }
-
         // storage gatewayConfig
         $app->shouldReceive('make')->with('Recca0120\LaravelPayum\Storage\EloquentStorage', [
             'modelClass' => 'Recca0120\LaravelPayum\Model\GatewayConfig',
@@ -117,11 +104,41 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $builder->shouldReceive('setGatewayConfigStorage')->andReturn($eloquentStorage);
 
+        $eloquentGatewayConfig
+            ->shouldReceive('getGatewayName')->once()->andReturn('fooGateway')
+            ->shouldReceive('getFactoryName')->once()->andReturn('fooFactoryName')
+            ->shouldReceive('getConfig')->once()->andReturn([
+                'foo' => 'bar',
+            ]);
+
+        $eloquentStorage->shouldReceive('findBy')->with([])->andReturn([$eloquentGatewayConfig]);
+
+        $builder->shouldReceive('addGateway')->with('fooGateway', [
+            'factory' => 'fooGateway',
+            'foo' => 'bar',
+        ]);
+
+        // gatewayConfigs
+        $gatewayConfigs = array_get($configData, 'gatewayConfigs', []);
+        foreach ($gatewayConfigs as $gatewayName => $gatewayConfig) {
+            if (class_exists($gatewayConfig['factory']) === true) {
+                $builder->shouldReceive('addGatewayFactory')->with($gatewayName, m::type('Closure'))->andReturnUsing(function ($name, $closure) use ($defaultConfig, $gatewayFactory) {
+                    return $closure($defaultConfig, $gatewayFactory);
+                });
+                $app->shouldReceive('make')->with($gatewayConfig['factory'], m::any());
+            }
+
+            $gatewayConfig['factory'] = $gatewayName;
+            $builder->shouldReceive('addGateway')->with($gatewayName, $gatewayConfig);
+        }
+
         // registerPayum
         $builder->shouldReceive('getPayum')->once()->andReturn($payum);
-        $app->shouldReceive('singleton')->with('Payum\Core\Payum', m::type('Closure'))->once()->andReturnUsing(function ($name, $closure) {
-            return $closure(m::self());
-        })
+
+        $app
+            ->shouldReceive('singleton')->with('Payum\Core\Payum', m::type('Closure'))->once()->andReturnUsing(function ($name, $closure) {
+                return $closure(m::self());
+            })
             ->shouldReceive('make')->with('payum.builder')->once()->andReturn($builder);
 
         $app->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\Payum', 'Recca0120\LaravelPayum\Service\Payum');
@@ -170,6 +187,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $router->shouldReceive('group');
 
         $serviceProvider->boot($viewFactory, $router);
+        $serviceProvider->provides();
 
         /*
         |------------------------------------------------------------

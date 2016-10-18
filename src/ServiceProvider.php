@@ -148,25 +148,37 @@ class ServiceProvider extends BaseServiceProvider
                 ]);
 
             $addStorages = (Arr::get($config, 'storage.token') === 'eloquent') ?
-                $builder->addEloquentStorages():$builder->addDefaultStorages();
+                $builder->addEloquentStorages() : $builder->addDefaultStorages();
 
             $gatewayConfigs = Arr::get($config, 'gatewayConfigs', []);
-            foreach ($gatewayConfigs as $factoryName => $config) {
-                $factoryClass = Arr::get($config, 'factory');
-                if (empty($factoryClass) === false && class_exists($factoryClass) === true) {
-                    $builder
-                        ->addGatewayFactory($factoryName, function ($config, GatewayFactoryInterface $coreGatewayFactory) use ($app, $factoryClass) {
-                            return $app->make($factoryClass, [$config, $coreGatewayFactory]);
-                        });
-                }
-                $config['factory'] = $factoryName;
-                $builder->addGateway($factoryName, $config);
-            }
 
             if (Arr::get($config, 'storage.gatewayConfig') === 'eloquent') {
-                $builder->setGatewayConfigStorage($app->make(EloquentStorage::class, [
+                $gatewayConfigStorage = $app->make(EloquentStorage::class, [
                     'modelClass' => GatewayConfig::class,
-                ]));
+                ]);
+                $builder->setGatewayConfigStorage($gatewayConfigStorage);
+
+                foreach ($gatewayConfigStorage->findBy([]) as $eloquentGatewayConfig) {
+                    $gatewayName = $eloquentGatewayConfig->getGatewayName();
+                    $factoryName = $eloquentGatewayConfig->getFactoryName();
+                    $gatewayConfigs[$gatewayName] = array_merge(
+                        Arr::get($gatewayConfigs, $gatewayName, []),
+                        ['factory' => $factoryName],
+                        $eloquentGatewayConfig->getConfig()
+                    );
+                }
+            }
+
+            foreach ($gatewayConfigs as $gatewayName => $gatewayConfig) {
+                $factoryName = Arr::get($gatewayConfig, 'factory');
+                if (empty($factoryName) === false && class_exists($factoryName) === true) {
+                    $builder
+                        ->addGatewayFactory($gatewayName, function ($gatewayConfig, GatewayFactoryInterface $coreGatewayFactory) use ($app, $factoryName) {
+                            return $app->make($factoryName, [$gatewayConfig, $coreGatewayFactory]);
+                        });
+                }
+                $gatewayConfig['factory'] = $gatewayName;
+                $builder->addGateway($gatewayName, $gatewayConfig);
             }
 
             return $builder;
@@ -185,5 +197,14 @@ class ServiceProvider extends BaseServiceProvider
         return $this->app->singleton(Payum::class, function ($app) {
             return $this->app->make('payum.builder')->getPayum();
         });
+    }
+
+    public function provides()
+    {
+        return [
+            'payum',
+            'payum.builder',
+            'payum.converter.reply_to_http_response',
+        ];
     }
 }

@@ -197,7 +197,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         $model->shouldReceive('newQuery')->andReturn($newQuery);
 
         $newQuery->shouldReceive('where')->times(count($exceptedCriteria))->andReturnSelf()
-            ->shouldReceive('get->toArray')->andReturn($exceptedCriteria);
+            ->shouldReceive('get->all')->andReturn($exceptedCriteria);
 
         /*
         |------------------------------------------------------------

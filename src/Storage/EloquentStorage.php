@@ -104,6 +104,7 @@ class EloquentStorage extends AbstractStorage
             $query = $query->where($name, '=', $value);
         }
 
-        return $query->get()->toArray();
+        // return iterator_to_array($query->get());
+        return $query->get()->all();
     }
 }

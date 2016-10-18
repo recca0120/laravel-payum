@@ -38,6 +38,7 @@ class PaymentEloquentTest extends PHPUnit_Framework_TestCase
         $exceptedTotalAmount = 'fooTotalAmount';
         $exceptedCurrencyCode = 'fooCurrencyCode';
         $exceptedCreditCard = $creditcard;
+        $exceptedStatus = 'new';
 
         $payment->setNumber($exceptedNumber);
         $payment->setDetails($exceptedDetails);
@@ -47,6 +48,7 @@ class PaymentEloquentTest extends PHPUnit_Framework_TestCase
         $payment->setTotalAmount($exceptedTotalAmount);
         $payment->setCurrencyCode($exceptedCurrencyCode);
         $payment->setCreditCard($exceptedCreditCard);
+        $payment->setStatus($exceptedStatus);
 
         /*
         |------------------------------------------------------------
@@ -62,5 +64,6 @@ class PaymentEloquentTest extends PHPUnit_Framework_TestCase
         $this->assertSame($exceptedTotalAmount, $payment->getTotalAmount());
         $this->assertSame($exceptedCurrencyCode, $payment->getCurrencyCode());
         $this->assertSame($exceptedCreditCard, $payment->getCreditCard());
+        $this->assertSame($exceptedStatus, $payment->getStatus());
     }
 }
