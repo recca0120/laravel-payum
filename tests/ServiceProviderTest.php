@@ -26,7 +26,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         $serviceProvider = m::mock(new ServiceProvider($app));
         $config = m::mock('Illuminate\Contracts\Config\Repository');
         $configData = require __DIR__.'/../config/payum.php';
-        $configData['storage']['token'] = 'database';
+        $configData['storage']['token'] = 'eloquent';
         $configData['gatewayConfigs'] = [
             'gatewayName' => [
                 'factory' => 'factory',
@@ -39,7 +39,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 'password' => 'password',
             ],
         ];
-        $configData['storage']['gatewayConfig'] = 'database';
+        $configData['storage']['gatewayConfig'] = 'eloquent';
         $eloquentStorage = m::mock('Recca0120\LaravelPayum\Storage\EloquentStorage');
 
         // registerPayumBuilder

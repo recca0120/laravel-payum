@@ -147,8 +147,8 @@ class ServiceProvider extends BaseServiceProvider
                     'done' => $routeAlaisName.'done',
                 ]);
 
-            $addStorages = (Arr::get($config, 'storage.token') === 'filesystem') ? 'addDefaultStorages' : 'addEloquentStorages';
-            call_user_func([$builder, $addStorages]);
+            $addStorages = (Arr::get($config, 'storage.token') === 'eloquent') ?
+                $builder->addEloquentStorages():$builder->addDefaultStorages();
 
             $gatewayConfigs = Arr::get($config, 'gatewayConfigs', []);
             foreach ($gatewayConfigs as $factoryName => $config) {
@@ -163,7 +163,7 @@ class ServiceProvider extends BaseServiceProvider
                 $builder->addGateway($factoryName, $config);
             }
 
-            if (Arr::get($config, 'storage.gatewayConfig') === 'database') {
+            if (Arr::get($config, 'storage.gatewayConfig') === 'eloquent') {
                 $builder->setGatewayConfigStorage($app->make(EloquentStorage::class, [
                     'modelClass' => GatewayConfig::class,
                 ]));
