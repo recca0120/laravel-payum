@@ -197,6 +197,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
     }
 }
 
-function stroage_path() {
+function storage_path()
+{
     return '';
 }

@@ -23,7 +23,7 @@ class FilesystemStorageTest extends PHPUnit_Framework_TestCase
         $filesystem = m::mock('Illuminate\Filesystem\Filesystem');
         $exceptedPath = 'fooStoragePath';
         $config = [
-            'payum.path' => $exceptedPath
+            'payum.path' => $exceptedPath,
         ];
 
         /*
