@@ -21,6 +21,10 @@ class FilesystemStorageTest extends PHPUnit_Framework_TestCase
         $exceptedModelClass = 'fooModelClass';
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $filesystem = m::mock('Illuminate\Filesystem\Filesystem');
+        $exceptedPath = 'fooStoragePath';
+        $config = [
+            'payum.path' => $exceptedPath
+        ];
 
         /*
         |------------------------------------------------------------
@@ -28,10 +32,7 @@ class FilesystemStorageTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $storagePath = 'fooStoragePath';
-        $exceptedPath = $storagePath.'/app/payum/';
-
-        $app->shouldReceive('storagePath')->andReturn($storagePath);
+        $app->shouldReceive('offsetGet')->with('config')->andReturn($config);
 
         $filesystem->shouldReceive('isDirectory')->with($exceptedPath)->andReturn(false)
             ->shouldReceive('makeDirectory')->with($exceptedPath, 0777, true);

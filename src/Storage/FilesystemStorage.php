@@ -20,7 +20,7 @@ class FilesystemStorage extends PayumFilesystemStorage
      */
     public function __construct(Application $app, Filesystem $filesystem, $modelClass, $idProperty = 'payum_id')
     {
-        $storagePath = $app->storagePath().'/app/payum/';
+        $storagePath = $app['config']['payum.path'];
         if ($filesystem->isDirectory($storagePath) === false) {
             $filesystem->makeDirectory($storagePath, 0777, true);
         }

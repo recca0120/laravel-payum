@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'path' => stroage_path('app/payum'),
     'route' => [
         'prefix' => 'payment',
         'as' => 'payment.',
