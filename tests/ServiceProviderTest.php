@@ -61,7 +61,8 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $config->shouldReceive('get')->with('payum')->once()->andReturn($configData)
+        $config
+            ->shouldReceive('get')->with('payum')->once()->andReturn($configData)
             ->shouldReceive('get')->with('payum', [])->once()->andReturn($configData)
             ->shouldReceive('set')->once();
 
@@ -77,7 +78,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
                 return $closure($app);
             })
             ->shouldReceive('offsetGet')->with('config')->once()->andReturn($config)
-            ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilder')->once()->andReturn($builder)
+            ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilder', ['app' => $app, 'config' => $configData])->once()->andReturn($builder)
             ->shouldReceive('make')->with('Recca0120\LaravelPayum\Security\TokenFactory', [$tokenStorage, $registry])->once()->andReturn($builder)
             ->shouldReceive('make')->with('Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier', [$tokenStorage])->once()->andReturn($builder)
             ->shouldReceive('make')->with('Recca0120\LaravelPayum\CoreGatewayFactory', [$app, $defaultConfig])->once()->andReturn($builder);

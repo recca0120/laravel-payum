@@ -125,7 +125,10 @@ class ServiceProvider extends BaseServiceProvider
             $config = $app['config']->get('payum');
             $routeAlaisName = Arr::get($config, 'route.as');
 
-            $builder = $app->make(PayumBuilder::class)
+            $builder = $app->make(PayumBuilder::class, [
+                    'app' => $app,
+                    'config' => $config,
+                ])
                 ->setTokenFactory(function (StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($app) {
                     return $app->make(TokenFactory::class, [$tokenStorage, $registry]);
                 })->setHttpRequestVerifier(function (StorageInterface $tokenStorage) use ($app) {

@@ -2,18 +2,26 @@
 
 namespace Recca0120\LaravelPayum;
 
-use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Payum\Core\Model\ArrayObject;
 use Payum\Core\Model\Payment as PayumPayment;
 use Payum\Core\Model\Token as PayumToken;
 use Payum\Core\PayumBuilder as CorePayumBuilder;
+use Payum\Core\Storage\FilesystemStorage;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 use Recca0120\LaravelPayum\Model\Token as EloquentToken;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
-use Recca0120\LaravelPayum\Storage\FilesystemStorage;
 
 class PayumBuilder extends CorePayumBuilder
 {
+    /**
+     * $filesystem.
+     *
+     * @var \Illuminate\Filesystem\Filesystem
+     */
+    protected $filesystem;
+
     /**
      * $app.
      *
@@ -22,15 +30,25 @@ class PayumBuilder extends CorePayumBuilder
     protected $app;
 
     /**
+     * $config.
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
      * __construct.
      *
      * @method __construct
      *
      * @param \Illuminate\Contracts\Foundation\Application $app
+     * @param \Illuminate\Contracts\Config\Repository
      */
-    public function __construct(Application $app)
+    public function __construct(Filesystem $filesystem, $app, $config = [])
     {
+        $this->filesystem = $filesystem;
         $this->app = $app;
+        $this->config = $config;
     }
 
     /**
@@ -42,9 +60,25 @@ class PayumBuilder extends CorePayumBuilder
      */
     public function addDefaultStorages()
     {
-        $this->setTokenStorage($this->app->make(FilesystemStorage::class, ['modelClass' => PayumToken::class, 'idProperty' => 'hash']))
-            ->addStorage(PayumPayment::class, $this->app->make(FilesystemStorage::class, ['modelClass' => PayumPayment::class, 'idProperty' => 'number']))
-            ->addStorage(ArrayObject::class, $this->app->make(FilesystemStorage::class, ['modelClass' => ArrayObject::class]));
+        $path = Arr::get($this->config, 'path');
+        if ($this->filesystem->isDirectory($path) === false) {
+            $this->filesystem->makeDirectory($path, 0777, true);
+        }
+
+        $this->setTokenStorage($this->app->make(FilesystemStorage::class, [
+                'path' => $path,
+                'modelClass' => PayumToken::class,
+                'idProperty' => 'hash',
+            ]))
+            ->addStorage(PayumPayment::class, $this->app->make(FilesystemStorage::class, [
+                'path' => $path,
+                'modelClass' => PayumPayment::class,
+                'idProperty' => 'number',
+            ]))
+            ->addStorage(ArrayObject::class, $this->app->make(FilesystemStorage::class, [
+                'path' => $path,
+                'modelClass' => ArrayObject::class,
+            ]));
 
         return $this;
     }
