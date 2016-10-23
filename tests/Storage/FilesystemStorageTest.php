@@ -29,7 +29,7 @@ class FilesystemStorageTest extends PHPUnit_Framework_TestCase
         */
 
         $storagePath = 'fooStoragePath';
-        $exceptedPath = $storagePath.'/payum/';
+        $exceptedPath = $storagePath.'/app/payum/';
 
         $app->shouldReceive('storagePath')->andReturn($storagePath);
 
