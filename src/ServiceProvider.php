@@ -4,7 +4,6 @@ namespace Recca0120\LaravelPayum;
 
 use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Routing\Router;
-use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
@@ -63,7 +62,7 @@ class ServiceProvider extends BaseServiceProvider
                 'prefix' => 'payment',
                 'as' => 'payment.',
                 'namespace' => $this->namespace,
-            ], Arr::get($config, 'route', [])), function (Router $router) {
+            ], array_get($config, 'route', [])), function (Router $router) {
                 require __DIR__.'/Http/routes.php';
             });
         }
@@ -123,7 +122,7 @@ class ServiceProvider extends BaseServiceProvider
 
         return $this->app->singleton('payum.builder', function ($app) {
             $config = $app['config']->get('payum');
-            $routeAlaisName = Arr::get($config, 'route.as');
+            $routeAlaisName = array_get($config, 'route.as');
 
             $builder = $app->make(PayumBuilder::class, [
                     'app' => $app,
@@ -150,12 +149,12 @@ class ServiceProvider extends BaseServiceProvider
                     'done' => $routeAlaisName.'done',
                 ]);
 
-            $addStorages = (Arr::get($config, 'storage.token') === 'eloquent') ?
+            $addStorages = (array_get($config, 'storage.token') === 'eloquent') ?
                 $builder->addEloquentStorages() : $builder->addDefaultStorages();
 
-            $gatewayConfigs = Arr::get($config, 'gatewayConfigs', []);
+            $gatewayConfigs = array_get($config, 'gatewayConfigs', []);
 
-            if (Arr::get($config, 'storage.gatewayConfig') === 'eloquent') {
+            if (array_get($config, 'storage.gatewayConfig') === 'eloquent') {
                 $gatewayConfigStorage = $app->make(EloquentStorage::class, [
                     'modelClass' => GatewayConfig::class,
                 ]);
@@ -165,7 +164,7 @@ class ServiceProvider extends BaseServiceProvider
                     $gatewayName = $eloquentGatewayConfig->getGatewayName();
                     $factoryName = $eloquentGatewayConfig->getFactoryName();
                     $gatewayConfigs[$gatewayName] = array_merge(
-                        Arr::get($gatewayConfigs, $gatewayName, []),
+                        array_get($gatewayConfigs, $gatewayName, []),
                         ['factory' => $factoryName],
                         $eloquentGatewayConfig->getConfig()
                     );
@@ -173,7 +172,7 @@ class ServiceProvider extends BaseServiceProvider
             }
 
             foreach ($gatewayConfigs as $gatewayName => $gatewayConfig) {
-                $factoryName = Arr::get($gatewayConfig, 'factory');
+                $factoryName = array_get($gatewayConfig, 'factory');
                 if (empty($factoryName) === false && class_exists($factoryName) === true) {
                     $builder
                         ->addGatewayFactory($gatewayName, function ($gatewayConfig, GatewayFactoryInterface $coreGatewayFactory) use ($app, $factoryName) {

@@ -3,7 +3,6 @@
 namespace Recca0120\LaravelPayum;
 
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Arr;
 use Payum\Core\Model\ArrayObject;
 use Payum\Core\Model\Payment as PayumPayment;
 use Payum\Core\Model\Token as PayumToken;
@@ -60,7 +59,7 @@ class PayumBuilder extends CorePayumBuilder
      */
     public function addDefaultStorages()
     {
-        $path = Arr::get($this->config, 'path');
+        $path = array_get($this->config, 'path');
         if ($this->filesystem->isDirectory($path) === false) {
             $this->filesystem->makeDirectory($path, 0777, true);
         }
