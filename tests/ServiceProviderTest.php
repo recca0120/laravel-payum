@@ -66,10 +66,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('get')->with('payum', [])->once()->andReturn($configData)
             ->shouldReceive('set')->once();
 
-        $app->shouldReceive('offsetGet')->with('config')->twice()->andReturn($config);
-
         // registerPayumBuilder
-        $app->shouldReceive('bind')->with('payum.converter.reply_to_http_response', 'Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')->once()
+        $app
+            ->shouldReceive('bind')->with('payum.converter.reply_to_http_response', 'Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')->once()
             ->shouldReceive('bind')->with('payum.action.get_http_request', 'Recca0120\LaravelPayum\Action\GetHttpRequestAction')->once()
             ->shouldReceive('bind')->with('payum.action.obtain_credit_card', 'Recca0120\LaravelPayum\Action\ObtainCreditCardAction')->once()
             ->shouldReceive('bind')->with('payum.action.render_template', 'Recca0120\LaravelPayum\Action\RenderTemplateAction')->once()
@@ -77,7 +76,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('singleton')->with('payum.builder', m::type('Closure'))->once()->andReturnUsing(function ($name, $closure) use ($app) {
                 return $closure($app);
             })
-            ->shouldReceive('offsetGet')->with('config')->once()->andReturn($config)
+            ->shouldReceive('offsetGet')->with('config')->times(3)->andReturn($config)
             ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilder', ['app' => $app, 'config' => $configData])->once()->andReturn($builder)
             ->shouldReceive('make')->with('Recca0120\LaravelPayum\Security\TokenFactory', [$tokenStorage, $registry])->once()->andReturn($builder)
             ->shouldReceive('make')->with('Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier', [$tokenStorage])->once()->andReturn($builder)
@@ -181,6 +180,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app
             ->shouldReceive('offsetGet')->with('config')->andReturn($config)
+            ->shouldReceive('runningInConsole')->andReturn(true)
             ->shouldReceive('configPath')->andReturn(__DIR__)
             ->shouldReceive('basePath')->andReturn(__DIR__)
             ->shouldReceive('routesAreCached')->andReturn(false);

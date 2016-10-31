@@ -43,8 +43,11 @@ class ServiceProvider extends BaseServiceProvider
     {
         $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
         $config = $this->app['config']->get('payum', []);
-        $this->handleRoutes($router, $config)
-            ->handlePublishes();
+        $this->handleRoutes($router, $config);
+
+        if ($this->app->runningInConsole() === true) {
+            $this->handlePublishes();
+        }
     }
 
     /**
