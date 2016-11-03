@@ -20,41 +20,45 @@ class PayumBuilderAdapter
         $this->config = $config;
     }
 
-    public function setTokenFactory()
-    {
-        $this->builder->setTokenFactory(function (StorageInterface $tokenStorage, StorageRegistryInterface $registry) {
-            return $this->app->make(TokenFactory::class, [$tokenStorage, $registry]);
-        });
+    public function tokenFactory(StorageInterface $tokenStorage, StorageRegistryInterface $registry) {
+        return $this->app->make(TokenFactory::class, [$tokenStorage, $registry]);
     }
 
-    public function setHttpRequestVerifier()
+    public function setTokenFactory($builder)
     {
-        $this->builder->setHttpRequestVerifier(function (StorageInterface $tokenStorage) {
-            return $this->app->make(HttpRequestVerifier::class, [$tokenStorage]);
-        });
+        $builder->setTokenFactory([$this, 'tokenFactory']);
     }
 
-    public function setCoreGatewayFactory()
+    public function httpRequestVerifier(StorageInterface $tokenStorage) {
+        return $this->app->make(HttpRequestVerifier::class, [$tokenStorage]);
+    }
+
+    public function setHttpRequestVerifier($bulder)
     {
-        $this->builder->setCoreGatewayFactory(function ($defaultConfig) {
+        $bulder->setHttpRequestVerifier([$this, 'httpRequestVerifier']);
+    }
+
+    public function setCoreGatewayFactory($bulder)
+    {
+        $bulder->setCoreGatewayFactory(function ($defaultConfig) {
             return $this->app->make(CoreGatewayFactory::class, [$this->app, $defaultConfig]);
         });
     }
 
-    public function setCoreGatewayFactoryConfig()
+    public function setCoreGatewayFactoryConfig($bulder)
     {
-        $this->builder->setCoreGatewayFactoryConfig([
+        $bulder->setCoreGatewayFactoryConfig([
             'payum.action.obtain_credit_card' => 'payum.action.obtain_credit_card',
             'payum.action.render_template' => 'payum.action.render_template',
             'payum.extension.update_payment_status' => 'payum.extension.update_payment_status',
         ]);
     }
 
-    public function setGenericTokenFactoryPaths()
+    public function setGenericTokenFactoryPaths($bulder)
     {
         $routeAlaisName = array_get($this->config, 'route.as');
 
-        $this->builder->setGenericTokenFactoryPaths([
+        $bulder->setGenericTokenFactoryPaths([
             'authorize' => $routeAlaisName.'authorize',
             'capture' => $routeAlaisName.'capture',
             'notify' => $routeAlaisName.'notify',
@@ -66,13 +70,13 @@ class PayumBuilderAdapter
         ]);
     }
 
-    public function setStorage()
+    public function setStorage($bulder)
     {
         (array_get($this->config, 'storage.token') === 'eloquent') ?
-            $this->builder->addEloquentStorages() : $this->builder->addDefaultStorages();
+            $bulder->addEloquentStorages() : $bulder->addDefaultStorages();
     }
 
-    public function setGatewayConfig()
+    public function setGatewayConfig($bulder)
     {
         $gatewayConfigs = array_get($this->config, 'gatewayConfigs', []);
 
@@ -80,7 +84,7 @@ class PayumBuilderAdapter
             $gatewayConfigStorage = $this->app->make(EloquentStorage::class, [
                 'modelClass' => GatewayConfig::class,
             ]);
-            $this->builder->setGatewayConfigStorage($gatewayConfigStorage);
+            $bulder->setGatewayConfigStorage($gatewayConfigStorage);
 
             foreach ($gatewayConfigStorage->findBy([]) as $eloquentGatewayConfig) {
                 $gatewayName = $eloquentGatewayConfig->getGatewayName();
@@ -96,25 +100,25 @@ class PayumBuilderAdapter
         foreach ($gatewayConfigs as $gatewayName => $gatewayConfig) {
             $factoryName = array_get($gatewayConfig, 'factory');
             if (empty($factoryName) === false && class_exists($factoryName) === true) {
-                $this->builder
+                $bulder
                     ->addGatewayFactory($gatewayName, function ($gatewayConfig, GatewayFactoryInterface $coreGatewayFactory) use ($factoryName) {
                         return $this->app->make($factoryName, [$gatewayConfig, $coreGatewayFactory]);
                     });
             }
             $gatewayConfig['factory'] = $gatewayName;
-            $this->builder->addGateway($gatewayName, $gatewayConfig);
+            $bulder->addGateway($gatewayName, $gatewayConfig);
         }
     }
 
     public function getBuilder()
     {
-        $this->setTokenFactory();
-        $this->setHttpRequestVerifier();
-        $this->setCoreGatewayFactory();
-        $this->setCoreGatewayFactoryConfig();
-        $this->setGenericTokenFactoryPaths();
-        $this->setStorage();
-        $this->setGatewayConfig();
+        $this->setTokenFactory($this->builder);
+        $this->setHttpRequestVerifier($this->builder);
+        $this->setCoreGatewayFactory($this->builder);
+        $this->setCoreGatewayFactoryConfig($this->builder);
+        $this->setGenericTokenFactoryPaths($this->builder);
+        $this->setStorage($this->builder);
+        $this->setGatewayConfig($this->builder);
 
         return $this->builder;
     }
