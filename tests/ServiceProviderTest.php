@@ -1,7 +1,6 @@
 <?php
 
 use Mockery as m;
-use Payum\Core\Bridge\Spl\ArrayObject;
 use Recca0120\LaravelPayum\ServiceProvider;
 
 class ServiceProviderTest extends PHPUnit_Framework_TestCase
@@ -23,37 +22,9 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $serviceProvider = m::mock(new ServiceProvider($app));
-        $config = m::mock('Illuminate\Contracts\Config\Repository');
-        $configData = require __DIR__.'/../config/payum.php';
-        $configData['storage']['token'] = 'eloquent';
-        $configData['gatewayConfigs'] = [
-            'gatewayName' => [
-                'factory' => 'factory',
-                'username' => 'username',
-                'password' => 'password',
-            ],
-            'gatewayName2' => [
-                'factory' => 'stdClass',
-                'username' => 'username',
-                'password' => 'password',
-            ],
-        ];
-        $configData['storage']['gatewayConfig'] = 'eloquent';
-        $eloquentStorage = m::mock('Recca0120\LaravelPayum\Storage\EloquentStorage');
-
-        // registerPayumBuilder
-        $builder = m::mock('Recca0120\LaravelPayum\PayumBuilder');
-        $tokenStorage = m::mock('Payum\Core\Storage\StorageInterface');
-        $registry = m::mock('Payum\Core\Registry\StorageRegistryInterface');
-        $gatewayFactory = m::mock('Payum\Core\GatewayFactoryInterface');
-        $defaultConfig = new ArrayObject([
-            'payum.template.obtain_credit_card' => 'foo.payum.template.obtain_credit_card',
-        ]);
-
-        $eloquentGatewayConfig = m::mock('GatewayConfigRecca0120\LaravelPayum\Model\GatewayConfig');
-        // registerPayum
-        $payum = m::mock('Payum\Core\Payum');
+        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
+        $payumBuilderManager = m::mock('Recca0120\LaravelPayum\PayumBuilderManager');
+        $payumBuilder = m::mock('Payum\Core\PayumBuilder');
 
         /*
         |------------------------------------------------------------
@@ -62,94 +33,38 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $config
-            ->shouldReceive('get')->with('payum')->once()->andReturn($configData)
-            ->shouldReceive('get')->with('payum', [])->once()->andReturn($configData)
+            ->shouldReceive('offsetGet')->with('payum')->once()->andReturn([])
+            ->shouldReceive('get')->with('payum', [])->once()->andReturn([])
             ->shouldReceive('set')->once();
 
-        // registerPayumBuilder
         $app
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
             ->shouldReceive('bind')->with('payum.converter.reply_to_http_response', 'Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')->once()
             ->shouldReceive('bind')->with('payum.action.get_http_request', 'Recca0120\LaravelPayum\Action\GetHttpRequestAction')->once()
             ->shouldReceive('bind')->with('payum.action.obtain_credit_card', 'Recca0120\LaravelPayum\Action\ObtainCreditCardAction')->once()
             ->shouldReceive('bind')->with('payum.action.render_template', 'Recca0120\LaravelPayum\Action\RenderTemplateAction')->once()
             ->shouldReceive('bind')->with('payum.extension.update_payment_status', 'Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension')->once()
-            ->shouldReceive('singleton')->with('payum.builder', m::type('Closure'))->once()->andReturnUsing(function ($name, $closure) use ($app) {
+            ->shouldReceive('singleton')->with('payum.builder', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($app) {
                 return $closure($app);
             })
-            ->shouldReceive('offsetGet')->with('config')->times(3)->andReturn($config)
-            ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilder', ['app' => $app, 'config' => $configData])->once()->andReturn($builder)
-            ->shouldReceive('make')->with('Recca0120\LaravelPayum\Security\TokenFactory', [$tokenStorage, $registry])->once()->andReturn($builder)
-            ->shouldReceive('make')->with('Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier', [$tokenStorage])->once()->andReturn($builder)
-            ->shouldReceive('make')->with('Recca0120\LaravelPayum\CoreGatewayFactory', [$app, $defaultConfig])->once()->andReturn($builder);
-
-        $builder
-            ->shouldReceive('setTokenFactory')->once()->andReturnUsing(function ($closure) use ($tokenStorage, $registry) {
-                return $closure($tokenStorage, $registry);
+            ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilderManager', ['config' => []])->once()->andReturn($payumBuilderManager)
+            ->shouldReceive('singleton')->with('Payum\Core\Payum', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($app) {
+                return $closure($app);
             })
-            ->shouldReceive('setHttpRequestVerifier')->once()->andReturnUsing(function ($closure) use ($tokenStorage) {
-                return $closure($tokenStorage);
-            })
-            ->shouldReceive('setCoreGatewayFactory')->once()->with(m::type('Closure'))->andReturnUsing(function ($closure) use ($defaultConfig) {
-                return $closure($defaultConfig);
-            })
-            ->shouldReceive('setCoreGatewayFactoryConfig')->once()->andReturnSelf()
-            ->shouldReceive('setGenericTokenFactoryPaths')->once()->andReturnSelf()
-            // ->shouldReceive('addDefaultStorages')->once()->andReturnSelf()
-            ->shouldReceive('addEloquentStorages')->once()->andReturnSelf();
+            ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\Payum', 'Recca0120\LaravelPayum\Service\Payum')->once()
+            ->shouldReceive('make')->with('payum.builder')->once()->andReturn($payumBuilder);
 
-        // storage gatewayConfig
-        $app->shouldReceive('make')->with('Recca0120\LaravelPayum\Storage\EloquentStorage', [
-            'modelClass' => 'Recca0120\LaravelPayum\Model\GatewayConfig',
-        ])->andReturn($eloquentStorage);
-
-        $builder->shouldReceive('setGatewayConfigStorage')->andReturn($eloquentStorage);
-
-        $eloquentGatewayConfig
-            ->shouldReceive('getGatewayName')->once()->andReturn('fooGateway')
-            ->shouldReceive('getFactoryName')->once()->andReturn('fooFactoryName')
-            ->shouldReceive('getConfig')->once()->andReturn([
-                'foo' => 'bar',
-            ]);
-
-        $eloquentStorage->shouldReceive('findBy')->with([])->andReturn([$eloquentGatewayConfig]);
-
-        $builder->shouldReceive('addGateway')->with('fooGateway', [
-            'factory' => 'fooGateway',
-            'foo' => 'bar',
-        ]);
-
-        // gatewayConfigs
-        $gatewayConfigs = array_get($configData, 'gatewayConfigs', []);
-        foreach ($gatewayConfigs as $gatewayName => $gatewayConfig) {
-            if (class_exists($gatewayConfig['factory']) === true) {
-                $builder->shouldReceive('addGatewayFactory')->with($gatewayName, m::type('Closure'))->andReturnUsing(function ($name, $closure) use ($defaultConfig, $gatewayFactory) {
-                    return $closure($defaultConfig, $gatewayFactory);
-                });
-                $app->shouldReceive('make')->with($gatewayConfig['factory'], m::any());
-            }
-
-            $gatewayConfig['factory'] = $gatewayName;
-            $builder->shouldReceive('addGateway')->with($gatewayName, $gatewayConfig);
-        }
-
-        // registerPayum
-        $builder->shouldReceive('getPayum')->once()->andReturn($payum);
-
-        $app
-            ->shouldReceive('singleton')->with('Payum\Core\Payum', m::type('Closure'))->once()->andReturnUsing(function ($name, $closure) {
-                return $closure(m::self());
-            })
-            ->shouldReceive('make')->with('payum.builder')->once()->andReturn($builder);
-
-        $app->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\Payum', 'Recca0120\LaravelPayum\Service\Payum');
-
-        $serviceProvider->register();
+        $payumBuilderManager->shouldReceive('getBuilder')->once();
+        $payumBuilder->shouldReceive('getPayum');
 
         /*
         |------------------------------------------------------------
         | Assertion
         |------------------------------------------------------------
         */
+
+        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider->register();
     }
 
     public function test_boot()
@@ -165,7 +80,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldAllowMockingProtectedMethods();
         $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
         $router = m::mock('Illuminate\Routing\Router');
-        $config = m::mock('Illuminate\Contracts\Config\Repository');
+        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
 
         /*
         |------------------------------------------------------------
@@ -173,7 +88,8 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $config->shouldReceive('get')->andReturn([])
+        $config
+            ->shouldReceive('offsetGet')->with('payum')->andReturn([])
             ->shouldReceive('set')->andReturnSelf();
 
         $viewFactory->shouldReceive('addNamespace')->with('payum', m::any());

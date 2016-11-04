@@ -19,7 +19,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         */
         $exceptedModelClass = 'fooModelClass';
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = new EloquentStorage($app, $exceptedModelClass);
+        $eloquentStorage = new EloquentStorage($exceptedModelClass, $app);
 
         /*
         |------------------------------------------------------------
@@ -48,7 +48,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
 
         $exceptedModelClass = 'fooModelClass';
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
+        $eloquentStorage = m::mock(new EloquentStorage($exceptedModelClass, $app))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock('Illuminate\Database\Eloquent\Model');
 
@@ -79,7 +79,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
 
         $exceptedModelClass = 'fooModelClass';
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
+        $eloquentStorage = m::mock(new EloquentStorage($exceptedModelClass, $app))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock('Illuminate\Database\Eloquent\Model');
 
@@ -110,7 +110,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
 
         $exceptedModelClass = 'fooModelClass';
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
+        $eloquentStorage = m::mock(new EloquentStorage($exceptedModelClass, $app))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock('Illuminate\Database\Eloquent\Model');
 
@@ -142,7 +142,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
 
         $exceptedModelClass = 'fooModelClass';
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
+        $eloquentStorage = m::mock(new EloquentStorage($exceptedModelClass, $app))
             ->shouldAllowMockingProtectedMethods();
         $model = m::mock('Illuminate\Database\Eloquent\Model');
 
@@ -177,8 +177,7 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
 
         $exceptedModelClass = 'fooModelClass';
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($app, $exceptedModelClass))
-            ->shouldAllowMockingProtectedMethods();
+        $eloquentStorage = new EloquentStorage($exceptedModelClass, $app);
         $model = m::mock('Illuminate\Database\Eloquent\Model');
         $newQuery = m::mock('stdClass');
         /*

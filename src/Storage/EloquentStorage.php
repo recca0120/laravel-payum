@@ -17,7 +17,7 @@ class EloquentStorage extends AbstractStorage
      * @param \Illuminate\Contracts\Foundation\Application $app
      * @param string                                       $modelClass
      */
-    public function __construct(Application $app, $modelClass)
+    public function __construct($modelClass, Application $app)
     {
         parent::__construct($modelClass);
         $this->app = $app;

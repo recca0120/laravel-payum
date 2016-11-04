@@ -35,7 +35,7 @@ class ServiceProvider extends BaseServiceProvider
     public function boot(ViewFactory $viewFactory, Router $router)
     {
         $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
-        $config = $this->app['config']->get('payum', []);
+        $config = $this->app['config']['payum'];
         $this->handleRoutes($router, $config);
 
         if ($this->app->runningInConsole() === true) {
@@ -96,56 +96,37 @@ class ServiceProvider extends BaseServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
-        $this->registerPayumBuilder();
-        $this->registerPayum();
-        $this->app->singleton(PayumService::class, PayumService::class);
-    }
 
-    /**
-     * registerPayumBuilder.
-     *
-     * @method registerPayumBuilder
-     *
-     * @return \Payum\Core\PayumBuilder
-     */
-    protected function registerPayumBuilder()
-    {
         $this->app->bind('payum.converter.reply_to_http_response', ReplyToSymfonyResponseConverter::class);
         $this->app->bind('payum.action.get_http_request', GetHttpRequestAction::class);
         $this->app->bind('payum.action.obtain_credit_card', ObtainCreditCardAction::class);
         $this->app->bind('payum.action.render_template', RenderTemplateAction::class);
         $this->app->bind('payum.extension.update_payment_status', UpdatePaymentStatusExtension::class);
 
-        return $this->app->singleton('payum.builder', function ($app) {
-            $config = $app['config']->get('payum');
+        $this->app->singleton('payum.builder', function ($app) {
+            $config = $app['config']['payum'];
 
-            return (new PayumBuilderAdapter($app->make(PayumBuilder::class, [
-                'app' => $app,
+            return $app->make(PayumBuilderManager::class, [
                 'config' => $config,
-            ]), $app, $config))->getBuilder();
+            ])->getBuilder();
         });
+
+        $this->app->singleton(Payum::class, function ($app) {
+            return $this->app->make('payum.builder')->getPayum();
+        });
+
+        $this->app->singleton(PayumService::class, PayumService::class);
     }
 
     /**
-     * registerPayum.
+     * provides.
      *
-     * @method registerPayum
+     * @method provides
      *
-     * @return \Payum\Core\Payum
+     * @return array
      */
-    protected function registerPayum()
-    {
-        return $this->app->singleton(Payum::class, function ($app) {
-            return $this->app->make('payum.builder')->getPayum();
-        });
-    }
-
     public function provides()
     {
-        return [
-            'payum',
-            'payum.builder',
-            'payum.converter.reply_to_http_response',
-        ];
+        return ['payum', 'payum.builder', 'payum.converter.reply_to_http_response'];
     }
 }
