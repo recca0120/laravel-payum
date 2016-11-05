@@ -23,8 +23,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $filesystem = m::mock('Illuminate\Filesystem\Filesystem');
         $app = m::mock('Illuminate\Contracts\Foundation\Application');
         $config = [];
-        $manager = m::mock(new PayumBuilderManager($payumBuilder, $filesystem, $app, $config))
-            ->shouldAllowMockingProtectedMethods();
+        $manager = new PayumBuilderManager($payumBuilder, $filesystem, $app, $config);
 
         $storageInterface = m::mock('Payum\Core\Storage\StorageInterface');
         $storageRegistryInterface = m::mock('Payum\Core\Registry\StorageRegistryInterface');
@@ -61,8 +60,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $filesystem = m::mock('Illuminate\Filesystem\Filesystem');
         $app = m::mock('Illuminate\Contracts\Foundation\Application');
         $config = [];
-        $manager = m::mock(new PayumBuilderManager($payumBuilder, $filesystem, $app, $config))
-            ->shouldAllowMockingProtectedMethods();
+        $manager = new PayumBuilderManager($payumBuilder, $filesystem, $app, $config);
 
         $storageInterface = m::mock('Payum\Core\Storage\StorageInterface');
 
@@ -97,8 +95,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $filesystem = m::mock('Illuminate\Filesystem\Filesystem');
         $app = m::mock('Illuminate\Contracts\Foundation\Application');
         $config = [];
-        $manager = m::mock(new PayumBuilderManager($payumBuilder, $filesystem, $app, $config))
-            ->shouldAllowMockingProtectedMethods();
+        $manager = new PayumBuilderManager($payumBuilder, $filesystem, $app, $config);
 
         $storageInterface = m::mock('Payum\Core\Storage\StorageInterface');
 
@@ -135,8 +132,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $config = [
             'route.as' => 'payum.',
         ];
-        $manager = m::mock(new PayumBuilderManager($payumBuilder, $filesystem, $app, $config))
-            ->shouldAllowMockingProtectedMethods();
+        $manager = new PayumBuilderManager($payumBuilder, $filesystem, $app, $config);
 
         /*
         |------------------------------------------------------------
@@ -176,8 +172,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $config = [
             'route.as' => 'payum.',
         ];
-        $manager = m::mock(new PayumBuilderManager($payumBuilder, $filesystem, $app, $config))
-            ->shouldAllowMockingProtectedMethods();
+        $manager = new PayumBuilderManager($payumBuilder, $filesystem, $app, $config);
 
         $modelClass = 'fooClass';
 
@@ -215,8 +210,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $config = [
             'path' => 'fooPath',
         ];
-        $manager = m::mock(new PayumBuilderManager($payumBuilder, $filesystem, $app, $config))
-            ->shouldAllowMockingProtectedMethods();
+        $manager = new PayumBuilderManager($payumBuilder, $filesystem, $app, $config);
 
         $modelClass = 'fooClass';
         $idProperty = 'fooId';

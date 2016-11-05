@@ -17,10 +17,22 @@ class EloquentStorage extends AbstractStorage
      * @param \Illuminate\Contracts\Foundation\Application $app
      * @param string                                       $modelClass
      */
-    public function __construct($modelClass, Application $app)
+    public function __construct($modelClass, Application $app = null)
     {
         parent::__construct($modelClass);
         $this->app = $app;
+    }
+
+    /**
+     * makeModel.
+     *
+     * @method makeModel
+     *
+     * @return \Illuminate\Database\Eloquent\Model
+     */
+    protected function makeModel()
+    {
+        return $this->app->make($this->modelClass);
     }
 
     /**
@@ -32,7 +44,7 @@ class EloquentStorage extends AbstractStorage
      */
     public function create()
     {
-        return $this->app->make($this->modelClass);
+        return $this->makeModel();
     }
 
     /**
@@ -84,7 +96,7 @@ class EloquentStorage extends AbstractStorage
      */
     protected function doFind($id)
     {
-        return $this->app->make($this->modelClass)->find($id);
+        return $this->makeModel()->find($id);
     }
 
     /**
@@ -98,7 +110,7 @@ class EloquentStorage extends AbstractStorage
      */
     public function findBy(array $criteria)
     {
-        $model = $this->app->make($this->modelClass);
+        $model = $this->makeModel();
         $query = $model->newQuery();
         foreach ($criteria as $name => $value) {
             $query = $query->where($name, '=', $value);

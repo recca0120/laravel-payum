@@ -110,7 +110,7 @@ class PayumBuilderManager
      *
      * @return \Recca0120\LaravelPayum\Security\TokenFactory
      */
-    protected function createTokenFactory(StorageInterface $tokenStorage, StorageRegistryInterface $registry)
+    public function createTokenFactory(StorageInterface $tokenStorage, StorageRegistryInterface $registry)
     {
         return $this->app->make(TokenFactory::class, [$tokenStorage, $registry]);
     }
@@ -124,7 +124,7 @@ class PayumBuilderManager
      *
      * @return \Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier
      */
-    protected function createHttpRequestVerifier(StorageInterface $tokenStorage)
+    public function createHttpRequestVerifier(StorageInterface $tokenStorage)
     {
         return $this->app->make(HttpRequestVerifier::class, [$tokenStorage]);
     }
@@ -138,7 +138,7 @@ class PayumBuilderManager
      *
      * @return \Recca0120\LaravelPayum\CoreGatewayFactory
      */
-    protected function createCoreGatewayFactoryConfig($defaultConfig)
+    public function createCoreGatewayFactoryConfig($defaultConfig)
     {
         return $this->app->make(CoreGatewayFactory::class, [
             'defaultConfig' => $defaultConfig,
@@ -152,7 +152,7 @@ class PayumBuilderManager
      *
      * @return array
      */
-    protected function createGenericTokenFactoryPaths()
+    public function createGenericTokenFactoryPaths()
     {
         return [
             'authorize' => $this->routeAliasName.'authorize',
@@ -175,7 +175,7 @@ class PayumBuilderManager
      *
      * @return \Recca0120\LaravelPayum\Storage\EloquentStorage
      */
-    protected function createEloquentStorage($modelClass)
+    public function createEloquentStorage($modelClass)
     {
         return $this->app->make(EloquentStorage::class, [
             $modelClass,
@@ -193,7 +193,7 @@ class PayumBuilderManager
      *
      * @return \Payum\Core\Storage\FilesystemStorage
      */
-    protected function createFilesystemStorage($modelClass, $idProperty = 'payum_id')
+    public function createFilesystemStorage($modelClass, $idProperty = 'payum_id')
     {
         return $this->app->make(FilesystemStorage::class, [
             $this->storagePath,
