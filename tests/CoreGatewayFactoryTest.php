@@ -23,7 +23,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         $actionInterface = m::mock('Payum\Core\Action\ActionInterface');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $defaultConfig = new ArrayObject();
-        $coreGateway = m::mock(new CoreGatewayFactory($app, []));
+        $coreGatewayFactory = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();
 
         /*
@@ -32,16 +32,18 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $coreGateway->shouldDeferMissing()
+        $coreGatewayFactory
+            ->shouldDeferMissing()
             ->shouldAllowMockingProtectedMethods();
 
-        $app->shouldReceive('offsetGet')->with('payum.action.foo1')->once()->andReturn($actionInterface);
+        $app
+            ->shouldReceive('offsetGet')->with('payum.action.foo1')->once()->andReturn($actionInterface);
 
         $defaultConfig->defaults([
             'payum.prepend_actions' => [],
             'payum.action.foo1' => 'payum.action.foo1',
         ]);
-        $coreGateway->buildActions($gateway, $defaultConfig);
+        $coreGatewayFactory->buildActions($gateway, $defaultConfig);
 
         /*
         |------------------------------------------------------------
@@ -62,7 +64,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         $api = m::mock('stdClass');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $defaultConfig = new ArrayObject();
-        $coreGateway = m::mock(new CoreGatewayFactory($app, []));
+        $coreGatewayFactory = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();
 
         /*
@@ -71,16 +73,18 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $coreGateway->shouldDeferMissing()
+        $coreGatewayFactory
+            ->shouldDeferMissing()
             ->shouldAllowMockingProtectedMethods();
 
-        $app->shouldReceive('offsetGet')->with('payum.api.foo1')->once()->andReturn($api);
+        $app
+            ->shouldReceive('offsetGet')->with('payum.api.foo1')->once()->andReturn($api);
 
         $defaultConfig->defaults([
             'payum.prepend_apis' => [],
             'payum.api.foo1' => 'payum.api.foo1',
         ]);
-        $coreGateway->buildApis($gateway, $defaultConfig);
+        $coreGatewayFactory->buildApis($gateway, $defaultConfig);
 
         /*
         |------------------------------------------------------------
@@ -102,7 +106,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         $extensionInterface = m::mock('Payum\Core\Extension\ExtensionInterface');
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $defaultConfig = new ArrayObject();
-        $coreGateway = m::mock(new CoreGatewayFactory($app, []));
+        $coreGatewayFactory = m::mock(new CoreGatewayFactory($app, []));
         $gateway = new Gateway();
 
         /*
@@ -111,7 +115,8 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $coreGateway->shouldDeferMissing()
+        $coreGatewayFactory
+            ->shouldDeferMissing()
             ->shouldAllowMockingProtectedMethods();
 
         $app->shouldReceive('offsetGet')->with('payum.extension.foo1')->once()->andReturn($extensionInterface);
@@ -120,7 +125,7 @@ class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase
             'payum.prepend_extensions' => [],
             'payum.extension.foo1' => 'payum.extension.foo1',
         ]);
-        $coreGateway->buildExtensions($gateway, $defaultConfig);
+        $coreGatewayFactory->buildExtensions($gateway, $defaultConfig);
 
         /*
         |------------------------------------------------------------

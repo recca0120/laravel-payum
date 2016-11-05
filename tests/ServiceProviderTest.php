@@ -76,8 +76,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $serviceProvider = m::mock(new ServiceProvider($app))
-            ->shouldAllowMockingProtectedMethods();
+        $serviceProvider = new ServiceProvider($app);
         $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
         $router = m::mock('Illuminate\Routing\Router');
         $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
