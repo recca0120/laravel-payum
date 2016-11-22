@@ -103,10 +103,11 @@ class PayumBuilderManager
 
     /**
      * createTokenFactory.
+     *
      * @method createTokenFactory
      *
-     * @param \Payum\Core\Storage\StorageInterface             $tokenStorage
-     * @param \Payum\Core\Registry\StorageRegistryInterface    $registry
+     * @param \Payum\Core\Storage\StorageInterface          $tokenStorage
+     * @param \Payum\Core\Registry\StorageRegistryInterface $registry
      *
      * @return \Recca0120\LaravelPayum\Security\TokenFactory
      */
@@ -120,7 +121,7 @@ class PayumBuilderManager
      *
      * @method createHttpRequestVerifier
      *
-     * @param \Payum\Core\Storage\StorageInterface  $tokenStorage
+     * @param \Payum\Core\Storage\StorageInterface $tokenStorage
      *
      * @return \Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier
      */
@@ -134,7 +135,7 @@ class PayumBuilderManager
      *
      * @method createCoreGatewayFactoryConfig
      *
-     * @param array     $defaultConfig
+     * @param array $defaultConfig
      *
      * @return \Recca0120\LaravelPayum\CoreGatewayFactory
      */
@@ -171,7 +172,7 @@ class PayumBuilderManager
      *
      * @method createEloquentStorage
      *
-     * @param string   $modelClass
+     * @param string $modelClass
      *
      * @return \Recca0120\LaravelPayum\Storage\EloquentStorage
      */
@@ -188,8 +189,8 @@ class PayumBuilderManager
      *
      * @method createFilesystemStorage
      *
-     * @param string    $modelClass
-     * @param string    $idProperty
+     * @param string $modelClass
+     * @param string $idProperty
      *
      * @return \Payum\Core\Storage\FilesystemStorage
      */
@@ -240,6 +241,24 @@ class PayumBuilderManager
     protected function setCoreGatewayFactory()
     {
         $this->payumBuilder->setCoreGatewayFactory([$this, 'createCoreGatewayFactoryConfig']);
+
+        return $this;
+    }
+
+    /**
+     * setCoreGatewayFactoryConfig.
+     *
+     * @method setCoreGatewayFactoryConfig
+     *
+     * @return self
+     */
+    protected function setCoreGatewayFactoryConfig()
+    {
+        $this->payumBuilder->setCoreGatewayFactoryConfig([
+            'payum.action.obtain_credit_card' => 'payum.action.obtain_credit_card',
+            'payum.action.render_template' => 'payum.action.render_template',
+            'payum.extension.update_payment_status' => 'payum.extension.update_payment_status',
+        ]);
 
         return $this;
     }
@@ -385,6 +404,7 @@ class PayumBuilderManager
             ->setTokenFactory()
             ->setHttpRequestVerifier()
             ->setCoreGatewayFactory()
+            ->setCoreGatewayFactoryConfig()
             ->setGenericTokenFactoryPaths()
             ->setStorage()
             ->setGatewayConfigStorage()

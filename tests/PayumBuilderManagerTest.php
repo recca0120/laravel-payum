@@ -516,6 +516,11 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('setTokenFactory')->with([$manager, 'createTokenFactory'])->once()
             ->shouldReceive('setHttpRequestVerifier')->with([$manager, 'createHttpRequestVerifier'])->once()
             ->shouldReceive('setCoreGatewayFactory')->with([$manager, 'createCoreGatewayFactoryConfig'])->once()
+            ->shouldReceive('setCoreGatewayFactoryConfig')->with([
+                'payum.action.obtain_credit_card' => 'payum.action.obtain_credit_card',
+                'payum.action.render_template' => 'payum.action.render_template',
+                'payum.extension.update_payment_status' => 'payum.extension.update_payment_status',
+            ])->once()
             ->shouldReceive('setGenericTokenFactoryPaths')
             ->shouldReceive('setTokenStorage')->with($storageInterface)->andReturnSelf()
             ->shouldReceive('addStorage')->with('Payum\Core\Model\Payment', $storageInterface)->andReturnSelf()
