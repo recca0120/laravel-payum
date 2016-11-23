@@ -13,6 +13,7 @@ use Payum\Core\Reply\ReplyInterface;
 use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Cancel;
 use Payum\Core\Request\Capture;
+use Payum\Core\Request\Generic;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Request\Payout;
@@ -139,6 +140,35 @@ class Payum
     }
 
     /**
+     * getGateway.
+     *
+     * @method getGateway
+     *
+     * @param string    $gatewayName
+     *
+     * @return \Payum\Core\GatewayInterface
+     */
+    public function getGateway($gatewayName)
+    {
+        return $this->getPayum()->getGateway($gatewayName);
+    }
+
+    /**
+     * execute.
+     *
+     * @method execute
+     *
+     * @param  string                       $gatewayName
+     * @param  Payum\Core\Request\Generic   $request
+     *
+     * @return \Payum\Core\Reply\ReplyInterface|null
+     */
+    public function execute($gatewayName, Generic $request)
+    {
+        return $this->getGateway($gatewayName)->execute($request);
+    }
+
+    /**
      * send.
      *
      * @method send
@@ -154,7 +184,7 @@ class Payum
         $payum = $this->getPayum();
         $httpRequestVerifier = $payum->getHttpRequestVerifier();
         $token = $this->getToken($httpRequestVerifier, $request, $payumToken);
-        $gateway = $payum->getGateway($token->getGatewayName());
+        $gateway = $this->getGateway($token->getGatewayName());
         try {
             return $closure($gateway, $token, $httpRequestVerifier);
         } catch (ReplyInterface $reply) {
