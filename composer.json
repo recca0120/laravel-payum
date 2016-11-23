@@ -49,7 +49,10 @@
         "payum/be2bill": "If you want to use be2bill gateway",
         "payum/payex": "If you want to use payex gateway",
         "payum/omnipay-bridge": "If you want to use omnipay provided gateways",
-        "payum/stripe": "If you want to use omnipay provided gateways"
+        "payum/stripe": "If you want to use stripe gateways",
+        "payum-tw/allpay": "If you want to use allpay gateways",
+        "payum-tw/mypay": "If you want to use mypay gateways",
+        "payum-tw/esunbank": "If you want to use esunbank gateways"
     },
     "autoload": {
         "psr-4": {
