@@ -12,12 +12,12 @@ use Payum\Core\Reply\ReplyInterface;
 use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Cancel;
 use Payum\Core\Request\Capture;
+use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Request\Payout;
 use Payum\Core\Request\Refund;
 use Payum\Core\Request\Sync;
-use Payum\Core\Request\Convert;
 use Payum\Core\Security\HttpRequestVerifierInterface;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
