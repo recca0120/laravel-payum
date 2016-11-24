@@ -3,7 +3,7 @@
 namespace Recca0120\LaravelPayum\Http\Controllers\Behavior;
 
 use Illuminate\Http\Request;
-use Recca0120\LaravelPayum\Service\Payum as PayumService;
+use Recca0120\LaravelPayum\Service\PayumService;
 
 trait AuthorizeBehavior
 {

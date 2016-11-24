@@ -51,7 +51,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('singleton')->with('Payum\Core\Payum', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($app) {
                 return $closure($app);
             })
-            ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\Payum', 'Recca0120\LaravelPayum\Service\Payum')->once()
+            ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\PayumService', 'Recca0120\LaravelPayum\Service\PayumService')->once()
             ->shouldReceive('make')->with('payum.builder')->once()->andReturn($payumBuilder);
 
         $payumBuilderManager->shouldReceive('getBuilder')->once();
@@ -65,6 +65,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $serviceProvider = new ServiceProvider($app);
         $serviceProvider->register();
+        $this->assertTrue(class_exists('\Recca0120\LaravelPayum\Service\Payum'));
     }
 
     public function test_boot()

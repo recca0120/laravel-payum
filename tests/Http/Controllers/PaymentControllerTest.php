@@ -19,7 +19,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         */
 
         $controller = new PaymentController();
-        $payumService = m::mock('Recca0120\LaravelPayum\Service\Payum');
+        $payumService = m::mock('Recca0120\LaravelPayum\Service\PayumService');
         $request = m::mock('Illuminate\Http\Request');
 
         /*
@@ -52,7 +52,7 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         */
 
         $controller = new PaymentController();
-        $payumService = m::mock('Recca0120\LaravelPayum\Service\Payum');
+        $payumService = m::mock('Recca0120\LaravelPayum\Service\PayumService');
         $request = m::mock('Illuminate\Http\Request');
 
         /*

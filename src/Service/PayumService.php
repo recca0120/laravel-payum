@@ -2,27 +2,26 @@
 
 namespace Recca0120\LaravelPayum\Service;
 
-use Closure;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Session\SessionManager;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Payum\Core\Model\Payment as PayumPayment;
-use Payum\Core\Payum as CorePayum;
+use Payum\Core\Payum;
 use Payum\Core\Reply\ReplyInterface;
 use Payum\Core\Request\Authorize;
 use Payum\Core\Request\Cancel;
 use Payum\Core\Request\Capture;
-use Payum\Core\Request\Generic;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Request\Payout;
 use Payum\Core\Request\Refund;
 use Payum\Core\Request\Sync;
+use Payum\Core\Request\Convert;
 use Payum\Core\Security\HttpRequestVerifierInterface;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
-class Payum
+class PayumService
 {
     /**
      * $payum.
@@ -70,7 +69,7 @@ class Payum
      * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
      */
     public function __construct(
-        CorePayum $payum,
+        Payum $payum,
         SessionManager $sessionManager,
         ResponseFactory $responseFactory,
         ReplyToSymfonyResponseConverter $converter
@@ -154,32 +153,17 @@ class Payum
     }
 
     /**
-     * execute.
-     *
-     * @method execute
-     *
-     * @param  string                       $gatewayName
-     * @param  Payum\Core\Request\Generic   $request
-     *
-     * @return \Payum\Core\Reply\ReplyInterface|null
-     */
-    public function execute($gatewayName, Generic $request)
-    {
-        return $this->getGateway($gatewayName)->execute($request);
-    }
-
-    /**
      * send.
      *
      * @method send
      *
      * @param \Illuminate\Http\Request $request
      * @param string                   $payumToken
-     * @param \Closure                 $closure
+     * @param callable                 $closure
      *
      * @return mixed
      */
-    public function send(Request $request, $payumToken, Closure $closure)
+    public function send(Request $request, $payumToken, callable $closure)
     {
         $payum = $this->getPayum();
         $httpRequestVerifier = $payum->getHttpRequestVerifier();
@@ -215,14 +199,14 @@ class Payum
      * @method prepare
      *
      * @param string   $gatewayName
-     * @param \Closure $closure
+     * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      * @param string   $tokenType
      *
      * @return mixed
      */
-    public function prepare($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
+    public function prepare($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
     {
         return $this->request($gatewayName, $closure, $afterPath, $afterParameters, $tokenType);
     }
@@ -233,14 +217,14 @@ class Payum
      * @method request
      *
      * @param string   $gatewayName
-     * @param \Closure $closure
+     * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      * @param string   $tokenType
      *
      * @return mixed
      */
-    public function request($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
+    public function request($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
     {
         $payum = $this->getPayum();
         $storage = $payum->getStorage($this->getPaymentModelName($payum));
@@ -265,13 +249,13 @@ class Payum
      * @method capture
      *
      * @param string   $gatewayName
-     * @param \Closure $closure
+     * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      *
      * @return mixed
      */
-    public function capture($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    public function capture($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
         return $this->request($gatewayName, $closure, $afterPath, $afterParameters, 'Capture');
     }
@@ -282,13 +266,13 @@ class Payum
      * @method authorize
      *
      * @param string   $gatewayName
-     * @param \Closure $closure
+     * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      *
      * @return mixed
      */
-    public function authorize($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    public function authorize($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
         return $this->request($gatewayName, $closure, $afterPath, $afterParameters, 'Authorize');
     }
@@ -299,13 +283,13 @@ class Payum
      * @method refund
      *
      * @param string   $gatewayName
-     * @param \Closure $closure
+     * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      *
      * @return mixed
      */
-    public function refund($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    public function refund($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
         return $this->request($gatewayName, $closure, $afterPath, $afterParameters, 'Refund');
     }
@@ -316,13 +300,13 @@ class Payum
      * @method cancel
      *
      * @param string   $gatewayName
-     * @param \Closure $closure
+     * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      *
      * @return mixed
      */
-    public function cancel($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    public function cancel($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
         return $this->request($gatewayName, $closure, $afterPath, $afterParameters, 'Cancel');
     }
@@ -333,15 +317,40 @@ class Payum
      * @method payout
      *
      * @param string   $gatewayName
-     * @param \Closure $closure
+     * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      *
      * @return mixed
      */
-    public function payout($gatewayName, Closure $closure, $afterPath = 'payment.done', array $afterParameters = [])
+    public function payout($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
         return $this->request($gatewayName, $closure, $afterPath, $afterParameters, 'Payout');
+    }
+
+    /**
+     * sync.
+     *
+     * @method sync
+     *
+     * @param string    $gatewayName
+     * @param callable  $closure
+     */
+    public function sync($gatewayName, callable $closure)
+    {
+        $payum = $this->getPayum();
+        $gateway = $this->getGateway($gatewayName);
+        $storage = $payum->getStorage($this->getPaymentModelName($payum));
+        $payment = $storage->create();
+        $closure($payment, $gatewayName, $storage, $this->payum);
+
+        $request = new Sync($payment);
+        $convert = new Convert($payment, 'array', $request->getToken());
+        $gateway->execute($convert);
+        $payment->setDetails($convert->getResult());
+        $gateway->execute($request);
+
+        return $request->getModel();
     }
 
     /**
@@ -351,11 +360,11 @@ class Payum
      *
      * @param \Illuminate\Http\Request $request
      * @param string                   $payumToken
-     * @param \Closure                 $closure
+     * @param callable                 $closure
      *
      * @return mixed
      */
-    public function done(Request $request, $payumToken, Closure $closure)
+    public function done(Request $request, $payumToken, callable $closure)
     {
         return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) use ($closure) {
             $gateway->execute($status = new GetHumanStatus($token));

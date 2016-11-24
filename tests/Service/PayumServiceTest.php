@@ -7,9 +7,9 @@ use Payum\Core\Request\Cancel;
 use Payum\Core\Request\Capture;
 use Payum\Core\Request\Payout;
 use Payum\Core\Request\Refund;
-use Recca0120\LaravelPayum\Service\Payum as PayumService;
+use Recca0120\LaravelPayum\Service\PayumService;
 
-class PayumTest extends PHPUnit_Framework_TestCase
+class PayumServiceTest extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -257,10 +257,12 @@ class PayumTest extends PHPUnit_Framework_TestCase
 
         $excepted = 'fooTargetUrl';
 
-        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
+        $storage
+            ->shouldReceive('create')->once()->andReturn($eloquentPayment)
             ->shouldReceive('update')->once()->andReturn($eloquentPayment);
 
-        $payum->shouldReceive('getStorages')->once()->andReturn([
+        $payum
+            ->shouldReceive('getStorages')->once()->andReturn([
                 'Recca0120\LaravelPayum\Model\Payment' => 'storage',
             ])
             ->shouldReceive('getStorage')->once()->andReturn($storage)
@@ -1065,7 +1067,7 @@ class PayumTest extends PHPUnit_Framework_TestCase
         $this->assertSame($excepted, $payumService->receiveSync($request, $payumToken));
     }
 
-    public function test_execute()
+    public function test_sync()
     {
         /*
         |------------------------------------------------------------
@@ -1078,17 +1080,34 @@ class PayumTest extends PHPUnit_Framework_TestCase
         $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
         $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
         $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Payum\Core\Request\Generic');
         $gateway = m::mock('Payum\Core\GatewayInterface');
+        $payment = m::mock('Payum\Core\Model\Payment');
+        $tokenInterface = m::mock('Payum\Core\Security\TokenInterface');
+        $storage = m::mock('stdClass');
+
         /*
         |------------------------------------------------------------
         | Expectation
         |------------------------------------------------------------
         */
 
-        $payum->shouldReceive('getGateway')->once()->andReturn($gateway);
+        $payum
+            ->shouldReceive('getGateway')->once()->andReturn($gateway)
+            ->shouldReceive('getStorage')->once()->andReturn($storage)
+            ->shouldReceive('getStorages')->once()->andReturn([
+                'Payum\Core\Model\Payment' => 'storage',
+            ]);
 
-        $gateway->shouldReceive('execute')->with($request)->once();
+        $storage
+            ->shouldReceive('create')->once()->andReturn($payment);
+
+        $payment
+            ->shouldReceive('setDetails')->once()
+            ->shouldReceive('setNumber')->with('foo.number');
+
+        $gateway
+            ->shouldReceive('execute')->with(m::type('Payum\Core\Request\Convert'))->once()
+            ->shouldReceive('execute')->with(m::type('Payum\Core\Request\Generic'))->once();
 
         /*
         |------------------------------------------------------------
@@ -1096,6 +1115,8 @@ class PayumTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $payumService->execute('foo', $request);
+        $payumService->sync('foo', function ($payment) {
+            $payment->setNumber('foo.number');
+        });
     }
 }

@@ -11,7 +11,7 @@ use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
-use Recca0120\LaravelPayum\Service\Payum as PayumService;
+use Recca0120\LaravelPayum\Service\PayumService;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -116,6 +116,8 @@ class ServiceProvider extends BaseServiceProvider
         });
 
         $this->app->singleton(PayumService::class, PayumService::class);
+
+        class_alias(PayumService::class, 'Recca0120\LaravelPayum\Service\Payum');
     }
 
     /**
