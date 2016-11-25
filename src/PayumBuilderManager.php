@@ -4,6 +4,7 @@ namespace Recca0120\LaravelPayum;
 
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
 use Payum\Core\GatewayFactoryInterface;
 use Payum\Core\Model\ArrayObject;
@@ -93,12 +94,12 @@ class PayumBuilderManager
         $this->filesystem = $filesystem;
         $this->app = $app;
 
-        $this->tokenStorageType = array_get($config, 'storage.token', 'filesystem');
-        $this->gatewayConfigStorageType = array_get($config, 'storage.gatewayConfig', 'filesystem');
+        $this->tokenStorageType = Arr::get($config, 'storage.token', 'filesystem');
+        $this->gatewayConfigStorageType = Arr::get($config, 'storage.gatewayConfig', 'filesystem');
 
-        $this->routeAliasName = array_get($config, 'route.as');
-        $this->storagePath = array_get($config, 'path');
-        $this->gatewayConfigs = array_get($config, 'gatewayConfigs', []);
+        $this->routeAliasName = Arr::get($config, 'route.as');
+        $this->storagePath = Arr::get($config, 'path');
+        $this->gatewayConfigs = Arr::get($config, 'gatewayConfigs', []);
     }
 
     /**
@@ -345,7 +346,7 @@ class PayumBuilderManager
                 $gatewayName = $gatewayConfig->getGatewayName();
                 $factoryName = $gatewayConfig->getFactoryName();
                 $this->gatewayConfigs[$gatewayName] = array_merge(
-                    array_get($this->gatewayConfigs, $gatewayName, []),
+                    Arr::get($this->gatewayConfigs, $gatewayName, []),
                     ['factory' => $factoryName],
                     $gatewayConfig->getConfig()
                 );
@@ -377,7 +378,7 @@ class PayumBuilderManager
     protected function setGatewayConfig()
     {
         foreach ($this->gatewayConfigs as $gatewayName => $gatewayConfig) {
-            $factoryName = array_get($gatewayConfig, 'factory');
+            $factoryName = Arr::get($gatewayConfig, 'factory');
             if (empty($factoryName) === false && class_exists($factoryName) === true) {
                 $this->payumBuilder
                     ->addGatewayFactory($gatewayName, function ($gatewayConfig, GatewayFactoryInterface $coreGatewayFactory) use ($factoryName) {

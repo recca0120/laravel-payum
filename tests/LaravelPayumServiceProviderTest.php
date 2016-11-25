@@ -1,9 +1,9 @@
 <?php
 
 use Mockery as m;
-use Recca0120\LaravelPayum\ServiceProvider;
+use Recca0120\LaravelPayum\LaravelPayumServiceProvider;
 
-class ServiceProviderTest extends PHPUnit_Framework_TestCase
+class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -63,7 +63,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider = new LaravelPayumServiceProvider($app);
         $serviceProvider->register();
         $this->assertTrue(class_exists('\Recca0120\LaravelPayum\Service\Payum'));
     }
@@ -77,7 +77,7 @@ class ServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $serviceProvider = new ServiceProvider($app);
+        $serviceProvider = new LaravelPayumServiceProvider($app);
         $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
         $router = m::mock('Illuminate\Routing\Router');
         $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
