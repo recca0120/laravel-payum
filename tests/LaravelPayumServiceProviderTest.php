@@ -25,7 +25,6 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
         $payumBuilderManager = m::mock('Recca0120\LaravelPayum\PayumBuilderManager');
         $payumBuilder = m::mock('Payum\Core\PayumBuilder');
-        $aliasName = 'Recca0120\LaravelPayum\Service\Payum';
 
         /*
         |------------------------------------------------------------
@@ -53,7 +52,7 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
                 return $closure($app);
             })
             ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\PayumService', 'Recca0120\LaravelPayum\Service\PayumService')->once()
-            ->shouldReceive('singleton')->with($aliasName, 'Recca0120\LaravelPayum\Service\PayumService')->once()
+            ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\Payum', 'Recca0120\LaravelPayum\Service\PayumService')->once()
             ->shouldReceive('make')->with('payum.builder')->once()->andReturn($payumBuilder);
 
         $payumBuilderManager->shouldReceive('getBuilder')->once();
@@ -67,7 +66,6 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $serviceProvider = new LaravelPayumServiceProvider($app);
         $serviceProvider->register();
-        $this->assertTrue(class_exists($aliasName));
     }
 
     public function test_boot()
