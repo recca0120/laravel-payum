@@ -22,7 +22,7 @@ Instead, you may of course manually update your require block and run `composer 
 ```json
 {
     "require": {
-        "recca0120/laravel-payum": "^1.0.0"
+        "recca0120/laravel-payum": "^1.0.6"
     }
 }
 ```
@@ -32,7 +32,7 @@ Include the service provider within `config/app.php`. The service povider is nee
 ```php
 'providers' => [
     ...
-    Recca0120\LaravelPayum\ServiceProvider::class,
+    Recca0120\LaravelPayum\LaravelPayumServiceProvider::class,
     ...
 ];
 ```
@@ -160,7 +160,7 @@ If you want use eloquent you need change config.php and create database
 publish vendor
 
 ```bash
-artisan vendor:publish --provider="Recca0120\LaravelPayum\ServiceProvider"
+artisan vendor:publish --provider="Recca0120\LaravelPayum\LaravelPayumServiceProvider"
 ```
 
 migrate
