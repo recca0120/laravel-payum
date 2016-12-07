@@ -2,18 +2,18 @@
 
 namespace Recca0120\LaravelPayum;
 
-use Illuminate\Contracts\View\Factory as ViewFactory;
-use Illuminate\Routing\Router;
-use Illuminate\Support\Arr;
-use Illuminate\Support\ServiceProvider;
-use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Payum\Core\Payum;
-use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
-use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
-use Recca0120\LaravelPayum\Action\RenderTemplateAction;
-use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
+use Illuminate\Support\Arr;
+use Illuminate\Routing\Router;
+use Illuminate\Support\ServiceProvider;
 use Recca0120\LaravelPayum\Service\PayumService;
+use Illuminate\Contracts\View\Factory as ViewFactory;
+use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
+use Recca0120\LaravelPayum\Action\RenderTemplateAction;
+use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 use Recca0120\LaravelPayum\Service\Payum as OldPayumService;
+use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
+use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 
 class LaravelPayumServiceProvider extends ServiceProvider
 {

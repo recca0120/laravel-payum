@@ -5,7 +5,7 @@ return [
     'route' => [
         'prefix' => 'payment',
         'as' => 'payment.',
-        'middleware' => ['web']
+        'middleware' => ['web'],
     ],
     'storage' => [
         // optioins: eloquent, filesystem

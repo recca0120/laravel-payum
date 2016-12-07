@@ -2,10 +2,10 @@
 
 namespace Recca0120\LaravelPayum;
 
-use Illuminate\Contracts\Foundation\Application;
-use Payum\Core\Bridge\Spl\ArrayObject;
-use Payum\Core\CoreGatewayFactory as PayumCoreGatewayFactory;
 use Payum\Core\Gateway;
+use Payum\Core\Bridge\Spl\ArrayObject;
+use Illuminate\Contracts\Foundation\Application;
+use Payum\Core\CoreGatewayFactory as PayumCoreGatewayFactory;
 
 class CoreGatewayFactory extends PayumCoreGatewayFactory
 {

@@ -2,9 +2,9 @@
 
 namespace Recca0120\LaravelPayum\Model;
 
+use Payum\Core\Security\Util\Random;
 use Illuminate\Database\Eloquent\Model;
 use Payum\Core\Security\TokenInterface;
-use Payum\Core\Security\Util\Random;
 
 class Token extends Model implements TokenInterface
 {

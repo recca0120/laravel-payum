@@ -3,14 +3,14 @@
 namespace Recca0120\LaravelPayum\Action;
 
 use DateTime;
-use Illuminate\Contracts\View\Factory as ViewFactory;
 use Illuminate\Http\Request;
-use Payum\Core\Action\ActionInterface;
-use Payum\Core\Bridge\Symfony\Reply\HttpResponse;
-use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Model\CreditCard;
+use Payum\Core\Action\ActionInterface;
 use Payum\Core\Request\ObtainCreditCard;
 use Symfony\Component\HttpFoundation\Response;
+use Payum\Core\Bridge\Symfony\Reply\HttpResponse;
+use Illuminate\Contracts\View\Factory as ViewFactory;
+use Payum\Core\Exception\RequestNotSupportedException;
 
 class ObtainCreditCardAction implements ActionInterface
 {

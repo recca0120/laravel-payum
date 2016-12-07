@@ -2,9 +2,9 @@
 
 namespace Recca0120\LaravelPayum\Storage;
 
-use Illuminate\Contracts\Foundation\Application;
 use Payum\Core\Model\Identity;
 use Payum\Core\Storage\AbstractStorage;
+use Illuminate\Contracts\Foundation\Application;
 
 class EloquentStorage extends AbstractStorage
 {

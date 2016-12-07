@@ -2,10 +2,10 @@
 
 namespace Recca0120\LaravelPayum\Action;
 
-use Illuminate\Contracts\View\Factory as ViewFactory;
 use Payum\Core\Action\ActionInterface;
-use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\RenderTemplate;
+use Illuminate\Contracts\View\Factory as ViewFactory;
+use Payum\Core\Exception\RequestNotSupportedException;
 
 class RenderTemplateAction implements ActionInterface
 {

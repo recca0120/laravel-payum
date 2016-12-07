@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller as BaseController;
+use Payum\Core\Payum;
 use Payum\Core\GatewayInterface;
 use Payum\Core\Model\PaymentInterface;
-use Payum\Core\Payum;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\TokenInterface;
 use Payum\Core\Storage\StorageInterface;
+use Illuminate\Routing\Controller as BaseController;
 use Recca0120\LaravelPayum\Service\Payum as PayumService;
 
 class PaymentController extends BaseController

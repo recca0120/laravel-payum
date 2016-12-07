@@ -2,13 +2,13 @@
 
 namespace Recca0120\LaravelPayum\Extension;
 
-use Illuminate\Contracts\Events\Dispatcher;
-use Payum\Core\Extension\Context;
-use Payum\Core\Extension\ExtensionInterface;
-use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Generic;
+use Payum\Core\Extension\Context;
+use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\GetStatusInterface;
+use Illuminate\Contracts\Events\Dispatcher;
+use Payum\Core\Extension\ExtensionInterface;
 use Recca0120\LaravelPayum\Events\StatusChanged;
 
 class UpdatePaymentStatusExtension implements ExtensionInterface

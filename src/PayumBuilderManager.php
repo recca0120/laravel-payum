@@ -2,23 +2,23 @@
 
 namespace Recca0120\LaravelPayum;
 
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Arr;
-use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
-use Payum\Core\GatewayFactoryInterface;
-use Payum\Core\Model\ArrayObject;
-use Payum\Core\Model\Payment as PayumPayment;
-use Payum\Core\Model\Token as PayumToken;
 use Payum\Core\PayumBuilder;
-use Payum\Core\Registry\StorageRegistryInterface;
-use Payum\Core\Storage\FilesystemStorage;
+use Payum\Core\Model\ArrayObject;
+use Illuminate\Filesystem\Filesystem;
+use Payum\Core\GatewayFactoryInterface;
 use Payum\Core\Storage\StorageInterface;
+use Payum\Core\Model\Token as PayumToken;
+use Payum\Core\Storage\FilesystemStorage;
+use Payum\Core\Model\Payment as PayumPayment;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
-use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
-use Recca0120\LaravelPayum\Model\Token as EloquentToken;
+use Illuminate\Contracts\Foundation\Application;
+use Payum\Core\Registry\StorageRegistryInterface;
 use Recca0120\LaravelPayum\Security\TokenFactory;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
+use Recca0120\LaravelPayum\Model\Token as EloquentToken;
+use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
+use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
 class PayumBuilderManager
 {

@@ -2,22 +2,22 @@
 
 namespace Recca0120\LaravelPayum\Service;
 
-use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Http\Request;
-use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
-use Payum\Core\Model\Payment as PayumPayment;
 use Payum\Core\Payum;
-use Payum\Core\Reply\ReplyInterface;
-use Payum\Core\Request\Authorize;
+use Illuminate\Http\Request;
+use Payum\Core\Request\Sync;
 use Payum\Core\Request\Cancel;
-use Payum\Core\Request\Capture;
-use Payum\Core\Request\Convert;
-use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\Notify;
 use Payum\Core\Request\Payout;
 use Payum\Core\Request\Refund;
-use Payum\Core\Request\Sync;
+use Payum\Core\Request\Capture;
+use Payum\Core\Request\Convert;
+use Payum\Core\Request\Authorize;
+use Payum\Core\Reply\ReplyInterface;
+use Payum\Core\Request\GetHumanStatus;
+use Payum\Core\Model\Payment as PayumPayment;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
+use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 
 class PayumService
 {

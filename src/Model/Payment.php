@@ -2,9 +2,9 @@
 
 namespace Recca0120\LaravelPayum\Model;
 
+use Payum\Core\Model\PaymentInterface;
 use Illuminate\Database\Eloquent\Model;
 use Payum\Core\Model\CreditCardInterface;
-use Payum\Core\Model\PaymentInterface;
 
 class Payment extends Model implements PaymentInterface
 {

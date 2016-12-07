@@ -1,8 +1,8 @@
 <?php
 
 use Mockery as m;
-use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Gateway;
+use Payum\Core\Bridge\Spl\ArrayObject;
 use Recca0120\LaravelPayum\CoreGatewayFactory;
 
 class CoreGatewayFactoryTest extends PHPUnit_Framework_TestCase

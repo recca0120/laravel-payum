@@ -2,10 +2,10 @@
 
 namespace Recca0120\LaravelPayum\Security;
 
+use Payum\Core\Storage\StorageInterface;
+use Payum\Core\Security\AbstractTokenFactory;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Payum\Core\Registry\StorageRegistryInterface;
-use Payum\Core\Security\AbstractTokenFactory;
-use Payum\Core\Storage\StorageInterface;
 
 class TokenFactory extends AbstractTokenFactory
 {

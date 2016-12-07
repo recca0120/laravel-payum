@@ -1,8 +1,8 @@
 <?php
 
 use Mockery as m;
-use Recca0120\LaravelPayum\Service\PayumService;
 use Payum\Core\Reply\HttpResponse;
+use Recca0120\LaravelPayum\Service\PayumService;
 
 class PayumServiceTest extends PHPUnit_Framework_TestCase
 {
