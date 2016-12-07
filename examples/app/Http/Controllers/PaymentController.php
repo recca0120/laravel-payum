@@ -42,9 +42,9 @@ class PaymentController extends BaseController
         });
     }
 
-    public function done(PayumService $payumService, Request $request, $payumToken)
+    public function done(PayumService $payumService, $payumToken)
     {
-        return $payumService->done($request, $payumToken, function (
+        return $payumService->done($payumToken, function (
             GetHumanStatus $status,
             PaymentInterface $payment,
             GatewayInterface $gateway,
