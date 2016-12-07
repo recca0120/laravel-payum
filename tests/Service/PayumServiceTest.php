@@ -1,13 +1,8 @@
 <?php
 
 use Mockery as m;
-use Payum\Core\Reply\HttpResponse;
-use Payum\Core\Request\Authorize;
-use Payum\Core\Request\Cancel;
-use Payum\Core\Request\Capture;
-use Payum\Core\Request\Payout;
-use Payum\Core\Request\Refund;
 use Recca0120\LaravelPayum\Service\PayumService;
+use Payum\Core\Reply\HttpResponse;
 
 class PayumServiceTest extends PHPUnit_Framework_TestCase
 {
@@ -20,1103 +15,517 @@ class PayumServiceTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
+        $payum = m::spy('\Payum\Core\Payum');
+        $request = m::spy('\Illuminate\Http\Request');
+        $responseFactory = m::spy('\Illuminate\Contracts\Routing\ResponseFactory');
+        $converter = m::spy('\Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
+        $payumService = new PayumService($payum, $request, $responseFactory, $converter);
+
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
         $this->assertSame($payum, $payumService->getPayum());
     }
 
-    public function test_send()
+    public function test_get_gateway()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
+        $payum = m::spy('Payum\Core\Payum');
+        $request = m::spy('Illuminate\Http\Request');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $converter = m::spy('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
+
+        $gateway = m::spy('Payum\Core\GatewayInterface');
+        $gatewayName = 'foo.gateway';
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
+        $payum
+            ->shouldReceive('getGateway')->andReturn($gateway);
 
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->once()->andReturn($token);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName);
+        $payumService = new PayumService($payum, $request, $responseFactory, $converter);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $payumService->send($request, $payumToken, function () use ($gateway, $token, $httpRequestVerifier) {
-            $args = func_get_args();
-            $this->assertSame($args[0], $gateway);
-            $this->assertSame($args[1], $token);
-            $this->assertSame($args[2], $httpRequestVerifier);
-        });
-    }
-
-    public function test_get_token_without_payum_token()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $request->cookies = m::mock('stdClass');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
-        $sessionName = 'foo';
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $sessionManager
-            ->shouldReceive('driver')->once()->andReturnSelf()
-            ->shouldReceive('isStarted')->once()->andReturn(false)
-            ->shouldReceive('getName')->once()->andReturn($sessionName)
-            ->shouldReceive('setId')->with($sessionName)->once()
-            ->shouldReceive('setRequestOnHandler')->with($request)->once()
-            ->shouldReceive('start')->twice()
-            ->shouldReceive('forget')->with($payumTokenId)->once()->andReturn(true)
-            ->shouldReceive('get')->once()->andReturn($payumToken)
-            ->shouldReceive('save')->once();
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $request->cookies->shouldReceive('get')->with($sessionName)->andReturn($sessionName);
-
-        $httpRequestVerifier->shouldReceive('verify')->once()->andReturn($token);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payumService->send($request, null, function () use ($gateway, $token, $httpRequestVerifier) {
-            $args = func_get_args();
-            $this->assertSame($args[0], $gateway);
-            $this->assertSame($args[1], $token);
-            $this->assertSame($args[2], $httpRequestVerifier);
-        });
-    }
-
-    public function test_convert_reply()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $request->cookies = m::mock('stdClass');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $reply = m::mock('Payum\Core\Reply\ReplyInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
-        $sessionName = 'foo';
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $request->cookies->shouldReceive('get')->with($sessionName)->andReturn($sessionName);
-
-        $httpRequestVerifier->shouldReceive('verify')->once()->andReturn($token);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName);
-
-        $sessionManager
-            ->shouldReceive('driver')->once()->andReturnSelf()
-            ->shouldReceive('isStarted')->once()->andReturn(false)
-            ->shouldReceive('getName')->once()->andReturn($sessionName)
-            ->shouldReceive('setId')->with($sessionName)->once()
-            ->shouldReceive('setRequestOnHandler')->with($request)->once()
-            ->shouldReceive('start')->once()
-            ->shouldReceive('set')->with($payumTokenId, $payumToken)
-            ->shouldReceive('save')->once();
-
-        $replyToSymfonyResponseConverter->shouldReceive('convert')->with(m::type('Payum\Core\Reply\ReplyInterface'))->andReturn($reply);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($reply, $payumService->send($request, $payumToken, function () {
-            throw new HttpResponse('testing');
-        }));
+        $this->assertSame($gateway, $payumService->getGateway($gatewayName));
+        $payum->shouldHaveReceived('getGateway')->with($gatewayName)->once();
     }
 
     public function test_prepare()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $gatewayName = 'fooGatewayName';
-        $storage = m::mock('stdClass');
-        $eloquentPayment = m::mock('Recca0120\LaravelPayum\Model\Payment');
-        $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $excepted = 'fooTargetUrl';
-
-        $storage
-            ->shouldReceive('create')->once()->andReturn($eloquentPayment)
-            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
-
-        $payum
-            ->shouldReceive('getStorages')->once()->andReturn([
-                'Recca0120\LaravelPayum\Model\Payment' => 'storage',
-            ])
-            ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
-
-        $tokenFactory->shouldReceive('createCaptureToken')->once()->andReturn($token);
-
-        $responseFactory->shouldReceive('redirectTo')->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payumService->prepare($gatewayName, function () {
-        }, 'payment.done', []);
+        $this->validateRequest('prepare', 'Capture');
     }
 
-    public function test_request_capture()
+    public function test_request()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $gatewayName = 'fooGatewayName';
-        $storage = m::mock('stdClass');
-        $eloquentPayment = m::mock('Recca0120\LaravelPayum\Model\Payment');
-        $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $excepted = 'fooTargetUrl';
-
-        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
-            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
-
-        $payum->shouldReceive('getStorages')->once()->andReturn([
-                'Recca0120\LaravelPayum\Model\Payment' => 'storage',
-            ])
-            ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
-
-        $tokenFactory->shouldReceive('createCaptureToken')->once()->andReturn($token);
-
-        $responseFactory->shouldReceive('redirectTo')->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payumService->capture($gatewayName, function () {
-        }, 'payment.done', []);
+        $this->validateRequest('request', 'Capture');
     }
 
-    public function test_request_authorize()
+    public function test_capture()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $gatewayName = 'fooGatewayName';
-        $storage = m::mock('stdClass');
-        $eloquentPayment = m::mock('Recca0120\LaravelPayum\Model\Payment');
-        $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $excepted = 'fooTargetUrl';
-
-        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
-            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
-
-        $payum->shouldReceive('getStorages')->once()->andReturn([
-                'Recca0120\LaravelPayum\Model\Payment' => 'storage',
-            ])
-            ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
-
-        $tokenFactory->shouldReceive('createAuthorizeToken')->once()->andReturn($token);
-
-        $responseFactory->shouldReceive('redirectTo')->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payumService->authorize($gatewayName, function () {
-        }, 'payment.done', []);
+        $this->validateRequest('capture', 'Capture');
     }
 
-    public function test_request_refund()
+    public function test_authorize()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $gatewayName = 'fooGatewayName';
-        $storage = m::mock('stdClass');
-        $eloquentPayment = m::mock('Recca0120\LaravelPayum\Model\Payment');
-        $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $excepted = 'fooTargetUrl';
-
-        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
-            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
-
-        $payum->shouldReceive('getStorages')->once()->andReturn([
-                'Recca0120\LaravelPayum\Model\Payment' => 'storage',
-            ])
-            ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
-
-        $tokenFactory->shouldReceive('createRefundToken')->once()->andReturn($token);
-
-        $responseFactory->shouldReceive('redirectTo')->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payumService->refund($gatewayName, function () {
-        }, 'payment.done', []);
+        $this->validateRequest('authorize', 'Authorize');
     }
 
-    public function test_request_cancel()
+    public function test_refund()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $gatewayName = 'fooGatewayName';
-        $storage = m::mock('stdClass');
-        $eloquentPayment = m::mock('Recca0120\LaravelPayum\Model\Payment');
-        $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $excepted = 'fooTargetUrl';
-
-        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
-            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
-
-        $payum->shouldReceive('getStorages')->once()->andReturn([
-                'Recca0120\LaravelPayum\Model\Payment' => 'storage',
-            ])
-            ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
-
-        $tokenFactory->shouldReceive('createCancelToken')->once()->andReturn($token);
-
-        $responseFactory->shouldReceive('redirectTo')->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payumService->cancel($gatewayName, function () {
-        }, 'payment.done', []);
+        $this->validateRequest('refund', 'Refund');
     }
 
-    public function test_request_payout()
+    public function test_cancel()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $gatewayName = 'fooGatewayName';
-        $storage = m::mock('stdClass');
-        $eloquentPayment = m::mock('Recca0120\LaravelPayum\Model\Payment');
-        $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $excepted = 'fooTargetUrl';
-
-        $storage->shouldReceive('create')->once()->andReturn($eloquentPayment)
-            ->shouldReceive('update')->once()->andReturn($eloquentPayment);
-
-        $payum->shouldReceive('getStorages')->once()->andReturn([
-                'Recca0120\LaravelPayum\Model\Payment' => 'storage',
-            ])
-            ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getTokenFactory')->once()->andReturn($tokenFactory);
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($excepted);
-
-        $tokenFactory->shouldReceive('createPayoutToken')->once()->andReturn($token);
-
-        $responseFactory->shouldReceive('redirectTo')->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payumService->payout($gatewayName, function () {
-        }, 'payment.done', []);
+        $this->validateRequest('cancel', 'Cancel');
     }
 
-    public function test_done()
+    public function test_payout()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName);
-
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\GetHumanStatus'))->once();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $payumService->done($request, $payumToken, function ($status) use ($gateway, $token, $httpRequestVerifier) {
-            $args = func_get_args();
-            $this->assertSame($token, $status->getModel());
-            $this->assertSame($args[2], $gateway);
-            $this->assertSame($args[3], $token);
-            $this->assertSame($args[4], $httpRequestVerifier);
-        });
+        $this->validateRequest('payout', 'Payout');
     }
 
     public function test_receive_authorize()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $this->validateReceive('Authorize');
+    }
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-        $excepted = 'fooTargetUrl';
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token)
-            ->shouldReceive('invalidate')->with($token);
-
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Authorize'));
-
-        $responseFactory->shouldReceive('redirectTo')->once()->andReturn($excepted);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName)
-            ->shouldReceive('getAfterUrl')->once()->andReturn($excepted);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($excepted, $payumService->receiveAuthorize($request, $payumToken));
+    public function test_receive_authorize_throw_reply()
+    {
+        $this->validateReceive('Authorize', true);
     }
 
     public function test_receive_capture()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $this->validateReceive('Capture');
+    }
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-        $excepted = 'fooTargetUrl';
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token)
-            ->shouldReceive('invalidate')->with($token);
-
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Capture'));
-
-        $responseFactory->shouldReceive('redirectTo')->once()->andReturn($excepted);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName)
-            ->shouldReceive('getAfterUrl')->once()->andReturn($excepted);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($excepted, $payumService->receiveCapture($request, $payumToken));
+    public function test_receive_capture_throw_reply()
+    {
+        $this->validateReceive('Capture', true);
     }
 
     public function test_receive_notify()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $this->validateReceive('Notify');
+    }
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-        $excepted = 'fooTargetUrl';
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token)
-            ->shouldReceive('invalidate')->with($token);
-
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Notify'));
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName);
-
-        $responseFactory->shouldReceive('make')->once()->andReturn(204);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $response = $payumService->receiveNotify($request, $payumToken);
-        $this->assertNull($response[0]);
-        $this->assertSame(204, $response);
+    public function test_receive_notify_throw_reply()
+    {
+        $this->validateReceive('Notify', true);
     }
 
     public function test_receive_notify_unsafe()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
+        $payum = m::spy('Payum\Core\Payum');
+        $request = m::spy('Illuminate\Http\Request');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $converter = m::spy('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
+
+        $gatewayName = 'foo.gateway';
+        $gateway = m::spy('Payum\Core\GatewayInterface');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-        $payum->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
 
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Notify'));
+        $payum
+            ->shouldReceive('getGateway')->with($gatewayName)->andReturn($gateway);
 
-        $responseFactory->shouldReceive('make')->once()->andReturn(204);
+        $payumService = new PayumService($payum, $request, $responseFactory, $converter);
+        $payumService->receiveNotifyUnsafe($gatewayName);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $response = $payumService->receiveNotifyUnsafe($gatewayName);
-        $this->assertSame(204, $response);
+        $payum->shouldHaveReceived('getGateway')->with($gatewayName)->once();
+        $gateway->shouldHaveReceived('execute')->with(m::type('Payum\Core\Request\Notify'))->once();
+        $responseFactory->shouldHaveReceived('make')->with(null, 204);
     }
 
     public function test_receive_notify_unsafe_throw_reply()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
+        $payum = m::spy('Payum\Core\Payum');
+        $request = m::spy('Illuminate\Http\Request');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $converter = m::spy('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
+
+        $gatewayName = 'foo.gateway';
+        $gateway = m::spy('Payum\Core\GatewayInterface');
         $throwResponse = new HttpResponse('testing');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-        $payum->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
 
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Notify'))->andReturnUsing(function () use ($throwResponse) {
-            throw $throwResponse;
-        });
+        $payum
+            ->shouldReceive('getGateway')->with($gatewayName)->andReturn($gateway);
 
-        $replyToSymfonyResponseConverter->shouldReceive('convert')->once()->andReturn($throwResponse);
+        $responseFactory
+            ->shouldReceive('make')->with(null, 204)->andReturnUsing(function () use ($throwResponse) {
+                throw $throwResponse;
+            });
+
+        $payumService = new PayumService($payum, $request, $responseFactory, $converter);
+        $payumService->receiveNotifyUnsafe($gatewayName);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $response = $payumService->receiveNotifyUnsafe($gatewayName);
-        $this->assertSame($throwResponse, $response);
-        $this->assertInstanceOf('Payum\Core\Reply\ReplyInterface', $response);
+        $payum->shouldHaveReceived('getGateway')->with($gatewayName)->once();
+        $gateway->shouldHaveReceived('execute')->with(m::type('Payum\Core\Request\Notify'))->once();
+        $responseFactory->shouldHaveReceived('make')->with(null, 204);
+        $converter->shouldHaveReceived('convert')->with($throwResponse)->once();
     }
 
     public function test_receive_payout()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $this->validateReceive('Payout');
+    }
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-        $excepted = 'fooTargetUrl';
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token)
-            ->shouldReceive('invalidate')->with($token);
-
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Payout'));
-
-        $responseFactory->shouldReceive('redirectTo')->once()->andReturn($excepted);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName)
-            ->shouldReceive('getAfterUrl')->once()->andReturn($excepted);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($excepted, $payumService->receivePayout($request, $payumToken));
+    public function test_receive_payout_throw_reply()
+    {
+        $this->validateReceive('Payout', true);
     }
 
     public function test_receive_cancel()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $this->validateReceive('Cancel');
+    }
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
+    public function test_receive_cancel_throw_reply()
+    {
+        $this->validateReceive('Cancel', true);
+    }
 
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-        $excepted = 'fooTargetUrl';
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token)
-            ->shouldReceive('invalidate')->with($token);
-
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Cancel'));
-
-        $responseFactory->shouldReceive('redirectTo')->once()->andReturn($excepted);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName)
-            ->shouldReceive('getAfterUrl')->once()->andReturn($excepted);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($excepted, $payumService->receiveCancel($request, $payumToken));
+    public function test_receive_cancel_without_after_url()
+    {
+        $this->validateReceive('Cancel', false, true);
     }
 
     public function test_receive_refund()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $this->validateReceive('Refund');
+    }
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
+    public function test_receive_refund_throw_reply()
+    {
+        $this->validateReceive('Refund', true);
+    }
 
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-        $excepted = 'fooTargetUrl';
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token)
-            ->shouldReceive('invalidate')->with($token);
-
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Refund'));
-
-        $responseFactory->shouldReceive('redirectTo')->once()->andReturn($excepted);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName)
-            ->shouldReceive('getAfterUrl')->once()->andReturn($excepted);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($excepted, $payumService->receiveRefund($request, $payumToken));
+    public function test_receive_refund_without_after_url()
+    {
+        $this->validateReceive('Refund', false, true);
     }
 
     public function test_receive_sync()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $this->validateReceive('Sync');
+    }
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $request = m::mock('Illuminate\Http\Request');
-        $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface');
-        $token = m::mock('Payum\Core\Security\TokenInterface');
-        $payumToken = uniqid();
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payumTokenId = 'payum_token';
-        $gatewayName = 'fooGatewayName';
+    public function test_receive_sync_throw_reply()
+    {
+        $this->validateReceive('Sync', true);
+    }
 
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-        $excepted = 'fooTargetUrl';
-
-        $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn($httpRequestVerifier)
-            ->shouldReceive('getGateway')->with($gatewayName)->once()->andReturn($gateway);
-
-        $request->shouldReceive('merge')->with([
-            $payumTokenId => $payumToken,
-        ])->once();
-
-        $httpRequestVerifier->shouldReceive('verify')->with($request)->once()->andReturn($token)
-            ->shouldReceive('invalidate')->with($token);
-
-        $gateway->shouldReceive('execute')->with(m::type('Payum\Core\Request\Sync'));
-
-        $responseFactory->shouldReceive('redirectTo')->once()->andReturn($excepted);
-
-        $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName)
-            ->shouldReceive('getAfterUrl')->once()->andReturn($excepted);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($excepted, $payumService->receiveSync($request, $payumToken));
+    public function test_done()
+    {
+        $this->validateReceive('Done');
     }
 
     public function test_sync()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $payum = m::mock('Payum\Core\Payum');
-        $sessionManager = m::mock('Illuminate\Session\SessionManager');
-        $responseFactory = m::mock('Illuminate\Contracts\Routing\ResponseFactory');
-        $replyToSymfonyResponseConverter = m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
-        $payumService = new PayumService($payum, $sessionManager, $responseFactory, $replyToSymfonyResponseConverter);
-        $gateway = m::mock('Payum\Core\GatewayInterface');
-        $payment = m::mock('Payum\Core\Model\Payment');
-        $tokenInterface = m::mock('Payum\Core\Security\TokenInterface');
-        $storage = m::mock('stdClass');
+        $payum = m::spy('Payum\Core\Payum');
+        $request = m::spy('Illuminate\Http\Request');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $converter = m::spy('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
+
+        $gatewayName = 'foo.gateway';
+        $gateway = m::spy('Payum\Core\GatewayInterface');
+        $closure = function () {
+        };
+
+        $paymentModel = 'Recca0120\LaravelPayum\Model\Payment';
+        $payment = m::spy($paymentModel);
+
+        $storages = [
+            $paymentModel,
+        ];
+
+        $storage = m::spy('Payum\Core\Storage\StorageInterface');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
         $payum
-            ->shouldReceive('getGateway')->once()->andReturn($gateway)
-            ->shouldReceive('getStorage')->once()->andReturn($storage)
-            ->shouldReceive('getStorages')->once()->andReturn([
-                'Payum\Core\Model\Payment' => 'storage',
-            ]);
+            ->shouldReceive('getGateway')->with($gatewayName)->andReturn($gateway)
+            ->shouldReceive('getStorages')->andReturn($storages)
+            ->shouldReceive('getStorage')->andReturn($storage);
 
         $storage
-            ->shouldReceive('create')->once()->andReturn($payment);
+            ->shouldReceive('create')->andReturn($payment);
 
-        $payment
-            ->shouldReceive('setDetails')->once()
-            ->shouldReceive('setNumber')->with('foo.number');
-
-        $gateway
-            ->shouldReceive('execute')->with(m::type('Payum\Core\Request\Convert'))->once()
-            ->shouldReceive('execute')->with(m::type('Payum\Core\Request\Generic'))->once();
+        $payumService = new PayumService($payum, $request, $responseFactory, $converter);
+        $payumService->sync($gatewayName, $closure);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $payumService->sync('foo', function ($payment) {
-            $payment->setNumber('foo.number');
-        });
+        $payum->shouldHaveReceived('getGateway')->with($gatewayName)->once();
+        $payum->shouldHaveReceived('getStorages')->once();
+        $payum->shouldHaveReceived('getStorage')->once();
+        $storage->shouldHaveReceived('create')->once();
+        $gateway->shouldHaveReceived('execute')->with(m::type('Payum\Core\Request\Convert'))->once();
+        $payment->shouldHaveReceived('setDetails')->once();
+        $gateway->shouldHaveReceived('execute')->with(m::type('Payum\Core\Request\Sync'))->once();
+    }
+
+    public function validateReceive($type, $throwException = false, $withoutAfterUrl = false)
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $payum = m::spy('Payum\Core\Payum');
+        $request = m::spy('Illuminate\Http\Request');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $converter = m::spy('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
+
+        $payumToken = uniqid();
+
+        $session = m::spy('Illuminate\Session\SessionInterface');
+        $httpRequestVerifier = m::spy('Payum\Core\Security\HttpRequestVerifierInterface');
+        $token = m::spy('Payum\Core\Security\TokenInterface');
+
+        $gatewayName = 'foo.gateway';
+
+        $gateway = m::spy('Payum\Core\GatewayInterface');
+
+        $afterUrl = ($withoutAfterUrl === true) ? '' : 'foo.after_url';
+
+        $throwResponse = new HttpResponse('testing');
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $request
+            ->shouldReceive('session')->andReturn($session);
+
+        $session
+            ->shouldReceive('isStarted')->andReturn(false)
+            ->shouldReceive('get')->with('payum_token')->andReturn($payumToken);
+
+        $payum
+            ->shouldReceive('getHttpRequestVerifier')->andReturn($httpRequestVerifier)
+            ->shouldReceive('getGateway')->with($gatewayName)->andReturn($gateway);
+
+        $httpRequestVerifier
+            ->shouldReceive('verify')->with($request)->andReturn($token);
+
+        $token
+            ->shouldReceive('getGatewayName')->andReturn($gatewayName)
+            ->shouldReceive('getAfterUrl')->andReturn($afterUrl);
+
+        if ($throwException === true) {
+            $responseFactory
+                ->shouldReceive('redirectTo')->with($afterUrl)->andReturnUsing(function () use ($throwResponse) {
+                    throw $throwResponse;
+                });
+        }
+
+        $payumService = new PayumService($payum, $request, $responseFactory, $converter);
+        call_user_func_array([$payumService, 'receive'.$type], [null, function () {
+        }]);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $request->shouldHaveReceived('session')->atLeast(1);
+        $session->shouldHaveReceived('isStarted')->atLeast(1);
+        $session->shouldHaveReceived('start')->atLeast(1);
+        $session->shouldHaveReceived('get')->with('payum_token')->once();
+        $session->shouldHaveReceived('forget')->with('payum_token')->once();
+        $request->shouldHaveReceived('merge')->with(['payum_token' => $payumToken]);
+        $session->shouldHaveReceived('save')->atLeast(1);
+        $payum->shouldHaveReceived('getHttpRequestVerifier')->once();
+        $httpRequestVerifier->shouldHaveReceived('verify')->with($request)->once();
+        $token->shouldHaveReceived('getGatewayName')->once();
+
+        switch ($type) {
+            case 'Notify':
+                $gateway->shouldHaveReceived('execute')->with(m::type('Payum\Core\Request\\'.$type))->once();
+                $responseFactory->shouldHaveReceived('make')->with(null, 204);
+                break;
+            case 'Done':
+                $gateway->shouldHaveReceived('execute')->with(m::type('Payum\Core\Request\GetHumanStatus'))->once();
+                break;
+            default:
+                $gateway->shouldHaveReceived('execute')->with(m::type('Payum\Core\Request\\'.$type))->once();
+                $httpRequestVerifier->shouldHaveReceived('invalidate')->with($token)->once();
+                $token->shouldHaveReceived('getAfterUrl')->once();
+
+                if ($withoutAfterUrl === true) {
+                    $responseFactory->shouldHaveReceived('make')->with(null, 204);
+                } else {
+                    $responseFactory->shouldHaveReceived('redirectTo')->with($afterUrl)->once();
+                }
+
+                if ($throwException === true) {
+                    $converter->shouldHaveReceived('convert')->with($throwResponse)->once();
+                }
+
+                break;
+        }
+    }
+
+    protected function validateRequest($method, $tokenType)
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $payum = m::spy('Payum\Core\Payum');
+        $request = m::spy('Illuminate\Http\Request');
+        $responseFactory = m::spy('Illuminate\Contracts\Routing\ResponseFactory');
+        $converter = m::spy('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter');
+
+        $gateway = m::spy('Payum\Core\GatewayInterface');
+        $storage = m::spy('Payum\Core\Storage\StorageInterface');
+
+        $tokenFactory = m::spy('Payum\Core\Security\TokenFactoryInterface');
+        $token = m::spy('Payum\Core\Security\TokenInterface');
+
+        $gatewayName = 'foo.gateway';
+        $closure = function () {
+        };
+        $afterPath = 'foo.done';
+        $afterParameters = [];
+
+        $paymentModel = 'Recca0120\LaravelPayum\Model\Payment';
+        $payment = m::spy($paymentModel);
+
+        $storages = [
+            $paymentModel,
+        ];
+
+        $createMethod = 'create'.ucfirst($tokenType).'Token';
+
+        $targetUrl = 'foo.target_url';
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $payum
+            ->shouldReceive('getStorages')->andReturn($storages)
+            ->shouldReceive('getStorage')->andReturn($storage)
+            ->shouldReceive('getTokenFactory')->andReturn($tokenFactory);
+
+        $storage
+            ->shouldReceive('create')->andReturn($payment)
+            ->shouldReceive('update');
+
+        $tokenFactory
+            ->shouldReceive($createMethod)->andReturn($token);
+
+        $token
+            ->shouldReceive('getTargetUrl')->andReturn($targetUrl);
+
+        $payumService = new PayumService($payum, $request, $responseFactory, $converter);
+        call_user_func_array([$payumService, $method], [$gatewayName, $closure, $afterPath, $afterParameters, $tokenType]);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $payum->shouldHaveReceived('getStorages')->once();
+        $payum->shouldHaveReceived('getStorage')->with($paymentModel)->once();
+        $storage->shouldHaveReceived('create')->once();
+        $storage->shouldHaveReceived('update')->with($payment)->once();
+        $payum->shouldHaveReceived('getTokenFactory')->once();
+        $tokenFactory->shouldHaveReceived($createMethod)->with(
+            $gatewayName,
+            $payment,
+            $afterPath,
+            $afterParameters
+        )->once();
+        $token->shouldHaveReceived('getTargetUrl')->once();
+        $responseFactory->shouldHaveReceived('redirectTo')->with($targetUrl)->once();
     }
 }

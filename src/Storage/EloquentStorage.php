@@ -9,13 +9,13 @@ use Payum\Core\Storage\AbstractStorage;
 class EloquentStorage extends AbstractStorage
 {
     /**
-     * @var \Doctrine\Common\Persistence\ObjectManager
+     * @var \Illuminate\Contracts\Foundation\Application
      */
     protected $app;
 
     /**
-     * @param \Illuminate\Contracts\Foundation\Application $app
      * @param string                                       $modelClass
+     * @param \Illuminate\Contracts\Foundation\Application $app
      */
     public function __construct($modelClass, Application $app = null)
     {

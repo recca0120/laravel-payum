@@ -5,8 +5,8 @@ return [
     'route' => [
         'prefix' => 'payment',
         'as' => 'payment.',
+        'middleware' => ['web']
     ],
-
     'storage' => [
         // optioins: eloquent, filesystem
         'token' => 'filesystem',

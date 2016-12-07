@@ -20,7 +20,6 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
 
         $controller = new PaymentController();
         $payumService = m::mock('Recca0120\LaravelPayum\Service\PayumService');
-        $request = m::mock('Illuminate\Http\Request');
 
         /*
         |------------------------------------------------------------
@@ -38,8 +37,8 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
 
         foreach ($methods as $method) {
             $exceptedPayumToken = uniqid();
-            $payumService->shouldReceive('receive'.ucfirst($method))->with($request, $exceptedPayumToken)->andReturn($exceptedPayumToken);
-            $this->assertSame($exceptedPayumToken, call_user_func_array([$controller, $method], [$payumService, $request, $exceptedPayumToken]));
+            $payumService->shouldReceive('receive'.ucfirst($method))->with($exceptedPayumToken)->andReturn($exceptedPayumToken);
+            $this->assertSame($exceptedPayumToken, call_user_func_array([$controller, $method], [$payumService, $exceptedPayumToken]));
         }
     }
 
@@ -53,7 +52,6 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
 
         $controller = new PaymentController();
         $payumService = m::mock('Recca0120\LaravelPayum\Service\PayumService');
-        $request = m::mock('Illuminate\Http\Request');
 
         /*
         |------------------------------------------------------------

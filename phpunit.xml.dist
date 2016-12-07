@@ -14,7 +14,7 @@
 >
     <testsuites>
         <testsuite name="Package Test Suite">
-            <directory suffix="Test.php">./tests</directory>
+            <directory suffix="PayumServiceTest.php">./tests</directory>
         </testsuite>
     </testsuites>
     <filter>

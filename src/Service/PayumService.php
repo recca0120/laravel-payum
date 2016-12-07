@@ -4,7 +4,6 @@ namespace Recca0120\LaravelPayum\Service;
 
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
-use Illuminate\Session\SessionManager;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Payum\Core\Model\Payment as PayumPayment;
 use Payum\Core\Payum;
@@ -18,7 +17,6 @@ use Payum\Core\Request\Notify;
 use Payum\Core\Request\Payout;
 use Payum\Core\Request\Refund;
 use Payum\Core\Request\Sync;
-use Payum\Core\Security\HttpRequestVerifierInterface;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
 class PayumService
@@ -31,11 +29,11 @@ class PayumService
     protected $payum;
 
     /**
-     * $sessionManager.
+     * $payum.
      *
-     * @var \Illuminate\Session\SessionManager
+     * @var \Illuminate\Http\Request
      */
-    protected $sessionManager;
+    protected $request;
 
     /**
      * $responseFactory.
@@ -64,18 +62,18 @@ class PayumService
      * @method __construct
      *
      * @param \Payum\Core\Payum                                          $payum
-     * @param \Illuminate\Session\SessionManager                         $sessionManager
+     * @param \Illuminate\Http\Request                                   $request
      * @param \Illuminate\Contracts\Routing\ResponseFactory              $responseFactory
      * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
      */
     public function __construct(
         Payum $payum,
-        SessionManager $sessionManager,
+        Request $request,
         ResponseFactory $responseFactory,
         ReplyToSymfonyResponseConverter $converter
     ) {
         $this->payum = $payum;
-        $this->sessionManager = $sessionManager;
+        $this->request = $request;
         $this->responseFactory = $responseFactory;
         $this->converter = $converter;
     }
@@ -93,57 +91,11 @@ class PayumService
     }
 
     /**
-     * getSession.
-     *
-     * @method getSession
-     *
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return \Illuminate\Session\Store
-     */
-    protected function getSession($request)
-    {
-        $session = $this->sessionManager->driver();
-        if ($session->isStarted() === false) {
-            $session->setId($request->cookies->get($session->getName()));
-            $session->setRequestOnHandler($request);
-            $session->start();
-        }
-
-        return $session;
-    }
-
-    /**
-     * getToken.
-     *
-     * @method getToken
-     *
-     * @param \Payum\Core\Security\HttpRequestVerifierInterface $httpRequestVerifier
-     * @param \Illuminate\Http\Request                          $request
-     * @param string                                            $payumToken
-     *
-     * @return \Payum\Core\Model\Token
-     */
-    protected function getToken(HttpRequestVerifierInterface $httpRequestVerifier, Request $request, $payumToken = null)
-    {
-        if (empty($payumToken) === true) {
-            $session = $this->getSession($request);
-            $payumToken = $session->get($this->payumTokenId);
-            $session->forget($this->payumTokenId);
-            $session->save();
-            $session->start();
-        }
-        $request->merge([$this->payumTokenId => $payumToken]);
-
-        return $httpRequestVerifier->verify($request);
-    }
-
-    /**
      * getGateway.
      *
      * @method getGateway
      *
-     * @param string    $gatewayName
+     * @param string $gatewayName
      *
      * @return \Payum\Core\GatewayInterface
      */
@@ -153,44 +105,34 @@ class PayumService
     }
 
     /**
-     * send.
+     * request.
      *
-     * @method send
+     * @method request
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
-     * @param callable                 $closure
+     * @param string   $gatewayName
+     * @param callable $closure
+     * @param string   $afterPath
+     * @param array    $afterParameters
+     * @param string   $tokenType
      *
      * @return mixed
      */
-    public function send(Request $request, $payumToken, callable $closure)
+    public function request($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
     {
-        $payum = $this->getPayum();
-        $httpRequestVerifier = $payum->getHttpRequestVerifier();
-        $token = $this->getToken($httpRequestVerifier, $request, $payumToken);
-        $gateway = $this->getGateway($token->getGatewayName());
-        try {
-            return $closure($gateway, $token, $httpRequestVerifier);
-        } catch (ReplyInterface $reply) {
-            $session = $this->getSession($request);
-            $session->set('payum_token', $payumToken);
-            $session->save();
+        $storage = $this->getStorage();
+        $payment = $storage->create();
+        $closure($payment, $gatewayName, $storage, $this->getPayum(), $this->request);
+        $storage->update($payment);
+        $tokenFactory = $this->getPayum()->getTokenFactory();
+        $method = 'create'.ucfirst($tokenType).'Token';
+        $token = call_user_func_array([$tokenFactory, $method], [
+            $gatewayName,
+            $payment,
+            $afterPath,
+            $afterParameters,
+        ]);
 
-            return $this->converter->convert($reply);
-        }
-    }
-
-    /**
-     * getPaymentModelName.
-     *
-     * @method getPaymentModelName
-     *
-     * @return string
-     */
-    protected function getPaymentModelName($payum)
-    {
-        return (in_array(EloquentPayment::class, array_keys($payum->getStorages())) === true) ?
-            EloquentPayment::class : PayumPayment::class;
+        return $this->responseFactory->redirectTo($token->getTargetUrl());
     }
 
     /**
@@ -209,38 +151,6 @@ class PayumService
     public function prepare($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
     {
         return $this->request($gatewayName, $closure, $afterPath, $afterParameters, $tokenType);
-    }
-
-    /**
-     * request.
-     *
-     * @method request
-     *
-     * @param string   $gatewayName
-     * @param callable $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     * @param string   $tokenType
-     *
-     * @return mixed
-     */
-    public function request($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
-    {
-        $payum = $this->getPayum();
-        $storage = $payum->getStorage($this->getPaymentModelName($payum));
-        $payment = $storage->create();
-        $closure($payment, $gatewayName, $storage, $this->payum);
-        $storage->update($payment);
-        $tokenFactory = $this->payum->getTokenFactory();
-        $method = 'create'.ucfirst($tokenType).'Token';
-        $token = call_user_func_array([$tokenFactory, $method], [
-            $gatewayName,
-            $payment,
-            $afterPath,
-            $afterParameters,
-        ]);
-
-        return $this->responseFactory->redirectTo($token->getTargetUrl());
     }
 
     /**
@@ -329,49 +239,29 @@ class PayumService
     }
 
     /**
-     * sync.
+     * send.
      *
-     * @method sync
+     * @method send
      *
-     * @param string    $gatewayName
-     * @param callable  $closure
-     */
-    public function sync($gatewayName, callable $closure)
-    {
-        $payum = $this->getPayum();
-        $gateway = $this->getGateway($gatewayName);
-        $storage = $payum->getStorage($this->getPaymentModelName($payum));
-        $payment = $storage->create();
-        $closure($payment, $gatewayName, $storage, $this->payum);
-
-        $request = new Sync($payment);
-        $convert = new Convert($payment, 'array', $request->getToken());
-        $gateway->execute($convert);
-        $payment->setDetails($convert->getResult());
-        $gateway->execute($request);
-
-        return $request->getModel();
-    }
-
-    /**
-     * done.
-     *
-     * @method done
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
-     * @param callable                 $closure
+     * @param string   $payumToken
+     * @param callable $closure
      *
      * @return mixed
      */
-    public function done(Request $request, $payumToken, callable $closure)
+    public function receive($payumToken, callable $closure)
     {
-        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) use ($closure) {
-            $gateway->execute($status = new GetHumanStatus($token));
-            $payment = $status->getFirstModel();
+        $payumToken = $this->getPayumToken($payumToken);
+        $httpRequestVerifier = $this->getPayum()->getHttpRequestVerifier();
+        $token = $httpRequestVerifier->verify($this->request);
+        $gateway = $this->getGateway($token->getGatewayName());
 
-            return $closure($status, $payment, $gateway, $token, $httpRequestVerifier);
-        });
+        try {
+            return $closure($gateway, $token, $httpRequestVerifier);
+        } catch (ReplyInterface $reply) {
+            $this->storePayumToken($payumToken);
+
+            return $this->converter->convert($reply);
+        }
     }
 
     /**
@@ -379,14 +269,13 @@ class PayumService
      *
      * @method receiveAuthorize
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param string $payumToken
      *
      * @return mixed
      */
-    public function receiveAuthorize(Request $request, $payumToken)
+    public function receiveAuthorize($payumToken)
     {
-        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->receive($payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Authorize($token));
             $httpRequestVerifier->invalidate($token);
 
@@ -399,14 +288,13 @@ class PayumService
      *
      * @method receiveCapture
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param string $payumToken
      *
      * @return mixed
      */
-    public function receiveCapture(Request $request, $payumToken = null)
+    public function receiveCapture($payumToken = null)
     {
-        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->receive($payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Capture($token));
             $httpRequestVerifier->invalidate($token);
 
@@ -419,14 +307,13 @@ class PayumService
      *
      * @method receiveNotify
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param string $payumToken
      *
      * @return mixed
      */
-    public function receiveNotify(Request $request, $payumToken)
+    public function receiveNotify($payumToken)
     {
-        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->receive($payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Notify($token));
 
             return $this->responseFactory->make(null, 204);
@@ -459,14 +346,13 @@ class PayumService
      *
      * @method receivePayout
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param string $payumToken
      *
      * @return mixed
      */
-    public function receivePayout(Request $request, $payumToken)
+    public function receivePayout($payumToken)
     {
-        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->receive($payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Payout($token));
             $httpRequestVerifier->invalidate($token);
 
@@ -479,14 +365,13 @@ class PayumService
      *
      * @method receiveCancel
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param string $payumToken
      *
      * @return mixed
      */
-    public function receiveCancel(Request $request, $payumToken)
+    public function receiveCancel($payumToken)
     {
-        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->receive($payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Cancel($token));
             $httpRequestVerifier->invalidate($token);
             $afterUrl = $token->getAfterUrl();
@@ -503,14 +388,13 @@ class PayumService
      *
      * @method receiveRefund
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param string $payumToken
      *
      * @return mixed
      */
-    public function receiveRefund(Request $request, $payumToken)
+    public function receiveRefund($payumToken)
     {
-        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->receive($payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Refund($token));
             $httpRequestVerifier->invalidate($token);
             $afterUrl = $token->getAfterUrl();
@@ -527,18 +411,144 @@ class PayumService
      *
      * @method receiveSync
      *
-     * @param \Illuminate\Http\Request $request
-     * @param string                   $payumToken
+     * @param string $payumToken
      *
      * @return mixed
      */
-    public function receiveSync(Request $request, $payumToken)
+    public function receiveSync($payumToken)
     {
-        return $this->send($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->receive($payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Sync($token));
             $httpRequestVerifier->invalidate($token);
 
             return $this->responseFactory->redirectTo($token->getAfterUrl());
         });
+    }
+
+    /**
+     * receiveDone.
+     *
+     * @method receiveDone
+     *
+     * @param string   $payumToken
+     * @param callable $closure
+     *
+     * @return mixed
+     */
+    public function receiveDone($payumToken, callable $closure)
+    {
+        return $this->done($payumToken, $closure);
+    }
+
+    /**
+     * done.
+     *
+     * @method done
+     *
+     * @param string   $payumToken
+     * @param callable $closure
+     *
+     * @return mixed
+     */
+    public function done($payumToken, callable $closure)
+    {
+        return $this->receive($payumToken, function ($gateway, $token, $httpRequestVerifier) use ($closure) {
+            $gateway->execute($status = new GetHumanStatus($token));
+            $payment = $status->getFirstModel();
+
+            return $closure($status, $payment, $gateway, $token, $httpRequestVerifier);
+        });
+    }
+
+    /**
+     * sync.
+     *
+     * @method sync
+     *
+     * @param string   $gatewayName
+     * @param callable $closure
+     */
+    public function sync($gatewayName, callable $closure)
+    {
+        $gateway = $this->getGateway($gatewayName);
+        $storage = $this->getStorage();
+        $payment = $storage->create();
+        $closure($payment, $gatewayName, $storage, $this->getPayum());
+
+        $request = new Sync($payment);
+        $convert = new Convert($payment, 'array', $request->getToken());
+        $gateway->execute($convert);
+        $payment->setDetails($convert->getResult());
+        $gateway->execute($request);
+
+        return $request->getModel();
+    }
+
+    /**
+     * getSessionFromRequest.
+     *
+     * @method getSessionFromRequest
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return \Illuminate\Session\SessionInterface
+     */
+    protected function getSessionFromRequest()
+    {
+        $session = $this->request->session();
+        if ($session->isStarted() === false) {
+            $session->start();
+        }
+
+        return $session;
+    }
+
+    /**
+     * storePayumToken.
+     *
+     * @param string $payumToken
+     *
+     * @return static
+     */
+    protected function storePayumToken($payumToken)
+    {
+        $session = $this->getSessionFromRequest();
+        $session->set($this->payumTokenId, $payumToken);
+        $session->save();
+    }
+
+    /**
+     * getPayumToken.
+     *
+     * @param string $payumToken
+     *
+     * @return string
+     */
+    protected function getPayumToken($payumToken = null)
+    {
+        $session = $this->getSessionFromRequest();
+        if (empty($payumToken) === true) {
+            $payumToken = $session->get($this->payumTokenId);
+            $session->forget($this->payumTokenId);
+        }
+        $this->request->merge([$this->payumTokenId => $payumToken]);
+        $session->save();
+
+        return $payumToken;
+    }
+
+    /**
+     * getStorage.
+     *
+     * @method getStorage
+     *
+     * @return \Payum\Core\Storage\StorageInterface
+     */
+    protected function getStorage()
+    {
+        $paymentModel = (in_array(EloquentPayment::class, array_keys($this->getPayum()->getStorages())) === true) ?
+            EloquentPayment::class : PayumPayment::class;
+
+        return $this->getPayum()->getStorage($paymentModel);
     }
 }
