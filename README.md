@@ -43,7 +43,8 @@ Include the service provider within `config/app.php`. The service povider is nee
 return [
     'route' => [
         'prefix' => 'payment',
-        'as'     => 'payment.',
+        'as' => 'payment.',
+        'middleware' => ['web'],
     ],
 
     'storage' => [
@@ -111,9 +112,9 @@ class PaymentController extends BaseController
         });
     }
 
-    public function done(PayumService $payumService, Request $request, $payumToken)
+    public function done(PayumService $payumService, $payumToken)
     {
-        return $payumService->done($request, $payumToken, function (
+        return $payumService->done($payumToken, function (
             GetHumanStatus $status,
             PaymentInterface $payment,
             GatewayInterface $gateway,
@@ -175,8 +176,9 @@ modify config
 
 return [
     'route' => [
-        'prefix'     => 'payment',
-        'as'         => 'payment.',
+        'prefix' => 'payment',
+        'as' => 'payment.',
+        'middleware' => ['web'],
     ],
 
     'storage' => [
