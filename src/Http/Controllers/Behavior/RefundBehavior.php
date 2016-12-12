@@ -7,16 +7,16 @@ use Recca0120\LaravelPayum\Service\PayumService;
 trait RefundBehavior
 {
     /**
-     * refund.
+     * receiveRefund.
      *
-     * @method refund
+     * @method receiveRefund
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $payumToken
      *
      * @return mixed
      */
-    public function refund(PayumService $payumService, $payumToken)
+    public function receiveRefund(PayumService $payumService, $payumToken)
     {
         return $payumService->receiveRefund($payumToken);
     }

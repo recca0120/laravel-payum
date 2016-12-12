@@ -7,31 +7,31 @@ use Recca0120\LaravelPayum\Service\PayumService;
 trait NotifyBehavior
 {
     /**
-     * notify.
+     * receiveNotify.
      *
-     * @method notify
+     * @method receiveNotify
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $payumToken
      *
      * @return mixed
      */
-    public function notify(PayumService $payumService, $payumToken)
+    public function receiveNotify(PayumService $payumService, $payumToken)
     {
         return $payumService->receiveNotify($payumToken);
     }
 
     /**
-     * notifyUnsafe.
+     * receiveNotifyUnsafe.
      *
-     * @method notifyUnsafe
+     * @method receiveNotifyUnsafe
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $gatewayName
      *
      * @return mixed
      */
-    public function notifyUnsafe(PayumService $payumService, $gatewayName)
+    public function receiveNotifyUnsafe(PayumService $payumService, $gatewayName)
     {
         return $payumService->receiveNotifyUnsafe($gatewayName);
     }

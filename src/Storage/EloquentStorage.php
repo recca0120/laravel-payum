@@ -32,7 +32,9 @@ class EloquentStorage extends AbstractStorage
      */
     protected function makeModel()
     {
-        return $this->app->make($this->modelClass);
+        $class = $this->modelClass;
+
+        return is_null($this->app) === true ? new $class : $this->app->make($class);
     }
 
     /**

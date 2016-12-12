@@ -16,47 +16,49 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $event = m::mock('Illuminate\Contracts\Events\Dispatcher');
+        $event = m::spy('Illuminate\Contracts\Events\Dispatcher');
+        $context = m::spy('Payum\Core\Extension\Context');
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $context
+            ->shouldReceive('getPrevious')->andReturn(true);
+
         $extension = new UpdatePaymentStatusExtension($event);
-        $context = m::mock('Payum\Core\Extension\Context');
+        $extension->onPostExecute($context);
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Assert
         |------------------------------------------------------------
         */
 
-        $context->shouldReceive('getPrevious')->andReturn(true);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertNull($extension->onPostExecute($context));
+        $context->shouldHaveReceived('getPrevious')->once();
     }
 
     public function test_when_request_is_not_instanceof_generic()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $event = m::mock('Illuminate\Contracts\Events\Dispatcher');
-        $extension = new UpdatePaymentStatusExtension($event);
-        $context = m::mock('Payum\Core\Extension\Context');
-        $request = m::mock('stdClass');
+        $event = m::spy('Illuminate\Contracts\Events\Dispatcher');
+        $context = m::spy('Payum\Core\Extension\Context');
+        $request = m::spy('stdClass');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
@@ -64,31 +66,35 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getPrevious')->andReturn(false)
             ->shouldReceive('getRequest')->andReturn($request);
 
+        $extension = new UpdatePaymentStatusExtension($event);
+
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
         $this->assertNull($extension->onPostExecute($context));
+
+        $context->shouldHaveReceived('getPrevious')->once();
+        $context->shouldHaveReceived('getRequest')->once();
     }
 
     public function test_when_request_is_instanceof_get_status_interface()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $event = m::mock('Illuminate\Contracts\Events\Dispatcher');
-        $extension = new UpdatePaymentStatusExtension($event);
-        $context = m::mock('Payum\Core\Extension\Context');
-        $request = m::mock('Payum\Core\Request\GetStatusInterface ,Payum\Core\Request\Generic');
+        $event = m::spy('Illuminate\Contracts\Events\Dispatcher');
+        $context = m::spy('Payum\Core\Extension\Context');
+        $request = m::spy('Payum\Core\Request\GetStatusInterface ,Payum\Core\Request\Generic');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
@@ -96,32 +102,35 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getPrevious')->andReturn(false)
             ->shouldReceive('getRequest')->andReturn($request);
 
+        $extension = new UpdatePaymentStatusExtension($event);
+
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
         $this->assertNull($extension->onPostExecute($context));
+        $context->shouldHaveReceived('getPrevious')->once();
+        $context->shouldHaveReceived('getRequest')->once();
     }
 
     public function test_when_request_is_instanceof_payment_interface()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $event = m::mock('Illuminate\Contracts\Events\Dispatcher');
-        $extension = new UpdatePaymentStatusExtension($event);
-        $context = m::mock('Payum\Core\Extension\Context');
-        $request = m::mock('Payum\Core\Request\Generic');
+        $event = m::spy('Illuminate\Contracts\Events\Dispatcher');
+        $context = m::spy('Payum\Core\Extension\Context');
+        $request = m::spy('Payum\Core\Request\Generic');
         $payment = new PaymentTest();
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
@@ -135,17 +144,24 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         $request
             ->shouldReceive('getFirstModel')->andReturn($payment);
 
-        $event->shouldReceive('fire')->once();
+        $extension = new UpdatePaymentStatusExtension($event);
+        $extension->onPreExecute($context);
+        $extension->onExecute($context);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $extension->onPreExecute($context);
-        $extension->onExecute($context);
         $this->assertNull($extension->onPostExecute($context));
+
+        $context->shouldHaveReceived('getPrevious')->once();
+        $context->shouldHaveReceived('getRequest')->once();
+        $request->shouldHaveReceived('getFirstModel')->once();
+        $context->shouldHaveReceived('getGateway')->once();
+        $event->shouldHaveReceived('fire')->once();
+
         $this->assertSame(GetHumanStatus::STATUS_PENDING, $payment->getStatus());
     }
 }

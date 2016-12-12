@@ -1,7 +1,6 @@
 <?php
 
 use Mockery as m;
-use Payum\Core\Request\RenderTemplate;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 
 class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
@@ -15,41 +14,42 @@ class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
         $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
-        $renderTemplateAction = new RenderTemplateAction($viewFactory);
+        $request = m::spy('Payum\Core\Request\RenderTemplate');
+        $templateName = 'foo.template';
+        $parameters = [];
+        $result = 'foo';
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $exceptedTemplateName = 'foo';
-        $exceptedParameters = [
-            'foo',
-            'bar',
-        ];
-        $excepted = 'foobar';
-        $request = new RenderTemplate($exceptedTemplateName, $exceptedParameters);
+        $request
+            ->shouldReceive('getTemplateName')->andReturn($templateName)
+            ->shouldReceive('getParameters')->andReturn($parameters);
 
-        $viewFactory->shouldReceive('make')->with($exceptedTemplateName, $exceptedParameters)->andReturnSelf()
-            ->shouldReceive('render')->andReturn($excepted);
+        $viewFactory
+            ->shouldReceive('make')->with($templateName, $parameters)->andReturnSelf()
+            ->shouldReceive('render')->andReturn($result);
 
+        $renderTemplateAction = new RenderTemplateAction($viewFactory);
         $renderTemplateAction->execute($request);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame($exceptedTemplateName, $request->getTemplateName());
-        $this->assertSame($exceptedParameters, $request->getParameters());
-        $this->assertSame($excepted, $request->getResult());
+        $request->shouldHaveReceived('getTemplateName')->once();
+        $request->shouldHaveReceived('getParameters')->once();
+        $request->shouldHaveReceived('setResult')->with($result)->once();
     }
 
     /**
@@ -59,26 +59,27 @@ class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
-        $renderTemplateAction = new RenderTemplateAction($viewFactory);
-        $request = m::mock('stdClass');
+        $viewFactory = m::spy('Illuminate\Contracts\View\Factory');
+        $request = m::spy('stdClass');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $renderTemplateAction = new RenderTemplateAction($viewFactory);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
         |------------------------------------------------------------
         */
 
         $renderTemplateAction->execute($request);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
     }
 }

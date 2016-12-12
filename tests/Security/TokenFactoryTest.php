@@ -14,37 +14,31 @@ class TokenFactoryTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $storage = m::mock('Payum\Core\Storage\StorageInterface');
-        $registry = m::mock('Payum\Core\Registry\StorageRegistryInterface');
-        $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator');
-        $tokenFactory = m::mock(new TokenFactory($storage, $registry, $urlGenerator))
-            ->shouldAllowMockingProtectedMethods();
+        $storage = m::spy('Payum\Core\Storage\StorageInterface');
+        $registry = m::spy('Payum\Core\Registry\StorageRegistryInterface');
+        $urlGenerator = m::spy('Illuminate\Contracts\Routing\UrlGenerator');
+        $path = 'foo';
+        $parameters = [];
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $exceptedPath = 'foo.bar';
-        $exceptedParameters = [
-            'buzz',
-            'fuzz',
-        ];
-        $exceptedUrl = 'fooUrl';
-
-        $urlGenerator->shouldReceive('route')->with($exceptedPath, $exceptedParameters)->andReturn($exceptedUrl);
+        $tokenFactory = m::mock(new TokenFactory($storage, $registry, $urlGenerator))->shouldAllowMockingProtectedMethods();
+        $tokenFactory->generateUrl($path, $parameters);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame($exceptedUrl, $tokenFactory->generateUrl($exceptedPath, $exceptedParameters));
+        $urlGenerator->shouldHaveReceived('route')->with($path, $parameters);
     }
 }

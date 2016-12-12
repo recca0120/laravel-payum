@@ -14,196 +14,206 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
-        $exceptedModelClass = 'fooModelClass';
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = new EloquentStorage($exceptedModelClass, $app);
+
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $model = m::spy('Illuminate\Database\Eloquent\Model');
+        $className = get_class($model);
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('make')->with($exceptedModelClass)->andReturn($exceptedModelClass);
+        $app
+            ->shouldReceive('make')->with($className)->andReturn($model);
+
+        $eloquentStorage = new EloquentStorage($className, $app);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame($exceptedModelClass, $eloquentStorage->create());
+        $this->assertSame($model, $eloquentStorage->create());
+        $app->shouldHaveReceived('make')->with($className)->once();
     }
 
-    public function test_do_update_model()
+    public function test_update()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $exceptedModelClass = 'fooModelClass';
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($exceptedModelClass, $app))
-            ->shouldAllowMockingProtectedMethods();
-        $model = m::mock('Illuminate\Database\Eloquent\Model');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $model = m::spy('Illuminate\Database\Eloquent\Model');
+        $className = get_class($model);
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $model->shouldReceive('save');
-
-        $eloquentStorage->doUpdateModel($model);
+        $eloquentStorage = new EloquentStorage($className, $app);
+        $eloquentStorage->update($model);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
+
+        $model->shouldHaveReceived('save')->once();
     }
 
-    public function test_do_delete_model()
+    public function test_delete()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $exceptedModelClass = 'fooModelClass';
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($exceptedModelClass, $app))
-            ->shouldAllowMockingProtectedMethods();
-        $model = m::mock('Illuminate\Database\Eloquent\Model');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $model = m::spy('Illuminate\Database\Eloquent\Model');
+        $className = get_class($model);
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $model->shouldReceive('delete');
-
-        $eloquentStorage->doDeleteModel($model);
+        $eloquentStorage = new EloquentStorage($className, $app);
+        $eloquentStorage->delete($model);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
+
+        $model->shouldHaveReceived('delete')->once();
     }
 
-    public function test_do_get_identity()
+    public function test_identity()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $exceptedModelClass = 'fooModelClass';
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($exceptedModelClass, $app))
-            ->shouldAllowMockingProtectedMethods();
-        $model = m::mock('Illuminate\Database\Eloquent\Model');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $model = m::spy('Illuminate\Database\Eloquent\Model');
+        $className = get_class($model);
+        $key = uniqid();
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $exceptedKey = 'fooKey';
-        $model->shouldReceive('getKey')->andReturn($exceptedKey);
+        $model
+            ->shouldReceive('getKey')->andReturn($key);
+
+        $eloquentStorage = new EloquentStorage($className, $app);
+        $eloquentStorage->identify($model);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame($exceptedKey, $eloquentStorage->doGetIdentity($model)->getId());
+        $model->shouldHaveReceived('getKey')->once();
     }
 
-    public function test_do_find()
+    public function test_find()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $exceptedModelClass = 'fooModelClass';
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = m::mock(new EloquentStorage($exceptedModelClass, $app))
-            ->shouldAllowMockingProtectedMethods();
-        $model = m::mock('Illuminate\Database\Eloquent\Model');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $model = m::spy('Illuminate\Database\Eloquent\Model');
+        $className = get_class($model);
+        $id = uniqid();
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
 
-        $exceptedId = 'fooId';
+        $app
+            ->shouldReceive('make')->with($className)->andReturn($model);
 
-        $app->shouldReceive('make')->with($exceptedModelClass)->andReturn($model);
-
-        $model->shouldReceive('find')->with($exceptedId)->andReturn($exceptedModelClass);
+        $eloquentStorage = new EloquentStorage($className, $app);
+        $eloquentStorage->find($id);
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Assert
         |------------------------------------------------------------
         */
 
-        $this->assertSame($exceptedModelClass, $eloquentStorage->doFind($exceptedId));
+        $app->shouldHaveReceived('make')->with($className)->once();
+        $model->shouldHaveReceived('find')->with($id)->once();
     }
 
     public function test_find_by()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $exceptedModelClass = 'fooModelClass';
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $eloquentStorage = new EloquentStorage($exceptedModelClass, $app);
-        $model = m::mock('Illuminate\Database\Eloquent\Model');
-        $newQuery = m::mock('stdClass');
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $exceptedCriteria = [
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $model = m::spy('Illuminate\Database\Eloquent\Model');
+        $className = get_class($model);
+        $criteria = [
             'foo' => 'bar',
             'fuzz' => 'buzz',
         ];
 
-        $app->shouldReceive('make')->with($exceptedModelClass)->andReturn($model);
-
-        $model->shouldReceive('newQuery')->andReturn($newQuery);
-
-        $newQuery->shouldReceive('where')->times(count($exceptedCriteria))->andReturnSelf()
-            ->shouldReceive('get->all')->andReturn($exceptedCriteria);
-
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Act
         |------------------------------------------------------------
         */
 
-        $this->assertSame($exceptedCriteria, $eloquentStorage->findBy($exceptedCriteria));
+        $app
+            ->shouldReceive('make')->with($className)->andReturn($model);
+
+        $model
+            ->shouldReceive('newQuery')->andReturnSelf()
+            ->shouldReceive('where')->andReturnSelf()
+            ->shouldReceive('get->all')->andReturnSelf();
+
+        $eloquentStorage = new EloquentStorage($className, $app);
+        $eloquentStorage->findBy($criteria);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $app->shouldHaveReceived('make')->with($className)->once();
+        $model->shouldHaveReceived('newQuery')->once();
+        $model->shouldHaveReceived('where')->twice();
+        $model->shouldHaveReceived('get')->once();
     }
 }

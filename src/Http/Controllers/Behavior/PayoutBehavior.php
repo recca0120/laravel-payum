@@ -7,16 +7,16 @@ use Recca0120\LaravelPayum\Service\PayumService;
 trait PayoutBehavior
 {
     /**
-     * payout.
+     * receivePayout.
      *
-     * @method payout
+     * @method receivePayout
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $payumToken
      *
      * @return mixed
      */
-    public function payout(PayumService $payumService, $payumToken)
+    public function receivePayout(PayumService $payumService, $payumToken)
     {
         return $payumService->receivePayout($payumToken);
     }

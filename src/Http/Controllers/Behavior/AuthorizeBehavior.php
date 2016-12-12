@@ -7,16 +7,16 @@ use Recca0120\LaravelPayum\Service\PayumService;
 trait AuthorizeBehavior
 {
     /**
-     * authorize.
+     * receiveAuthorize.
      *
-     * @method authorize
+     * @method receiveAuthorize
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $payumToken
      *
      * @return mixed
      */
-    public function authorize(PayumService $payumService, $payumToken)
+    public function receiveAuthorize(PayumService $payumService, $payumToken)
     {
         return $payumService->receiveAuthorize($payumToken);
     }

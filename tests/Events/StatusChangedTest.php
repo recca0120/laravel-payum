@@ -14,26 +14,27 @@ class StatusChangedTest extends PHPUnit_Framework_TestCase
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $status = m::mock('Payum\Core\Request\GetStatusInterface');
-        $payment = m::mock('Payum\Core\Model\PaymentInterface');
+        $status = m::spy('Payum\Core\Request\GetStatusInterface');
+        $payment = m::spy('Payum\Core\Model\PaymentInterface');
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Act
         |------------------------------------------------------------
         */
 
         $event = new StatusChanged($status, $payment);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
         $this->assertSame($status, $event->status);
         $this->assertSame($payment, $event->payment);
     }

@@ -7,16 +7,16 @@ use Recca0120\LaravelPayum\Service\PayumService;
 trait CaptureBehavior
 {
     /**
-     * capture.
+     * receiveCapture.
      *
-     * @method capture
+     * @method receiveCapture
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $payumToken
      *
      * @return mixed
      */
-    public function capture(PayumService $payumService, $payumToken = null)
+    public function receiveCapture(PayumService $payumService, $payumToken = null)
     {
         return $payumService->receiveCapture($payumToken);
     }

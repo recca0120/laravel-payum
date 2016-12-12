@@ -11,7 +11,6 @@ use Illuminate\Contracts\View\Factory as ViewFactory;
 use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
-use Recca0120\LaravelPayum\Service\Payum as OldPayumService;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 
@@ -36,19 +35,21 @@ class LaravelPayumServiceProvider extends ServiceProvider
      */
     public function boot(ViewFactory $viewFactory, Router $router)
     {
+        if ($this->app->runningInConsole() === true) {
+            $this->handlePublishes();
+
+            return;
+        }
+
         $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
         $config = $this->app['config']['payum'];
         $this->handleRoutes($router, $config);
-
-        if ($this->app->runningInConsole() === true) {
-            $this->handlePublishes();
-        }
     }
 
     /**
      * register routes.
      *
-     * @param Illuminate\Routing\Router $router
+     * @param \Illuminate\Routing\Router $router
      * @param array                     $config
      *
      * @return static
@@ -119,7 +120,6 @@ class LaravelPayumServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(PayumService::class, PayumService::class);
-        $this->app->singleton(OldPayumService::class, PayumService::class);
     }
 
     /**

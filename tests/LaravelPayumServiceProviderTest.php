@@ -52,7 +52,6 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
                 return $closure($app);
             })
             ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\PayumService', 'Recca0120\LaravelPayum\Service\PayumService')->once()
-            ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\Payum', 'Recca0120\LaravelPayum\Service\PayumService')->once()
             ->shouldReceive('make')->with('payum.builder')->once()->andReturn($payumBuilder);
 
         $payumBuilderManager->shouldReceive('getBuilder')->once();

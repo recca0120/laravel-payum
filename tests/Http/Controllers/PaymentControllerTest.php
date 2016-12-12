@@ -10,64 +10,259 @@ class PaymentControllerTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_common_behaviors()
+    public function test_receive_authorize()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
+
+        $payumService = m::spy('Recca0120\LaravelPayum\Service\PayumService');
+        $token = uniqid();
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $payumService
+            ->shouldReceive('receiveAuthorize')->with($token)->andReturn($token);
 
         $controller = new PaymentController();
-        $payumService = m::mock('Recca0120\LaravelPayum\Service\PayumService');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Assert
         |------------------------------------------------------------
         */
 
-        $methods = ['authorize', 'capture', 'cancel', 'notify', 'payout', 'refund', 'sync'];
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        foreach ($methods as $method) {
-            $exceptedPayumToken = uniqid();
-            $payumService->shouldReceive('receive'.ucfirst($method))->with($exceptedPayumToken)->andReturn($exceptedPayumToken);
-            $this->assertSame($exceptedPayumToken, call_user_func_array([$controller, $method], [$payumService, $exceptedPayumToken]));
-        }
+        $controller->receiveAuthorize($payumService, $token);
+        $payumService->shouldHaveReceived('receiveAuthorize')->with($token)->once();
     }
 
-    public function test_notify_unsafe()
+    public function test_receive_capture()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
+
+        $payumService = m::spy('Recca0120\LaravelPayum\Service\PayumService');
+        $token = uniqid();
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $payumService
+            ->shouldReceive('receiveCapture')->with($token)->andReturn($token);
 
         $controller = new PaymentController();
-        $payumService = m::mock('Recca0120\LaravelPayum\Service\PayumService');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Assert
         |------------------------------------------------------------
         */
 
-        $exceptedGatewayName = 'fooGatewayName';
-        $payumService->shouldReceive('receiveNotifyUnsafe')->with($exceptedGatewayName)->andReturn($exceptedGatewayName);
+        $controller->receiveCapture($payumService, $token);
+        $payumService->shouldHaveReceived('receiveCapture')->with($token)->once();
+    }
+
+    public function test_receive_cancel()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $payumService = m::spy('Recca0120\LaravelPayum\Service\PayumService');
+        $token = uniqid();
 
         /*
         |------------------------------------------------------------
-        | Assertion
+        | Act
         |------------------------------------------------------------
         */
 
-        $this->assertSame($exceptedGatewayName, $controller->notifyUnsafe($payumService, $exceptedGatewayName));
+        $payumService
+            ->shouldReceive('receiveCancel')->with($token)->andReturn($token);
+
+        $controller = new PaymentController();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $controller->receiveCancel($payumService, $token);
+        $payumService->shouldHaveReceived('receiveCancel')->with($token)->once();
+    }
+
+    public function test_receive_notify()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $payumService = m::spy('Recca0120\LaravelPayum\Service\PayumService');
+        $token = uniqid();
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $payumService
+            ->shouldReceive('receiveNotify')->with($token)->andReturn($token);
+
+        $controller = new PaymentController();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $controller->receiveNotify($payumService, $token);
+        $payumService->shouldHaveReceived('receiveNotify')->with($token)->once();
+    }
+
+    public function test_receive_unsafe_notify()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $payumService = m::spy('Recca0120\LaravelPayum\Service\PayumService');
+        $gatewayName = 'fooGatewayName';
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $payumService
+            ->shouldReceive('receiveNotifyUnsafe')->with($gatewayName)->andReturn($gatewayName);
+
+        $controller = new PaymentController();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $controller->receiveNotifyUnsafe($payumService, $gatewayName);
+        $payumService->shouldHaveReceived('receiveNotifyUnsafe')->with($gatewayName)->once();
+    }
+
+    public function test_receive_payout()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $payumService = m::spy('Recca0120\LaravelPayum\Service\PayumService');
+        $token = uniqid();
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $payumService
+            ->shouldReceive('receivePayout')->with($token)->andReturn($token);
+
+        $controller = new PaymentController();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $controller->receivePayout($payumService, $token);
+        $payumService->shouldHaveReceived('receivePayout')->with($token)->once();
+    }
+
+    public function test_receive_refund()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $payumService = m::spy('Recca0120\LaravelPayum\Service\PayumService');
+        $token = uniqid();
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $payumService
+            ->shouldReceive('receiveRefund')->with($token)->andReturn($token);
+
+        $controller = new PaymentController();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $controller->receiveRefund($payumService, $token);
+        $payumService->shouldHaveReceived('receiveRefund')->with($token)->once();
+    }
+
+    public function test_receive_sync()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $payumService = m::spy('Recca0120\LaravelPayum\Service\PayumService');
+        $token = uniqid();
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $payumService
+            ->shouldReceive('receiveSync')->with($token)->andReturn($token);
+
+        $controller = new PaymentController();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $controller->receiveSync($payumService, $token);
+        $payumService->shouldHaveReceived('receiveSync')->with($token)->once();
     }
 }

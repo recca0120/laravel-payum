@@ -7,16 +7,16 @@ use Recca0120\LaravelPayum\Service\PayumService;
 trait SyncBehavior
 {
     /**
-     * sync.
+     * receiveSync.
      *
-     * @method sync
+     * @method receiveSync
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $payumToken
      *
      * @return mixed
      */
-    public function sync(PayumService $payumService, $payumToken)
+    public function receiveSync(PayumService $payumService, $payumToken)
     {
         return $payumService->receiveSync($payumToken);
     }
