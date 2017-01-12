@@ -10,64 +10,109 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    /**
-     * @test
-     */
     public function test_register()
     {
         /*
         |------------------------------------------------------------
-        | Set
+        | Arrange
         |------------------------------------------------------------
         */
 
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
-        $payumBuilderManager = m::mock('Recca0120\LaravelPayum\PayumBuilderManager');
-        $payumBuilder = m::mock('Payum\Core\PayumBuilder');
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $config = m::spy('Illuminate\Contracts\Config\Repository, ArrayAccess');
+        $urlGenerator = m::spy('Illuminate\Contracts\Routing\UrlGenerator');
+        $payumBuilderManager = m::spy('Recca0120\LaravelPayum\PayumBuilderManager');
+        $payumBuilder = m::spy('Payum\Core\PayumBuilder');
 
         /*
         |------------------------------------------------------------
-        | Expectation
+        | Act
         |------------------------------------------------------------
         */
-
-        $config
-            ->shouldReceive('offsetGet')->with('payum')->once()->andReturn([])
-            ->shouldReceive('get')->with('payum', [])->once()->andReturn([])
-            ->shouldReceive('set')->once();
 
         $app
-            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
-            ->shouldReceive('bind')->with('payum.converter.reply_to_http_response', 'Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')->once()
-            ->shouldReceive('bind')->with('payum.action.get_http_request', 'Recca0120\LaravelPayum\Action\GetHttpRequestAction')->once()
-            ->shouldReceive('bind')->with('payum.action.obtain_credit_card', 'Recca0120\LaravelPayum\Action\ObtainCreditCardAction')->once()
-            ->shouldReceive('bind')->with('payum.action.render_template', 'Recca0120\LaravelPayum\Action\RenderTemplateAction')->once()
-            ->shouldReceive('bind')->with('payum.extension.update_payment_status', 'Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension')->once()
-            ->shouldReceive('singleton')->with('payum.builder', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($app) {
-                return $closure($app);
-            })
-            ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilderManager', ['config' => []])->once()->andReturn($payumBuilderManager)
-            ->shouldReceive('singleton')->with('Payum\Core\Payum', m::type('Closure'))->once()->andReturnUsing(function ($className, $closure) use ($app) {
-                return $closure($app);
-            })
-            ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\Service\PayumService', 'Recca0120\LaravelPayum\Service\PayumService')->once()
-            ->shouldReceive('make')->with('payum.builder')->once()->andReturn($payumBuilder);
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config);
 
-        $payumBuilderManager->shouldReceive('getBuilder')->once();
-        $payumBuilder->shouldReceive('getPayum');
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
+        $config
+            ->shouldReceive('offsetGet')->andReturn([])
+            ->shouldReceive('get')->andReturn([])
+            ->shouldReceive('set');
 
         $serviceProvider = new LaravelPayumServiceProvider($app);
         $serviceProvider->register();
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
     }
 
     public function test_boot()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $viewFactory = m::spy('Illuminate\Contracts\View\Factory');
+        $router = m::spy('Illuminate\Routing\Router');
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $app->shouldReceive('routesAreCached')->andReturn(false);
+
+        $serviceProvider = new LaravelPayumServiceProvider($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $serviceProvider->boot($viewFactory, $router);
+        $serviceProvider->provides();
+    }
+
+    public function test_running_in_console()
+    {
+        /*
+        |------------------------------------------------------------
+        | Arrange
+        |------------------------------------------------------------
+        */
+
+        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
+        $viewFactory = m::spy('Illuminate\Contracts\View\Factory');
+        $router = m::spy('Illuminate\Routing\Router');
+
+        /*
+        |------------------------------------------------------------
+        | Act
+        |------------------------------------------------------------
+        */
+
+        $app->shouldReceive('runningInConsole')->andReturn(true);
+
+        $serviceProvider = new LaravelPayumServiceProvider($app);
+
+        /*
+        |------------------------------------------------------------
+        | Assert
+        |------------------------------------------------------------
+        */
+
+        $serviceProvider->boot($viewFactory, $router);
+        $serviceProvider->provides();
+    }
+
+    public function xboot()
     {
         /*
         |------------------------------------------------------------

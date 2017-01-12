@@ -101,25 +101,37 @@ class LaravelPayumServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
 
-        $this->app->bind('payum.converter.reply_to_http_response', ReplyToSymfonyResponseConverter::class);
-        $this->app->bind('payum.action.get_http_request', GetHttpRequestAction::class);
-        $this->app->bind('payum.action.obtain_credit_card', ObtainCreditCardAction::class);
-        $this->app->bind('payum.action.render_template', RenderTemplateAction::class);
-        $this->app->bind('payum.extension.update_payment_status', UpdatePaymentStatusExtension::class);
-
-        $this->app->singleton('payum.builder', function ($app) {
-            $config = $app['config']['payum'];
-
-            return $app->make(PayumBuilderManager::class, [
-                'config' => $config,
-            ])->getBuilder();
-        });
+        $this->app->singleton(PayumService::class, PayumService::class);
 
         $this->app->singleton(Payum::class, function ($app) {
             return $this->app->make('payum.builder')->getPayum();
         });
 
-        $this->app->singleton(PayumService::class, PayumService::class);
+        $this->app->singleton('payum.builder', function ($app) {
+            $config = $app['config']['payum'];
+
+            return $app->make(PayumBuilderManager::class, [
+                    'config' => $config
+                ])
+                ->setTokenFactory($app['url'])
+                ->setCoreGatewayFactoryConfig([
+                    'payum.action.get_http_request' => $app->make(GetHttpRequestAction::class),
+                    'payum.action.obtain_credit_card' => $app->make(ObtainCreditCardAction::class),
+                    'payum.action.render_template' => $app->make(RenderTemplateAction::class),
+                    'payum.converter.reply_to_http_response' => $app->make(ReplyToSymfonyResponseConverter::class),
+                    'payum.extension.update_payment_status' => $app->make(UpdatePaymentStatusExtension::class),
+                ])
+                ->setGenericTokenFactoryPaths(Arr::get($config, 'route.as'))
+                ->setStorage(
+                    Arr::get($config, 'storage.token', 'filesystem'),
+                    $app['files'],
+                    Arr::get($config, 'path')
+                )
+                ->setGatewayConfig(
+                    Arr::get($config, 'gatewayConfigs', []),
+                    Arr::get($config, 'storage.gatewayConfig') === 'eloquent'
+                )->getBuilder();
+        });
     }
 
     /**
