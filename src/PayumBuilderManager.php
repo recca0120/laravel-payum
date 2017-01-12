@@ -25,17 +25,38 @@ use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 class PayumBuilderManager
 {
     /**
+     * $payumBuilder.
+     *
+     * @var \Payum\Core\PayumBuilder
+     */
+    protected $payumBuilder;
+
+    /**
+     * $config.
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * $app.
+     *
+     * @var \Illuminate\Contracts\Foundation\Application
+     */
+    protected $app;
+
+    /**
      * __construct.
      *
      * @param \Payum\Core\PayumBuilder $payumBuilder
+     * @param array $config
      * @param \Illuminate\Contracts\Foundation\Application  $app
-     * @param array      $config
      */
-    public function __construct(PayumBuilder $payumBuilder, Application $app, $config = [])
+    public function __construct(PayumBuilder $payumBuilder, $config = [], Application $app = null)
     {
         $this->payumBuilder = $payumBuilder;
-        $this->app = $app;
         $this->config = $config;
+        $this->app = $app;
     }
 
     /**
@@ -212,7 +233,9 @@ class PayumBuilderManager
             if (empty($factoryName) === false && class_exists($factoryName) === true) {
                 $this->payumBuilder
                     ->addGatewayFactory($gatewayName, function ($gatewayConfig, GatewayFactoryInterface $coreGatewayFactory) use ($factoryName) {
-                        return $this->app->make($factoryName, [$gatewayConfig, $coreGatewayFactory]);
+                        return is_null($this->app) === true ?
+                            new $factoryName($gatewayConfig, $coreGatewayFactory) :
+                            $this->app->make($factoryName, [$gatewayConfig, $coreGatewayFactory]);
                     });
             }
             $gatewayConfig['factory'] = $gatewayName;
