@@ -42,8 +42,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
         }
 
         $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
-        $config = $this->app['config']['payum'];
-        $this->handleRoutes($router, $config);
+        $this->handleRoutes($router, $this->app['config']['payum']);
     }
 
     /**
@@ -101,17 +100,9 @@ class LaravelPayumServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
 
-        $this->app->singleton(PayumService::class, PayumService::class);
-
-        $this->app->singleton(Payum::class, function ($app) {
-            return $this->app->make('payum.builder')->getPayum();
-        });
-
         $this->app->singleton('payum.builder', function ($app) {
-            $config = $app['config']['payum'];
-
             return $app->make(PayumBuilderManager::class, [
-                    'config' => $config
+                    'config' => $app['config']['payum']
                 ])
                 ->setTokenFactory($app['url'])
                 ->setCoreGatewayFactoryConfig([
@@ -124,6 +115,12 @@ class LaravelPayumServiceProvider extends ServiceProvider
                 ->setStorage($app['files'])
                 ->getBuilder();
         });
+
+        $this->app->singleton(Payum::class, function ($app) {
+            return $this->app->make('payum.builder')->getPayum();
+        });
+
+        $this->app->singleton(PayumService::class, PayumService::class);
     }
 
     /**

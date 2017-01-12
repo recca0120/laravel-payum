@@ -20,7 +20,9 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
         $config = m::spy('Illuminate\Contracts\Config\Repository, ArrayAccess');
+
         $urlGenerator = m::spy('Illuminate\Contracts\Routing\UrlGenerator');
+        $filesystem = m::spy('Illuminate\Filesystem\Filesystem');
         $payumBuilderManager = m::spy('Recca0120\LaravelPayum\PayumBuilderManager');
         $payumBuilder = m::spy('Payum\Core\PayumBuilder');
 
@@ -31,12 +33,21 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $app
-            ->shouldReceive('offsetGet')->with('config')->andReturn($config);
+            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
+            ->shouldReceive('offsetGet')->with('url')->andReturn($urlGenerator)
+            ->shouldReceive('offsetGet')->with('files')->andReturn($filesystem)
+            ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilderManager', m::any())->andReturn($payumBuilderManager)
+            ->shouldReceive('make')->with('payum.builder')->andReturn($payumBuilder);
 
         $config
             ->shouldReceive('offsetGet')->andReturn([])
             ->shouldReceive('get')->andReturn([])
             ->shouldReceive('set');
+
+        $payumBuilderManager
+            ->shouldReceive('setTokenFactory')->andReturnSelf()
+            ->shouldReceive('setCoreGatewayFactoryConfig')->andReturnSelf()
+            ->shouldReceive('setStorage')->andReturnSelf();
 
         $serviceProvider = new LaravelPayumServiceProvider($app);
         $serviceProvider->register();
@@ -46,6 +57,19 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         | Assert
         |------------------------------------------------------------
         */
+        $app->shouldHaveReceived('singleton')->with('payum.builder', m::on(function($closure) use ($app) {
+            $closure($app);
+
+            return true;
+        }));
+
+        $app->shouldHaveReceived('singleton')->with('Payum\Core\Payum', m::on(function($closure) use ($app) {
+            $closure($app);
+
+            return true;
+        }));
+
+        $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelPayum\Service\PayumService', 'Recca0120\LaravelPayum\Service\PayumService');
     }
 
     public function test_boot()

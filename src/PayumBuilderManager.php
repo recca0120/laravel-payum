@@ -24,6 +24,13 @@ use Payum\Core\CoreGatewayFactory;
 
 class PayumBuilderManager
 {
+    /**
+     * __construct.
+     *
+     * @param \Payum\Core\PayumBuilder $payumBuilder
+     * @param \Illuminate\Contracts\Foundation\Application  $app
+     * @param array      $config
+     */
     public function __construct(PayumBuilder $payumBuilder, Application $app, $config = [])
     {
         $this->payumBuilder = $payumBuilder;
@@ -31,6 +38,13 @@ class PayumBuilderManager
         $this->config = $config;
     }
 
+    /**
+     * setTokenFactory.
+     *
+     * @param \Illuminate\Contracts\Routing\UrlGenerator $urlGenerator
+     *
+     * @return static
+     */
     public function setTokenFactory(UrlGenerator $urlGenerator)
     {
         $this->payumBuilder->setTokenFactory(function(StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($urlGenerator) {
@@ -40,6 +54,11 @@ class PayumBuilderManager
         return $this;
     }
 
+    /**
+     * setHttpRequestVerifier.
+     *
+     * @return static
+     */
     public function setHttpRequestVerifier()
     {
         $this->payumBuilder->setHttpRequestVerifier(function(StorageInterface $tokenStorage) {
@@ -49,6 +68,11 @@ class PayumBuilderManager
         return $this;
     }
 
+    /**
+     * setCoreGatewayFactory.
+     *
+     * @return static
+     */
     public function setCoreGatewayFactory()
     {
         $this->payumBuilder->setCoreGatewayFactory(function($defaultConfig) {
@@ -58,6 +82,13 @@ class PayumBuilderManager
         return $this;
     }
 
+    /**
+     * setCoreGatewayFactoryConfig.
+     *
+     * @param array $config
+     *
+     * @return static
+     */
     public function setCoreGatewayFactoryConfig($config)
     {
         $this->payumBuilder->setCoreGatewayFactoryConfig($config);
@@ -65,6 +96,11 @@ class PayumBuilderManager
         return $this;
     }
 
+    /**
+     * setGenericTokenFactoryPaths.
+     *
+     * @return static
+     */
     public function setGenericTokenFactoryPaths()
     {
         $routeAliasName = Arr::get($this->config, 'route.as');
@@ -82,6 +118,13 @@ class PayumBuilderManager
         return $this;
     }
 
+    /**
+     * setStorage.
+     *
+     * @param \Illuminate\Filesystem\Filesystem $filesystem
+     *
+     * @return static
+     */
     public function setStorage(Filesystem $filesystem)
     {
         return Arr::get($this->config, 'storage.token') === 'eloquent' ?
@@ -93,7 +136,7 @@ class PayumBuilderManager
      *
      * @method setEloquentStorage
      *
-     * @return self
+     * @return static
      */
     public function setEloquentStorage()
     {
@@ -109,7 +152,7 @@ class PayumBuilderManager
      *
      * @method setFilesystemStorage
      *
-     * @return self
+     * @return static
      */
     public function setFilesystemStorage(Filesystem $filesystem)
     {
@@ -126,6 +169,11 @@ class PayumBuilderManager
         return $this;
     }
 
+    /**
+     * loadGatewayConfigs.
+     *
+     * @return array
+     */
     public function loadGatewayConfigs()
     {
         $gatewayConfigs = [];
@@ -174,6 +222,11 @@ class PayumBuilderManager
         return $this;
     }
 
+    /**
+     * getBuilder.
+     *
+     * @return \Payum\Core\PayumBuilder
+     */
     public function getBuilder()
     {
         return $this
