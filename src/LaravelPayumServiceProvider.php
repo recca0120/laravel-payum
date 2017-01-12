@@ -121,16 +121,8 @@ class LaravelPayumServiceProvider extends ServiceProvider
                     'payum.converter.reply_to_http_response' => $app->make(ReplyToSymfonyResponseConverter::class),
                     'payum.extension.update_payment_status' => $app->make(UpdatePaymentStatusExtension::class),
                 ])
-                ->setGenericTokenFactoryPaths(Arr::get($config, 'route.as'))
-                ->setStorage(
-                    Arr::get($config, 'storage.token', 'filesystem'),
-                    $app['files'],
-                    Arr::get($config, 'path')
-                )
-                ->setGatewayConfig(
-                    Arr::get($config, 'gatewayConfigs', []),
-                    Arr::get($config, 'storage.gatewayConfig') === 'eloquent'
-                )->getBuilder();
+                ->setStorage($app['files'])
+                ->getBuilder();
         });
     }
 
