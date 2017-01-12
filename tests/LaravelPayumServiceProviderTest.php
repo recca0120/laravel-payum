@@ -57,13 +57,13 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         | Assert
         |------------------------------------------------------------
         */
-        $app->shouldHaveReceived('singleton')->with('payum.builder', m::on(function($closure) use ($app) {
+        $app->shouldHaveReceived('singleton')->with('payum.builder', m::on(function ($closure) use ($app) {
             $closure($app);
 
             return true;
         }));
 
-        $app->shouldHaveReceived('singleton')->with('Payum\Core\Payum', m::on(function($closure) use ($app) {
+        $app->shouldHaveReceived('singleton')->with('Payum\Core\Payum', m::on(function ($closure) use ($app) {
             $closure($app);
 
             return true;

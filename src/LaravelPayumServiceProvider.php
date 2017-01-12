@@ -102,7 +102,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
 
         $this->app->singleton('payum.builder', function ($app) {
             return $app->make(PayumBuilderManager::class, [
-                    'config' => $app['config']['payum']
+                    'config' => $app['config']['payum'],
                 ])
                 ->setTokenFactory($app['url'])
                 ->setCoreGatewayFactoryConfig([

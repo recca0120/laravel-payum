@@ -42,7 +42,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
 
         $manager->setTokenFactory($urlGenerator);
 
-        $payumBuilder->shouldHaveReceived('setTokenFactory')->with(m::on(function($closure) use ($urlGenerator, $storageInterface, $storageRegistryInterface) {
+        $payumBuilder->shouldHaveReceived('setTokenFactory')->with(m::on(function ($closure) use ($urlGenerator, $storageInterface, $storageRegistryInterface) {
             $this->assertInstanceOf('Recca0120\LaravelPayum\Security\TokenFactory', $closure($storageInterface, $storageRegistryInterface, $urlGenerator));
 
             return true;
@@ -78,7 +78,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
 
         $manager->setHttpRequestVerifier();
 
-        $payumBuilder->shouldHaveReceived('setHttpRequestVerifier')->with(m::on(function($closure) use ($storageInterface) {
+        $payumBuilder->shouldHaveReceived('setHttpRequestVerifier')->with(m::on(function ($closure) use ($storageInterface) {
             $this->assertInstanceOf('Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier', $closure($storageInterface));
 
             return true;
@@ -113,7 +113,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
 
         $manager->setCoreGatewayFactory();
 
-        $payumBuilder->shouldHaveReceived('setCoreGatewayFactory')->with(m::on(function($closure) use ($defaultConfig) {
+        $payumBuilder->shouldHaveReceived('setCoreGatewayFactory')->with(m::on(function ($closure) use ($defaultConfig) {
             $this->assertInstanceOf('Payum\Core\CoreGatewayFactory', $closure($defaultConfig));
 
             return true;
@@ -239,7 +239,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
 
         $filesystem = m::spy('Illuminate\Filesystem\Filesystem');
         $config = [
-            'path' => 'foo.path'
+            'path' => 'foo.path',
         ];
 
         /*
@@ -299,7 +299,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getFactoryName')->once()->andReturn('fooFactoryName')
             ->shouldReceive('getConfig')->once()->andReturn([
                 'foo' => 'bar',
-            ]);;
+            ]);
 
         $manager = new PayumBuilderManager($payumBuilder, $app);
 
@@ -343,7 +343,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
                     'password' => 'password',
                 ],
             ],
-            'storage.gatewayConfig' => 'eloquent'
+            'storage.gatewayConfig' => 'eloquent',
         ];
 
         $gatewayFactory = m::spy('Payum\Core\GatewayFactoryInterface');
@@ -364,7 +364,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('getFactoryName')->once()->andReturn('fooFactoryName')
             ->shouldReceive('getConfig')->once()->andReturn([
                 'foo' => 'bar',
-            ]);;
+            ]);
 
         $manager = new PayumBuilderManager($payumBuilder, $app, $config);
 
@@ -377,7 +377,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $manager->setGatewayConfig();
 
         foreach ($config['gatewayConfigs'] as $gatewayName => $gatewayConfig) {
-            $payumBuilder->shouldReceive('addGatewayFactory')->with($gatewayName, m::on(function($closure) use ($gatewayConfig, $gatewayFactory) {
+            $payumBuilder->shouldReceive('addGatewayFactory')->with($gatewayName, m::on(function ($closure) use ($gatewayConfig, $gatewayFactory) {
                 $closure($gatewayConfig, $gatewayFactory);
 
                 return true;

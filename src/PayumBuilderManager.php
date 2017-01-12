@@ -5,12 +5,14 @@ namespace Recca0120\LaravelPayum;
 use Illuminate\Support\Arr;
 use Payum\Core\PayumBuilder;
 use Payum\Core\Model\ArrayObject;
+use Payum\Core\CoreGatewayFactory;
 use Illuminate\Filesystem\Filesystem;
 use Payum\Core\GatewayFactoryInterface;
 use Payum\Core\Storage\StorageInterface;
 use Payum\Core\Model\Token as PayumToken;
 use Payum\Core\Storage\FilesystemStorage;
 use Payum\Core\Model\Payment as PayumPayment;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
 use Illuminate\Contracts\Foundation\Application;
 use Payum\Core\Registry\StorageRegistryInterface;
@@ -19,8 +21,6 @@ use Recca0120\LaravelPayum\Storage\EloquentStorage;
 use Recca0120\LaravelPayum\Model\Token as EloquentToken;
 use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
-use Illuminate\Contracts\Routing\UrlGenerator;
-use Payum\Core\CoreGatewayFactory;
 
 class PayumBuilderManager
 {
@@ -47,7 +47,7 @@ class PayumBuilderManager
      */
     public function setTokenFactory(UrlGenerator $urlGenerator)
     {
-        $this->payumBuilder->setTokenFactory(function(StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($urlGenerator) {
+        $this->payumBuilder->setTokenFactory(function (StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($urlGenerator) {
             return new TokenFactory($tokenStorage, $registry, $urlGenerator);
         });
 
@@ -61,7 +61,7 @@ class PayumBuilderManager
      */
     public function setHttpRequestVerifier()
     {
-        $this->payumBuilder->setHttpRequestVerifier(function(StorageInterface $tokenStorage) {
+        $this->payumBuilder->setHttpRequestVerifier(function (StorageInterface $tokenStorage) {
             return new HttpRequestVerifier($tokenStorage);
         });
 
@@ -75,7 +75,7 @@ class PayumBuilderManager
      */
     public function setCoreGatewayFactory()
     {
-        $this->payumBuilder->setCoreGatewayFactory(function($defaultConfig) {
+        $this->payumBuilder->setCoreGatewayFactory(function ($defaultConfig) {
             return new CoreGatewayFactory($defaultConfig);
         });
 
