@@ -1,7 +1,6 @@
 <?php
 
 use Mockery as m;
-use Payum\Core\Bridge\Spl\ArrayObject;
 use Recca0120\LaravelPayum\PayumBuilderManager;
 
 class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
@@ -351,9 +350,6 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $app = m::spy('Illuminate\Contracts\Foundation\Application');
 
         $gatewayConfig = m::spy('Recca0120\LaravelPayum\Model\GatewayConfig');
-
-
-
         $gatewayFactory = m::spy('Payum\Core\GatewayFactoryInterface');
 
         /*
