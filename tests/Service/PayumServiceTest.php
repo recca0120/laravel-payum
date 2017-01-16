@@ -376,7 +376,8 @@ class PayumServiceTest extends PHPUnit_Framework_TestCase
         */
 
         $request
-            ->shouldReceive('session')->andReturn($session);
+            ->shouldReceive('session')->andReturn($session)
+            ->shouldReceive('duplicate')->andReturnSelf();
 
         $session
             ->shouldReceive('isStarted')->andReturn(false)
@@ -415,8 +416,9 @@ class PayumServiceTest extends PHPUnit_Framework_TestCase
         $session->shouldHaveReceived('start')->atLeast(1);
         $session->shouldHaveReceived('get')->with('payum_token')->once();
         $session->shouldHaveReceived('forget')->with('payum_token')->once();
-        $request->shouldHaveReceived('merge')->with(['payum_token' => $payumToken]);
         $session->shouldHaveReceived('save')->atLeast(1);
+        $request->shouldHaveReceived('duplicate')->once();
+        $request->shouldHaveReceived('merge')->with(['payum_token' => $payumToken])->once();
         $payum->shouldHaveReceived('getHttpRequestVerifier')->once();
         $httpRequestVerifier->shouldHaveReceived('verify')->with($request)->once();
         $token->shouldHaveReceived('getGatewayName')->once();

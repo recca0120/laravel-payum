@@ -251,8 +251,12 @@ class PayumService
     public function receive($payumToken, callable $closure)
     {
         $payumToken = $this->getPayumToken($payumToken);
+        $request = $this->request->duplicate();
+        $request->merge([
+            $this->payumTokenId => $payumToken,
+        ]);
         $httpRequestVerifier = $this->getPayum()->getHttpRequestVerifier();
-        $token = $httpRequestVerifier->verify($this->request);
+        $token = $httpRequestVerifier->verify($request);
         $gateway = $this->getGateway($token->getGatewayName());
 
         try {
@@ -529,9 +533,8 @@ class PayumService
         $session = $this->getSessionFromRequest();
         if (empty($payumToken) === true) {
             $payumToken = $session->get($this->payumTokenId);
-            $session->forget($this->payumTokenId);
         }
-        $this->request->merge([$this->payumTokenId => $payumToken]);
+        $session->forget($this->payumTokenId);
         $session->save();
 
         return $payumToken;
