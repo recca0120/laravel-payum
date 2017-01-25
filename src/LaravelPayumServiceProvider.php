@@ -37,14 +37,11 @@ class LaravelPayumServiceProvider extends ServiceProvider
     public function boot(ViewFactory $viewFactory, Router $router)
     {
         $this->handleRoutes($router, $this->app['config']['payum']);
+        $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
 
         if ($this->app->runningInConsole() === true) {
             $this->handlePublishes();
-
-            return;
         }
-
-        $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
     }
 
     /**
@@ -87,7 +84,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
         ], 'views');
 
         $this->publishes([
-            __DIR__.'/../database/migrations' => $this->app->basePath().'/database/migrations/',
+            __DIR__.'/../database/migrations' => $this->app->databasePath().'/migrations/',
         ], 'public');
 
         return $this;

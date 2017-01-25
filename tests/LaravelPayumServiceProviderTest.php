@@ -100,42 +100,7 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         */
 
         $app
-            ->shouldReceive('routesAreCached')->andReturn(false);
-
-        $serviceProvider = new LaravelPayumServiceProvider($app);
-        $serviceProvider->boot($viewFactory, $router);
-        $serviceProvider->provides();
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $app->shouldHaveReceived('routesAreCached')->once();
-        $router->shouldHaveReceived('group')->once();
-        $viewFactory->shouldHaveReceived('addNamespace')->once();
-    }
-
-    public function test_running_in_console()
-    {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $viewFactory = m::spy('Illuminate\Contracts\View\Factory');
-        $router = m::spy('Illuminate\Routing\Router');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $app
+            ->shouldReceive('routesAreCached')->andReturn(false)
             ->shouldReceive('runningInConsole')->andReturn(true);
 
         $serviceProvider = new LaravelPayumServiceProvider($app);
@@ -150,6 +115,11 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app->shouldHaveReceived('routesAreCached')->once();
         $router->shouldHaveReceived('group')->once();
+        $viewFactory->shouldHaveReceived('addNamespace')->once();
+        $app->shouldHaveReceived('runningInConsole')->once();
+        $app->shouldHaveReceived('configPath')->once();
+        $app->shouldHaveReceived('basePath')->once();
+        $app->shouldHaveReceived('databasePath')->once();
     }
 }
 

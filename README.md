@@ -66,6 +66,28 @@ return [
 ];
 ```
 
+## VerifyCsrfToken
+
+```php
+
+namespace App\Http\Middleware;
+
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerifier;
+
+class VerifyCsrfToken extends BaseVerifier
+{
+    /**
+     * The URIs that should be excluded from CSRF verification.
+     *
+     * @var array
+     */
+    protected $except = [
+        'payment/*'
+    ];
+}
+
+```
+
 ## Controller
 
 ```php
@@ -101,11 +123,11 @@ class PaymentController extends BaseController
             $payment->setDetails([
                 'Items' => [
                     [
-                        'Name'     => '歐付寶黑芝麻豆漿',
-                        'Price'    => (int) '2000',
+                        'Name' => '歐付寶黑芝麻豆漿',
+                        'Price' => (int) '2000',
                         'Currency' => '元',
                         'Quantity' => (int) '1',
-                        'URL'      => 'dedwed',
+                        'URL' => 'dedwed',
                     ],
                 ],
             ]);
@@ -123,14 +145,14 @@ class PaymentController extends BaseController
             return response()->json([
                 'status' => $status->getValue(),
                 'client' => [
-                    'id'    => $payment->getClientId(),
+                    'id' => $payment->getClientId(),
                     'email' => $payment->getClientEmail(),
                 ],
-                'number'        => $payment->getNumber(),
-                'description'   => $payment->getCurrencyCode(),
-                'total_amount'  => $payment->getTotalAmount(),
+                'number' => $payment->getNumber(),
+                'description' => $payment->getCurrencyCode(),
+                'total_amount' => $payment->getTotalAmount(),
                 'currency_code' => $payment->getCurrencyCode(),
-                'details'       => $payment->getDetails(),
+                'details' => $payment->getDetails(),
             ]);
         });
     }

@@ -517,7 +517,7 @@ class PayumService
     protected function storePayumToken($payumToken)
     {
         $session = $this->getSessionFromRequest();
-        $session->set($this->payumTokenId, $payumToken);
+        $session->put($this->payumTokenId, $payumToken);
         $session->save();
     }
 

@@ -11,6 +11,7 @@ use Payum\Core\GatewayFactoryInterface;
 use Payum\Core\Storage\StorageInterface;
 use Payum\Core\Model\Token as PayumToken;
 use Payum\Core\Storage\FilesystemStorage;
+use Payum\Core\Model\Payout as PayumPayout;
 use Payum\Core\Model\Payment as PayumPayment;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
@@ -185,7 +186,8 @@ class PayumBuilderManager
         $this->payumBuilder
             ->setTokenStorage(new FilesystemStorage($storagePath, PayumToken::class, 'hash'))
             ->addStorage(PayumPayment::class, new FilesystemStorage($storagePath, PayumPayment::class, 'number'))
-            ->addStorage(ArrayObject::class, new FilesystemStorage($storagePath, ArrayObject::class));
+            ->addStorage(ArrayObject::class, new FilesystemStorage($storagePath, ArrayObject::class))
+            ->addStorage(PayumPayout::class, new FilesystemStorage($storagePath, PayumPayout::class));
 
         return $this;
     }
@@ -233,9 +235,7 @@ class PayumBuilderManager
             if (empty($factoryName) === false && class_exists($factoryName) === true) {
                 $this->payumBuilder
                     ->addGatewayFactory($gatewayName, function ($gatewayConfig, GatewayFactoryInterface $coreGatewayFactory) use ($factoryName) {
-                        return is_null($this->app) === true ?
-                            new $factoryName($gatewayConfig, $coreGatewayFactory) :
-                            $this->app->make($factoryName, [$gatewayConfig, $coreGatewayFactory]);
+                        return new $factoryName($gatewayConfig, $coreGatewayFactory);
                     });
             }
             $gatewayConfig['factory'] = $gatewayName;

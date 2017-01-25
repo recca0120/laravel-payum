@@ -443,6 +443,7 @@ class PayumServiceTest extends PHPUnit_Framework_TestCase
                 }
 
                 if ($throwException === true) {
+                    $session->shouldHaveReceived('put')->with('payum_token', $payumToken)->once();
                     $converter->shouldHaveReceived('convert')->with($throwResponse)->once();
                 }
 

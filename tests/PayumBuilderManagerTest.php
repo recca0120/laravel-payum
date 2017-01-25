@@ -272,7 +272,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $filesystem->shouldHaveReceived('isDirectory')->with($config['path'])->once();
         $filesystem->shouldHaveReceived('makeDirectory')->with($config['path'], 0777, true)->once();
         $payumBuilder->shouldHaveReceived('setTokenStorage')->once();
-        $payumBuilder->shouldHaveReceived('addStorage')->twice();
+        $payumBuilder->shouldHaveReceived('addStorage')->times(3);
     }
 
     public function test_load_gateway_configs()
@@ -382,11 +382,19 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $manager->setGatewayConfig();
 
         foreach ($config['gatewayConfigs'] as $gatewayName => $gatewayConfig) {
-            $payumBuilder->shouldReceive('addGatewayFactory')->with($gatewayName, m::on(function ($closure) use ($gatewayConfig, $gatewayFactory) {
-                $closure($gatewayConfig, $gatewayFactory);
+            $payumBuilder->shouldReceive('addGatewayFactory')->with($gatewayName, m::on(function ($closure) use ($gatewayName, $gatewayConfig, $gatewayFactory) {
+                $this->assertInstanceOf($gatewayName, $closure($gatewayConfig, $gatewayFactory));
 
                 return true;
             }));
         }
     }
+}
+
+class gatewayName
+{
+}
+
+class gatewayName2
+{
 }
