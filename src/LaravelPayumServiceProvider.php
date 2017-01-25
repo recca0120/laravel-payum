@@ -4,6 +4,7 @@ namespace Recca0120\LaravelPayum;
 
 use Payum\Core\Payum;
 use Illuminate\Support\Arr;
+use Payum\Core\PayumBuilder;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
 use Recca0120\LaravelPayum\Service\PayumService;
@@ -35,6 +36,8 @@ class LaravelPayumServiceProvider extends ServiceProvider
      */
     public function boot(ViewFactory $viewFactory, Router $router)
     {
+        $this->handleRoutes($router, $this->app['config']['payum']);
+
         if ($this->app->runningInConsole() === true) {
             $this->handlePublishes();
 
@@ -42,7 +45,6 @@ class LaravelPayumServiceProvider extends ServiceProvider
         }
 
         $viewFactory->addNamespace('payum', __DIR__.'/../resources/views');
-        $this->handleRoutes($router, $this->app['config']['payum']);
     }
 
     /**
@@ -100,10 +102,8 @@ class LaravelPayumServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
 
-        $this->app->singleton('payum.builder', function ($app) {
-            return $app->make(PayumBuilderManager::class, [
-                    'config' => $app['config']['payum'],
-                ])
+        $this->app->singleton(PayumBuilderManager::class, function ($app) {
+            return (new PayumBuilderManager(new PayumBuilder, $app['config']['payum'], $app))
                 ->setTokenFactory($app['url'])
                 ->setCoreGatewayFactoryConfig([
                     'payum.action.get_http_request' => $app->make(GetHttpRequestAction::class),
@@ -112,12 +112,15 @@ class LaravelPayumServiceProvider extends ServiceProvider
                     'payum.converter.reply_to_http_response' => $app->make(ReplyToSymfonyResponseConverter::class),
                     'payum.extension.update_payment_status' => $app->make(UpdatePaymentStatusExtension::class),
                 ])
-                ->setStorage($app['files'])
-                ->getBuilder();
+                ->setStorage($app['files']);
+        });
+
+        $this->app->singleton(PayumBuilder::class, function ($app) {
+            return $app->make(PayumBuilderManager::class)->getBuilder();
         });
 
         $this->app->singleton(Payum::class, function ($app) {
-            return $this->app->make('payum.builder')->getPayum();
+            return $this->app->make(PayumBuilder::class)->getPayum();
         });
 
         $this->app->singleton(PayumService::class, PayumService::class);

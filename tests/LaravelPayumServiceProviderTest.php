@@ -34,10 +34,19 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
 
         $app
             ->shouldReceive('offsetGet')->with('config')->andReturn($config)
+            ->shouldReceive('singleton')->with('Recca0120\LaravelPayum\PayumBuilderManager', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($app) {
+                return $closure($app);
+            })
             ->shouldReceive('offsetGet')->with('url')->andReturn($urlGenerator)
             ->shouldReceive('offsetGet')->with('files')->andReturn($filesystem)
-            ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilderManager', m::any())->andReturn($payumBuilderManager)
-            ->shouldReceive('make')->with('payum.builder')->andReturn($payumBuilder);
+            ->shouldReceive('singleton')->with('Payum\Core\PayumBuilder', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($app) {
+                return $closure($app);
+            })
+            ->shouldReceive('make')->with('Recca0120\LaravelPayum\PayumBuilderManager')->andReturn($payumBuilderManager)
+            ->shouldReceive('singleton')->with('Payum\Core\Payum', m::type('Closure'))->andReturnUsing(function ($className, $closure) use ($app) {
+                return $closure($app);
+            })
+            ->shouldReceive('make')->with('Payum\Core\PayumBuilder')->andReturn($payumBuilder);
 
         $config
             ->shouldReceive('offsetGet')->andReturn([])
@@ -45,9 +54,7 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('set');
 
         $payumBuilderManager
-            ->shouldReceive('setTokenFactory')->andReturnSelf()
-            ->shouldReceive('setCoreGatewayFactoryConfig')->andReturnSelf()
-            ->shouldReceive('setStorage')->andReturnSelf();
+            ->shouldReceive('getBuilder');
 
         $serviceProvider = new LaravelPayumServiceProvider($app);
         $serviceProvider->register();
@@ -57,19 +64,21 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         | Assert
         |------------------------------------------------------------
         */
-        $app->shouldHaveReceived('singleton')->with('payum.builder', m::on(function ($closure) use ($app) {
-            $closure($app);
 
-            return true;
-        }));
-
-        $app->shouldHaveReceived('singleton')->with('Payum\Core\Payum', m::on(function ($closure) use ($app) {
-            $closure($app);
-
-            return true;
-        }));
-
-        $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelPayum\Service\PayumService', 'Recca0120\LaravelPayum\Service\PayumService');
+        $app->shouldHaveReceived('singleton')->with('Recca0120\LaravelPayum\PayumBuilderManager', m::type('Closure'))->once();
+        $app->shouldHaveReceived('offsetGet')->with('url')->once();
+        $app->shouldHaveReceived('make')->with('Recca0120\LaravelPayum\Action\GetHttpRequestAction')->once();
+        $app->shouldHaveReceived('make')->with('Recca0120\LaravelPayum\Action\ObtainCreditCardAction')->once();
+        $app->shouldHaveReceived('make')->with('Recca0120\LaravelPayum\Action\RenderTemplateAction')->once();
+        $app->shouldHaveReceived('make')->with('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')->once();
+        $app->shouldHaveReceived('make')->with('Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension')->once();
+        $app->shouldHaveReceived('offsetGet')->with('files')->once();
+        $app->shouldHaveReceived('singleton')->with('Payum\Core\PayumBuilder', m::type('Closure'))->once();
+        $app->shouldHaveReceived('make')->with('Recca0120\LaravelPayum\PayumBuilderManager')->once();
+        $payumBuilderManager->shouldHaveReceived('getBuilder')->once();
+        $app->shouldHaveReceived('singleton')->with('Payum\Core\Payum', m::type('Closure'))->once();
+        $app->shouldHaveReceived('make')->with('Payum\Core\PayumBuilder')->once();
+        $payumBuilder->shouldHaveReceived('getPayum')->once();
     }
 
     public function test_boot()
@@ -90,9 +99,12 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('routesAreCached')->andReturn(false);
+        $app
+            ->shouldReceive('routesAreCached')->andReturn(false);
 
         $serviceProvider = new LaravelPayumServiceProvider($app);
+        $serviceProvider->boot($viewFactory, $router);
+        $serviceProvider->provides();
 
         /*
         |------------------------------------------------------------
@@ -100,8 +112,9 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $serviceProvider->boot($viewFactory, $router);
-        $serviceProvider->provides();
+        $app->shouldHaveReceived('routesAreCached')->once();
+        $router->shouldHaveReceived('group')->once();
+        $viewFactory->shouldHaveReceived('addNamespace')->once();
     }
 
     public function test_running_in_console()
@@ -122,9 +135,12 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('runningInConsole')->andReturn(true);
+        $app
+            ->shouldReceive('runningInConsole')->andReturn(true);
 
         $serviceProvider = new LaravelPayumServiceProvider($app);
+        $serviceProvider->boot($viewFactory, $router);
+        $serviceProvider->provides();
 
         /*
         |------------------------------------------------------------
@@ -132,53 +148,8 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $serviceProvider->boot($viewFactory, $router);
-        $serviceProvider->provides();
-    }
-
-    public function xboot()
-    {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
-
-        $app = m::mock('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $serviceProvider = new LaravelPayumServiceProvider($app);
-        $viewFactory = m::mock('Illuminate\Contracts\View\Factory');
-        $router = m::mock('Illuminate\Routing\Router');
-        $config = m::mock('Illuminate\Contracts\Config\Repository, ArrayAccess');
-
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $config
-            ->shouldReceive('offsetGet')->with('payum')->andReturn([])
-            ->shouldReceive('set')->andReturnSelf();
-
-        $viewFactory->shouldReceive('addNamespace')->with('payum', m::any());
-
-        $app
-            ->shouldReceive('offsetGet')->with('config')->andReturn($config)
-            ->shouldReceive('runningInConsole')->andReturn(true)
-            ->shouldReceive('configPath')->andReturn(__DIR__)
-            ->shouldReceive('basePath')->andReturn(__DIR__)
-            ->shouldReceive('routesAreCached')->andReturn(false);
-
-        $router->shouldReceive('group');
-
-        $serviceProvider->boot($viewFactory, $router);
-        $serviceProvider->provides();
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
+        $app->shouldHaveReceived('routesAreCached')->once();
+        $router->shouldHaveReceived('group')->once();
     }
 }
 

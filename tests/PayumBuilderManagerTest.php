@@ -358,7 +358,8 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $app->shouldReceive('make')->andReturn($gatewayConfig);
+        $app
+            ->shouldReceive('make')->andReturn($gatewayConfig);
 
         $gatewayConfig
             ->shouldReceive('newQuery')->andReturnSelf()
