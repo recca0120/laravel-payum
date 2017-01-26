@@ -22,11 +22,11 @@ class ObtainCreditCardAction implements ActionInterface
     protected $viewFactory;
 
     /**
-     * $request.
+     * $httpRequest.
      *
      * @var \Illuminate\Http\Request
      */
-    protected $request;
+    protected $httpRequest;
 
     /**
      * $templateName.
@@ -41,13 +41,13 @@ class ObtainCreditCardAction implements ActionInterface
      * @method __construct
      *
      * @param \Illuminate\Contracts\View\Factory $viewFactory
-     * @param \Illuminate\Http\Request           $request
+     * @param \Illuminate\Http\Request           $httpRrequest
      * @param string                             $templateName
      */
     public function __construct(ViewFactory $viewFactory, Request $request)
     {
         $this->viewFactory = $viewFactory;
-        $this->request = $request;
+        $this->httpRequest = $request;
     }
 
     /**
@@ -60,12 +60,12 @@ class ObtainCreditCardAction implements ActionInterface
             throw RequestNotSupportedException::createActionNotSupported($this, $request);
         }
 
-        if ($this->request->isMethod('POST')) {
+        if ($this->httpRequest->isMethod('POST')) {
             $creditCard = new CreditCard();
-            $creditCard->setHolder($this->request->get('card_holder'));
-            $creditCard->setNumber($this->request->get('card_number'));
-            $creditCard->setSecurityCode($this->request->get('card_cvv'));
-            $creditCard->setExpireAt(new DateTime($this->request->get('card_expire_at')));
+            $creditCard->setHolder($this->httpRequest->get('card_holder'));
+            $creditCard->setNumber($this->httpRequest->get('card_number'));
+            $creditCard->setSecurityCode($this->httpRequest->get('card_cvv'));
+            $creditCard->setExpireAt(new DateTime($this->httpRequest->get('card_expire_at')));
 
             $request->set($creditCard);
 
@@ -83,23 +83,6 @@ class ObtainCreditCardAction implements ActionInterface
             'X-Status-Code' => 200,
             'Pragma' => 'no-cache',
         ]));
-
-        /*
-            $content = $this->viewFactory->make($this->templateName, [
-                'model'      => $request->getModel(),
-                'firstModel' => $request->getFirstModel(),
-                'form'       => $form->render(),
-                'actionUrl'  => $request->getToken() ? $request->getToken()->getTargetUrl() : null,
-            ]);
-
-            $this->gateway->execute($renderTemplate);
-
-            throw new HttpResponse(new Response($renderTemplate->getResult(), 200, [
-                'Cache-Control' => 'no-store, no-cache, max-age=0, post-check=0, pre-check=0',
-                'X-Status-Code' => 200,
-                'Pragma'        => 'no-cache',
-            ]));
-        */
     }
 
     /**

@@ -2,51 +2,49 @@
 
 namespace Recca0120\LaravelPayum\Storage;
 
+use Closure;
 use Payum\Core\Model\Identity;
 use Payum\Core\Storage\AbstractStorage;
-use Illuminate\Contracts\Foundation\Application;
 
 class EloquentStorage extends AbstractStorage
 {
     /**
-     * @var \Illuminate\Contracts\Foundation\Application
+     * $modelResolver.
+     *
+     * @var \Closure
      */
-    protected $app;
+    protected $modelResolver;
 
     /**
-     * @param string                                       $modelClass
-     * @param \Illuminate\Contracts\Foundation\Application $app
+     * @param string $modelClass
      */
-    public function __construct($modelClass, Application $app = null)
+    public function __construct($modelClass)
     {
         parent::__construct($modelClass);
-        $this->app = $app;
+        $this->modelResolver = function() {
+            return new $this->modelClass();
+        };
     }
 
     /**
-     * makeModel.
+     * setModelResolver.
      *
-     * @method makeModel
-     *
-     * @return \Illuminate\Database\Eloquent\Model
+     * @return static
      */
-    protected function makeModel()
+    public function setModelResolver(Closure $closure)
     {
-        $class = $this->modelClass;
-
-        return is_null($this->app) === true ? new $class : $this->app->make($class);
+        $this->modelResolver = $closure;
     }
 
     /**
      * create.
      *
-     * @method create
-     *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create()
-    {
-        return $this->makeModel();
+    public function create() {
+        $resolver = $this->modelResolver;
+
+        return $resolver();
     }
 
     /**
@@ -98,7 +96,7 @@ class EloquentStorage extends AbstractStorage
      */
     protected function doFind($id)
     {
-        return $this->makeModel()->find($id);
+        return $this->create()->find($id);
     }
 
     /**
@@ -112,7 +110,7 @@ class EloquentStorage extends AbstractStorage
      */
     public function findBy(array $criteria)
     {
-        $model = $this->makeModel();
+        $model = $this->create();
         $query = $model->newQuery();
         foreach ($criteria as $name => $value) {
             $query = $query->where($name, '=', $value);

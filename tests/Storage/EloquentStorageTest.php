@@ -2,6 +2,7 @@
 
 use Mockery as m;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
+use Payum\Core\Model\Identity;
 
 class EloquentStorageTest extends PHPUnit_Framework_TestCase
 {
@@ -10,210 +11,80 @@ class EloquentStorageTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_create()
+    public function test_create_model()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
+        $storage = new EloquentStorage('stdClass');
+        $model = $storage->create();
 
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $model = m::spy('Illuminate\Database\Eloquent\Model');
-        $className = get_class($model);
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $app
-            ->shouldReceive('make')->with($className)->andReturn($model);
-
-        $eloquentStorage = new EloquentStorage($className, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($model, $eloquentStorage->create());
-        $app->shouldHaveReceived('make')->with($className)->once();
+        $this->assertTrue(is_object($model));
+        $this->assertInstanceOf('stdClass', $model);
     }
 
-    public function test_update()
+    public function test_update_model()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $model = m::spy('Illuminate\Database\Eloquent\Model');
-        $className = get_class($model);
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $eloquentStorage = new EloquentStorage($className, $app);
-        $eloquentStorage->update($model);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $model->shouldHaveReceived('save')->once();
+        $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
+        $model = m::mock('Illimunate\Database\Eloquent\Model');
+        $model->shouldReceive('save')->once();
+        $storage->setModelResolver(function() use ($model) {
+            return $model;
+        });
+        $storage->update($model);
     }
 
-    public function test_delete()
+    public function test_find_id_when_id_is_string()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $model = m::spy('Illuminate\Database\Eloquent\Model');
-        $className = get_class($model);
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $eloquentStorage = new EloquentStorage($className, $app);
-        $eloquentStorage->delete($model);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $model->shouldHaveReceived('delete')->once();
+        $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
+        $model = m::mock('Illimunate\Database\Eloquent\Model');
+        $model->shouldReceive('find')->with($id = uniqid())->once();
+        $storage->setModelResolver(function() use ($model) {
+            return $model;
+        });
+        $storage->find($id);
     }
 
-    public function test_identity()
+    public function test_find_id_when_id_is_identity()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $model = m::spy('Illuminate\Database\Eloquent\Model');
-        $className = get_class($model);
-        $key = uniqid();
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $model
-            ->shouldReceive('getKey')->andReturn($key);
-
-        $eloquentStorage = new EloquentStorage($className, $app);
-        $eloquentStorage->identify($model);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $model->shouldHaveReceived('getKey')->once();
+        $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
+        $model = m::mock('Illimunate\Database\Eloquent\Model');
+        $identity = m::mock('Payum\Core\Storage\IdentityInterface');
+        $identity->shouldReceive('getClass')->andReturn(get_parent_class($model))->once();
+        $identity->shouldReceive('getId')->andReturn($id = uniqid());
+        $model->shouldReceive('find')->with($id)->once();
+        $storage->setModelResolver(function() use ($model) {
+            return $model;
+        });
+        $storage->find($identity);
     }
 
-    public function test_find()
+    public function test_delete_model()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $model = m::spy('Illuminate\Database\Eloquent\Model');
-        $className = get_class($model);
-        $id = uniqid();
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $app
-            ->shouldReceive('make')->with($className)->andReturn($model);
-
-        $eloquentStorage = new EloquentStorage($className, $app);
-        $eloquentStorage->find($id);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $app->shouldHaveReceived('make')->with($className)->once();
-        $model->shouldHaveReceived('find')->with($id)->once();
+        $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
+        $model = m::mock('Illimunate\Database\Eloquent\Model');
+        $model->shouldReceive('delete')->once();
+        $storage->setModelResolver(function() use ($model) {
+            return $model;
+        });
+        $storage->delete($model);
     }
 
-    public function test_find_by()
+    public function test_identify_model()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
+        $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
+        $model = m::mock('Illimunate\Database\Eloquent\Model');
+        $model->shouldReceive('getKey')->andReturn($key = uniqid());
+        $identify = $storage->identify($model);
+        $this->assertSame($key, $identify->getId());
+    }
 
-        $app = m::spy('Illuminate\Contracts\Foundation\Application, ArrayAccess');
-        $model = m::spy('Illuminate\Database\Eloquent\Model');
-        $className = get_class($model);
-        $criteria = [
-            'foo' => 'bar',
-            'fuzz' => 'buzz',
-        ];
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $app
-            ->shouldReceive('make')->with($className)->andReturn($model);
-
-        $model
-            ->shouldReceive('newQuery')->andReturnSelf()
-            ->shouldReceive('where')->andReturnSelf()
-            ->shouldReceive('get->all')->andReturnSelf();
-
-        $eloquentStorage = new EloquentStorage($className, $app);
-        $eloquentStorage->findBy($criteria);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $app->shouldHaveReceived('make')->with($className)->once();
-        $model->shouldHaveReceived('newQuery')->once();
-        $model->shouldHaveReceived('where')->twice();
-        $model->shouldHaveReceived('get')->once();
+    public function test_find_by_criteria() {
+        $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
+        $model = m::mock('Illimunate\Database\Eloquent\Model');
+        $model->shouldReceive('newQuery')->andReturn($builder = m::mock('Illuminate\Database\Eloquent\Builder'))->once();
+        $builder->shouldReceive('where')->with('foo', '=', 'bar')->andReturnSelf()->once();
+        $builder->shouldReceive('get->all')->andReturn($result = ['foo', 'bar'])->once();
+        $storage->setModelResolver(function() use ($model) {
+            return $model;
+        });
+        $this->assertSame($result, $storage->findBy($criteria = ['foo' => 'bar']));
     }
 }

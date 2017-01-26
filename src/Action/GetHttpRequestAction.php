@@ -12,10 +12,10 @@ class GetHttpRequestAction extends SymfonyGetHttpRequestAction
      *
      * @method __construct
      *
-     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $httpRequest
      */
-    public function __construct(Request $request)
+    public function __construct(Request $httpRequest)
     {
-        $this->setHttpRequest($request);
+        $this->setHttpRequest($httpRequest);
     }
 }

@@ -12,28 +12,7 @@ class GetHttpRequestActionTest extends PHPUnit_Framework_TestCase
 
     public function test_construct()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $request = m::spy('Illuminate\Http\Request');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $getHttpRequestAction = new GetHttpRequestAction($request);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $this->assertAttributeSame($request, 'httpRequest', $getHttpRequestAction);
+        $getHttpRequestAction = new GetHttpRequestAction($httpRequest = m::mock('Illuminate\Http\Request'));
+        $this->assertAttributeSame($httpRequest, 'httpRequest', $getHttpRequestAction);
     }
 }
