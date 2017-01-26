@@ -10,40 +10,24 @@ class GatewayConfigEloquentTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_set_attributes()
+    public function test_set_gateway_name()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $gatewayConfig = new GatewayConfig();
+        $gatewayConfig->setGatewayName($gatewayName = 'foo');
+        $this->assertSame($gatewayName, $gatewayConfig->getGatewayName());
+    }
 
-        $gateConfig = m::mock(new GatewayConfig());
+    public function test_set_factory_name()
+    {
+        $gatewayConfig = new GatewayConfig();
+        $gatewayConfig->setFactoryName($factoryName = 'foo');
+        $this->assertSame($factoryName, $gatewayConfig->getFactoryName());
+    }
 
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
-
-        $exceptedGatewayName = 'fooGatewayName';
-        $exceptedFactoryName = 'fooFactoryName';
-        $exceptedGetConfig = [
-            'foo',
-            'bar',
-        ];
-        $gateConfig->setGatewayName($exceptedGatewayName);
-        $gateConfig->setFactoryName($exceptedFactoryName);
-        $gateConfig->setConfig($exceptedGetConfig);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($exceptedGatewayName, $gateConfig->getGatewayName());
-        $this->assertSame($exceptedFactoryName, $gateConfig->getFactoryName());
-        $this->assertSame($exceptedGetConfig, $gateConfig->getConfig());
+    public function test_set_config()
+    {
+        $gatewayConfig = new GatewayConfig();
+        $gatewayConfig->setConfig($config = ['foo' => 'bar']);
+        $this->assertSame($config, $gatewayConfig->getConfig());
     }
 }

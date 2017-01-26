@@ -6,7 +6,7 @@ use Payum\Core\Model\PaymentInterface;
 use Illuminate\Database\Eloquent\Model;
 use Payum\Core\Model\CreditCardInterface;
 
-class Payment extends Model implements PaymentInterface
+class Payment extends Model implements PaymentInterface, StatusInterface
 {
     /**
      * $table.

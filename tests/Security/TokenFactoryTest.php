@@ -12,33 +12,14 @@ class TokenFactoryTest extends PHPUnit_Framework_TestCase
 
     public function test_generate_url()
     {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $storage = m::spy('Payum\Core\Storage\StorageInterface');
-        $registry = m::spy('Payum\Core\Registry\StorageRegistryInterface');
-        $urlGenerator = m::spy('Illuminate\Contracts\Routing\UrlGenerator');
+        $tokenFactory = m::mock(new TokenFactory(
+            $storage = m::mock('Payum\Core\Storage\StorageInterface'),
+            $registry = m::mock('Payum\Core\Registry\StorageRegistryInterface'),
+            $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
+        ))->shouldAllowMockingProtectedMethods();
         $path = 'foo';
-        $parameters = [];
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $tokenFactory = m::mock(new TokenFactory($storage, $registry, $urlGenerator))->shouldAllowMockingProtectedMethods();
+        $parameters = ['foo' => 'bar'];
+        $urlGenerator->shouldReceive('route')->with($path, $parameters)->once();
         $tokenFactory->generateUrl($path, $parameters);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $urlGenerator->shouldHaveReceived('route')->with($path, $parameters);
     }
 }

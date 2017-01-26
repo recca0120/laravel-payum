@@ -45,10 +45,7 @@ class Token extends Model implements TokenInterface
      */
     public function __construct(array $attributes = [])
     {
-        if (empty($attributes['hash'])) {
-            $attributes['hash'] = Random::generateToken();
-        }
-
+        $attributes['hash'] = empty($attributes['hash']) === true ? Random::generateToken() : $attributes['hash'];
         parent::__construct($attributes);
     }
 

@@ -1,9 +1,9 @@
 <?php
 
 use Mockery as m;
-use Recca0120\LaravelPayum\PayumBuilderManager;
+use Recca0120\LaravelPayum\PayumBuilderWrapper;
 
-class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
+class PayumBuilderWrapperTest extends PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -32,7 +32,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
+        $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
 
         /*
         |------------------------------------------------------------
@@ -69,7 +69,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
+        $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
 
         /*
         |------------------------------------------------------------
@@ -105,7 +105,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
+        $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
 
         /*
         |------------------------------------------------------------
@@ -142,7 +142,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
+        $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
 
         /*
         |------------------------------------------------------------
@@ -175,7 +175,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         |------------------------------------------------------------
         */
 
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
+        $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
 
         /*
         |------------------------------------------------------------
@@ -217,7 +217,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
 
         $payumBuilder->shouldReceive('setTokenStorage')->andReturnSelf();
 
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
+        $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
 
         /*
         |------------------------------------------------------------
@@ -259,7 +259,7 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
             ->shouldReceive('setTokenStorage')->andReturnSelf()
             ->shouldReceive('addStorage')->andReturnSelf();
 
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
+        $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
 
         /*
         |------------------------------------------------------------
@@ -275,120 +275,120 @@ class PayumBuilderManagerTest extends PHPUnit_Framework_TestCase
         $payumBuilder->shouldHaveReceived('addStorage')->times(3);
     }
 
-    public function test_load_gateway_configs()
-    {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
+    // public function test_load_gateway_configs()
+    // {
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Arrange
+    //     |------------------------------------------------------------
+    //     */
+    //
+    //     $payumBuilder = m::spy('Payum\Core\PayumBuilder');
+    //     $config = [];
+    //     $app = m::spy('Illuminate\Contracts\Foundation\Application');
+    //
+    //     $gatewayConfig = m::spy('Recca0120\LaravelPayum\Model\GatewayConfig');
+    //
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Act
+    //     |------------------------------------------------------------
+    //     */
+    //
+    //     $app->shouldReceive('make')->andReturn($gatewayConfig);
+    //
+    //     $gatewayConfig
+    //         ->shouldReceive('newQuery')->andReturnSelf()
+    //         ->shouldReceive('get')->andReturnSelf()
+    //         ->shouldReceive('all')->andReturn([$gatewayConfig])
+    //         ->shouldReceive('getGatewayName')->once()->andReturn('fooGateway')
+    //         ->shouldReceive('getFactoryName')->once()->andReturn('fooFactoryName')
+    //         ->shouldReceive('getConfig')->once()->andReturn([
+    //             'foo' => 'bar',
+    //         ]);
+    //
+    //     $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
+    //
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Assert
+    //     |------------------------------------------------------------
+    //     */
+    //
+    //     $manager->loadGatewayConfigs();
+    //
+    //     $app->shouldHaveReceived('make')->once();
+    //     $gatewayConfig->shouldHaveReceived('newQuery')->once();
+    //     $gatewayConfig->shouldHaveReceived('get')->once();
+    //     $gatewayConfig->shouldHaveReceived('all')->once();
+    // }
 
-        $payumBuilder = m::spy('Payum\Core\PayumBuilder');
-        $config = [];
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-
-        $gatewayConfig = m::spy('Recca0120\LaravelPayum\Model\GatewayConfig');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $app->shouldReceive('make')->andReturn($gatewayConfig);
-
-        $gatewayConfig
-            ->shouldReceive('newQuery')->andReturnSelf()
-            ->shouldReceive('get')->andReturnSelf()
-            ->shouldReceive('all')->andReturn([$gatewayConfig])
-            ->shouldReceive('getGatewayName')->once()->andReturn('fooGateway')
-            ->shouldReceive('getFactoryName')->once()->andReturn('fooFactoryName')
-            ->shouldReceive('getConfig')->once()->andReturn([
-                'foo' => 'bar',
-            ]);
-
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $manager->loadGatewayConfigs();
-
-        $app->shouldHaveReceived('make')->once();
-        $gatewayConfig->shouldHaveReceived('newQuery')->once();
-        $gatewayConfig->shouldHaveReceived('get')->once();
-        $gatewayConfig->shouldHaveReceived('all')->once();
-    }
-
-    public function test_set_gateway_config()
-    {
-        /*
-        |------------------------------------------------------------
-        | Arrange
-        |------------------------------------------------------------
-        */
-
-        $payumBuilder = m::spy('Payum\Core\PayumBuilder');
-        $config = [
-            'gatewayConfigs' => [
-                'gatewayName' => [
-                    'factory' => 'factory',
-                    'username' => 'username',
-                    'password' => 'password',
-                ],
-                'gatewayName2' => [
-                    'factory' => 'stdClass',
-                    'username' => 'username',
-                    'password' => 'password',
-                ],
-            ],
-            'storage.gatewayConfig' => 'eloquent',
-        ];
-        $app = m::spy('Illuminate\Contracts\Foundation\Application');
-
-        $gatewayConfig = m::spy('Recca0120\LaravelPayum\Model\GatewayConfig');
-        $gatewayFactory = m::spy('Payum\Core\GatewayFactoryInterface');
-
-        /*
-        |------------------------------------------------------------
-        | Act
-        |------------------------------------------------------------
-        */
-
-        $app
-            ->shouldReceive('make')->andReturn($gatewayConfig);
-
-        $gatewayConfig
-            ->shouldReceive('newQuery')->andReturnSelf()
-            ->shouldReceive('get')->andReturnSelf()
-            ->shouldReceive('all')->andReturn([$gatewayConfig])
-            ->shouldReceive('getGatewayName')->once()->andReturn('fooGateway')
-            ->shouldReceive('getFactoryName')->once()->andReturn('fooFactoryName')
-            ->shouldReceive('getConfig')->once()->andReturn([
-                'foo' => 'bar',
-            ]);
-
-        $manager = new PayumBuilderManager($payumBuilder, $config, $app);
-
-        /*
-        |------------------------------------------------------------
-        | Assert
-        |------------------------------------------------------------
-        */
-
-        $manager->setGatewayConfig();
-
-        foreach ($config['gatewayConfigs'] as $gatewayName => $gatewayConfig) {
-            $payumBuilder->shouldReceive('addGatewayFactory')->with($gatewayName, m::on(function ($closure) use ($gatewayName, $gatewayConfig, $gatewayFactory) {
-                $this->assertInstanceOf($gatewayName, $closure($gatewayConfig, $gatewayFactory));
-
-                return true;
-            }));
-        }
-    }
+    // public function test_set_gateway_config()
+    // {
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Arrange
+    //     |------------------------------------------------------------
+    //     */
+    //
+    //     $payumBuilder = m::spy('Payum\Core\PayumBuilder');
+    //     $config = [
+    //         'gatewayConfigs' => [
+    //             'gatewayName' => [
+    //                 'factory' => 'factory',
+    //                 'username' => 'username',
+    //                 'password' => 'password',
+    //             ],
+    //             'gatewayName2' => [
+    //                 'factory' => 'stdClass',
+    //                 'username' => 'username',
+    //                 'password' => 'password',
+    //             ],
+    //         ],
+    //         'storage.gatewayConfig' => 'eloquent',
+    //     ];
+    //     $app = m::spy('Illuminate\Contracts\Foundation\Application');
+    //
+    //     $gatewayConfig = m::spy('Recca0120\LaravelPayum\Model\GatewayConfig');
+    //     $gatewayFactory = m::spy('Payum\Core\GatewayFactoryInterface');
+    //
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Act
+    //     |------------------------------------------------------------
+    //     */
+    //
+    //     $app
+    //         ->shouldReceive('make')->andReturn($gatewayConfig);
+    //
+    //     $gatewayConfig
+    //         ->shouldReceive('newQuery')->andReturnSelf()
+    //         ->shouldReceive('get')->andReturnSelf()
+    //         ->shouldReceive('all')->andReturn([$gatewayConfig])
+    //         ->shouldReceive('getGatewayName')->once()->andReturn('fooGateway')
+    //         ->shouldReceive('getFactoryName')->once()->andReturn('fooFactoryName')
+    //         ->shouldReceive('getConfig')->once()->andReturn([
+    //             'foo' => 'bar',
+    //         ]);
+    //
+    //     $manager = new PayumBuilderWrapper($payumBuilder, $config, $app);
+    //
+    //     /*
+    //     |------------------------------------------------------------
+    //     | Assert
+    //     |------------------------------------------------------------
+    //     */
+    //
+    //     $manager->setGatewayConfig();
+    //
+    //     foreach ($config['gatewayConfigs'] as $gatewayName => $gatewayConfig) {
+    //         $payumBuilder->shouldReceive('addGatewayFactory')->with($gatewayName, m::on(function ($closure) use ($gatewayName, $gatewayConfig, $gatewayFactory) {
+    //             $this->assertInstanceOf($gatewayName, $closure($gatewayConfig, $gatewayFactory));
+    //
+    //             return true;
+    //         }));
+    //     }
+    // }
 }
 
 class gatewayName

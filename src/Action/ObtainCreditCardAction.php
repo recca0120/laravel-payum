@@ -72,10 +72,11 @@ class ObtainCreditCardAction implements ActionInterface
             return;
         }
 
+        $token = $request->getToken();
         $form = $this->viewFactory->make($this->templateName, [
             'model' => $request->getModel(),
             'firstModel' => $request->getFirstModel(),
-            'actionUrl' => $request->getToken() ? $request->getToken()->getTargetUrl() : null,
+            'actionUrl' => $token ? $token->getTargetUrl() : null,
         ]);
 
         throw new HttpResponse(new Response($form->render(), 200, [

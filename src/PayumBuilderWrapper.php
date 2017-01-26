@@ -23,7 +23,7 @@ use Recca0120\LaravelPayum\Model\Token as EloquentToken;
 use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
-class PayumBuilderManager
+class PayumBuilderWrapper
 {
     /**
      * $payumBuilder.
@@ -40,24 +40,15 @@ class PayumBuilderManager
     protected $config;
 
     /**
-     * $app.
-     *
-     * @var \Illuminate\Contracts\Foundation\Application
-     */
-    protected $app;
-
-    /**
      * __construct.
      *
      * @param \Payum\Core\PayumBuilder $payumBuilder
      * @param array $config
-     * @param \Illuminate\Contracts\Foundation\Application  $app
      */
-    public function __construct(PayumBuilder $payumBuilder, $config = [], Application $app = null)
+    public function __construct(PayumBuilder $payumBuilder, $config = [])
     {
         $this->payumBuilder = $payumBuilder;
         $this->config = $config;
-        $this->app = $app;
     }
 
     /**
@@ -163,8 +154,8 @@ class PayumBuilderManager
     public function setEloquentStorage()
     {
         $this->payumBuilder
-            ->setTokenStorage(new EloquentStorage(EloquentToken::class, $this->app))
-            ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class, $this->app));
+            ->setTokenStorage(new EloquentStorage(EloquentToken::class))
+            ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class));
 
         return $this;
     }
@@ -200,10 +191,8 @@ class PayumBuilderManager
     public function loadGatewayConfigs()
     {
         $gatewayConfigs = [];
-        $storage = new EloquentStorage(GatewayConfig::class, $this->app);
-
+        $storage = new EloquentStorage(GatewayConfig::class);
         $this->payumBuilder->setGatewayConfigStorage($storage);
-
         foreach ($storage->findBy([]) as $gatewayConfig) {
             $gatewayName = $gatewayConfig->getGatewayName();
             $factoryName = $gatewayConfig->getFactoryName();

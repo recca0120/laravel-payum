@@ -10,48 +10,38 @@ class TokenEloquentTest extends PHPUnit_Framework_TestCase
         m::close();
     }
 
-    public function test_set_attributes()
+    public function test_set_hash()
     {
-        /*
-        |------------------------------------------------------------
-        | Set
-        |------------------------------------------------------------
-        */
+        $token = new Token();
+        $token->setHash($hash = uniqid());
+        $this->assertSame($hash, $token->getHash());
+    }
 
-        $token = m::mock(new Token());
-        $creditcard = m::mock('Payum\Core\Model\CreditCardInterface');
+    public function test_set_details()
+    {
+        $token = new Token();
+        $token->setDetails($details = ['foo' => 'bar']);
+        $this->assertSame($details, $token->getDetails());
+    }
 
-        /*
-        |------------------------------------------------------------
-        | Expectation
-        |------------------------------------------------------------
-        */
+    public function test_set_target_url()
+    {
+        $token = new Token();
+        $token->setTargetUrl($targetUrl = 'foo');
+        $this->assertSame($targetUrl, $token->getTargetUrl());
+    }
 
-        $exceptedHash = 'fooHash';
-        $exceptedDetails = [
-            'foo',
-            'bar',
-        ];
-        $exceptedTargetUrl = 'fooTargetUrl';
-        $exceptedAfterUrl = 'fooAfterUrl';
-        $exceptedgetGatewayName = 'fooGatewayName';
+    public function test_set_after_url()
+    {
+        $token = new Token();
+        $token->setAfterUrl($afterUrl = 'foo');
+        $this->assertSame($afterUrl, $token->getAfterUrl());
+    }
 
-        $token->setHash($exceptedHash);
-        $token->setDetails($exceptedDetails);
-        $token->setTargetUrl($exceptedTargetUrl);
-        $token->setAfterUrl($exceptedAfterUrl);
-        $token->setGatewayName($exceptedgetGatewayName);
-
-        /*
-        |------------------------------------------------------------
-        | Assertion
-        |------------------------------------------------------------
-        */
-
-        $this->assertSame($exceptedHash, $token->getHash());
-        $this->assertSame($exceptedDetails, $token->getDetails());
-        $this->assertSame($exceptedTargetUrl, $token->getTargetUrl());
-        $this->assertSame($exceptedAfterUrl, $token->getAfterUrl());
-        $this->assertSame($exceptedgetGatewayName, $token->getGatewayName());
+    public function test_set_gateway_name()
+    {
+        $token = new Token();
+        $token->setGatewayName($gatewayName = 'foo');
+        $this->assertSame($gatewayName, $token->getGatewayName());
     }
 }
