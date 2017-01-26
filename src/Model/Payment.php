@@ -5,8 +5,9 @@ namespace Recca0120\LaravelPayum\Model;
 use Payum\Core\Model\PaymentInterface;
 use Illuminate\Database\Eloquent\Model;
 use Payum\Core\Model\CreditCardInterface;
+use Recca0120\LaravelPayum\Contracts\PaymentStatus;
 
-class Payment extends Model implements PaymentInterface, StatusInterface
+class Payment extends Model implements PaymentInterface, PaymentStatus
 {
     /**
      * $table.

@@ -54,7 +54,7 @@ class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
         $context = m::mock('Payum\Core\Extension\Context');
         $context->shouldReceive('getPrevious')->once();
         $context->shouldReceive('getRequest')->andReturn($request = m::mock('Payum\Core\Request\Generic'))->once();
-        $request->shouldReceive('getFirstModel')->andReturn($payment = m::mock('Payum\Core\Model\PaymentInterface, Recca0120\LaravelPayum\Model\StatusInterface'))->once();
+        $request->shouldReceive('getFirstModel')->andReturn($payment = m::mock('Payum\Core\Model\PaymentInterface, Recca0120\LaravelPayum\Contracts\PaymentStatus'))->once();
         $context->shouldReceive('getGateway->execute')->with(m::on(function ($status) {
             $status->markCaptured();
 

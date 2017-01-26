@@ -98,8 +98,12 @@ class LaravelPayumServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
 
+        $this->app->singleton(PayumBuilderWrapper::class, function($app) {
+            return new PayumBuilderWrapper(new PayumBuilder, $app['config']['payum']);
+        });
+
         $this->app->singleton(PayumBuilder::class, function ($app) {
-            return (new PayumBuilderWrapper(new PayumBuilder, $app['config']['payum']))
+            return $app->make(PayumBuilderWrapper::class)
                 ->setTokenFactory($app['url'])
                 ->setStorage($app['files'])
                 ->setCoreGatewayFactoryConfig([
@@ -109,6 +113,10 @@ class LaravelPayumServiceProvider extends ServiceProvider
                     'payum.converter.reply_to_http_response' => $app->make(ReplyToSymfonyResponseConverter::class),
                     'payum.extension.update_payment_status' => $app->make(UpdatePaymentStatusExtension::class),
                 ])
+                ->setHttpRequestVerifier()
+                ->setCoreGatewayFactory()
+                ->setGenericTokenFactoryPaths()
+                ->setGatewayConfig()
                 ->getBuilder();
         });
 
@@ -128,6 +136,11 @@ class LaravelPayumServiceProvider extends ServiceProvider
      */
     public function provides()
     {
-        return [PayumBuilder::class, Payum::class, PayumService::class];
+        return [
+            PayumBuilderWrapper::class,
+            PayumBuilder::class,
+            Payum::class,
+            PayumService::class
+        ];
     }
 }

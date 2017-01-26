@@ -11,6 +11,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Payum\Core\Extension\ExtensionInterface;
 use Recca0120\LaravelPayum\Events\StatusChanged;
 use Recca0120\LaravelPayum\Model\StatusInterface;
+use Recca0120\LaravelPayum\Contracts\PaymentStatus;
 
 class UpdatePaymentStatusExtension implements ExtensionInterface
 {
@@ -54,7 +55,7 @@ class UpdatePaymentStatusExtension implements ExtensionInterface
             /* @var Payment $payment */
             $status = new GetHumanStatus($payment);
             $context->getGateway()->execute($status);
-            if ($payment instanceof StatusInterface) {
+            if ($payment instanceof PaymentStatus) {
                 $payment->setStatus($status->getValue());
             }
             $this->events->fire(new StatusChanged($status, $payment));

@@ -1,8 +1,8 @@
 <?php
 
-namespace Recca0120\LaravelPayum\Model;
+namespace Recca0120\LaravelPayum\Contracts;
 
-interface StatusInterface {
+interface PaymentStatus {
     /**
      * setStatus.
      *

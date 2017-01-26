@@ -98,13 +98,13 @@ class PayumBuilderWrapper
     /**
      * setCoreGatewayFactoryConfig.
      *
-     * @param array $config
+     * @param array $coreGatewayFactoryConfig
      *
      * @return static
      */
-    public function setCoreGatewayFactoryConfig($config)
+    public function setCoreGatewayFactoryConfig($coreGatewayFactoryConfig)
     {
-        $this->payumBuilder->setCoreGatewayFactoryConfig($config);
+        $this->payumBuilder->setCoreGatewayFactoryConfig($coreGatewayFactoryConfig);
 
         return $this;
     }
@@ -132,26 +132,13 @@ class PayumBuilderWrapper
     }
 
     /**
-     * setStorage.
-     *
-     * @param \Illuminate\Filesystem\Filesystem $filesystem
-     *
-     * @return static
-     */
-    public function setStorage(Filesystem $filesystem)
-    {
-        return Arr::get($this->config, 'storage.token') === 'eloquent' ?
-            $this->setEloquentStorage() : $this->setFilesystemStorage($filesystem);
-    }
-
-    /**
      * setEloquentStorage.
      *
      * @method setEloquentStorage
      *
      * @return static
      */
-    public function setEloquentStorage()
+    protected function setEloquentStorage()
     {
         $this->payumBuilder
             ->setTokenStorage(new EloquentStorage(EloquentToken::class))
@@ -167,7 +154,7 @@ class PayumBuilderWrapper
      *
      * @return static
      */
-    public function setFilesystemStorage(Filesystem $filesystem)
+    protected function setFilesystemStorage(Filesystem $filesystem)
     {
         $storagePath = Arr::get($this->config, 'path');
         if ($filesystem->isDirectory($storagePath) === false) {
@@ -184,11 +171,24 @@ class PayumBuilderWrapper
     }
 
     /**
+     * setStorage.
+     *
+     * @param \Illuminate\Filesystem\Filesystem $filesystem
+     *
+     * @return static
+     */
+    public function setStorage(Filesystem $filesystem)
+    {
+        return Arr::get($this->config, 'storage.token') === 'eloquent' ?
+            $this->setEloquentStorage() : $this->setFilesystemStorage($filesystem);
+    }
+
+    /**
      * loadGatewayConfigs.
      *
      * @return array
      */
-    public function loadGatewayConfigs()
+    protected function loadGatewayConfigs()
     {
         $gatewayConfigs = [];
         $storage = new EloquentStorage(GatewayConfig::class);
@@ -241,11 +241,6 @@ class PayumBuilderWrapper
      */
     public function getBuilder()
     {
-        return $this
-            ->setHttpRequestVerifier()
-            ->setCoreGatewayFactory()
-            ->setGenericTokenFactoryPaths()
-            ->setGatewayConfig()
-            ->payumBuilder;
+        return $this->payumBuilder;
     }
 }
