@@ -1,9 +1,9 @@
 <?php
-
+namespace Recca0120\LaravelPayum\Tests\Model;
 use Mockery as m;
 use Recca0120\LaravelPayum\Model\Payment;
 
-class PaymentEloquentTest extends PHPUnit_Framework_TestCase
+class PaymentEloquentTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {

@@ -1,9 +1,9 @@
 <?php
-
+namespace Recca0120\LaravelPayum\Tests\Actin;
 use Mockery as m;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 
-class RenderTemplateActionTest extends PHPUnit_Framework_TestCase
+class RenderTemplateActionTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {

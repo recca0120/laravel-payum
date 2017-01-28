@@ -57,7 +57,13 @@
             "Recca0120\\LaravelPayum\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Recca0120\\LaravelPayum\\Tests\\": "tests/"
+        }
+    },
     "config": {
-        "preferred-install": "dist"
+        "preferred-install": "dist",
+        "sort-packages": true
     }
 }

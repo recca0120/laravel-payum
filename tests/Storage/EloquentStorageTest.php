@@ -1,10 +1,12 @@
 <?php
 
+namespace Recca0120\LaravelPayum\Tests\Storage;
+
 use Mockery as m;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
 use Payum\Core\Model\Identity;
 
-class EloquentStorageTest extends PHPUnit_Framework_TestCase
+class EloquentStorageTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {

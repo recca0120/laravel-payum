@@ -1,12 +1,12 @@
 <?php
-
+namespace Recca0120\LaravelPayum\Tests\Actin;
 use Mockery as m;
 use Payum\Core\Reply\ReplyInterface;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 use Payum\Core\Model\CreditCard;
 use Payum\Core\Bridge\Symfony\Reply\HttpResponse;
 
-class ObtainCreditCardActionTest extends PHPUnit_Framework_TestCase
+class ObtainCreditCardActionTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {

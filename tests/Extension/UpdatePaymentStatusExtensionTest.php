@@ -1,11 +1,11 @@
 <?php
-
+namespace Recca0120\LaravelPayum\Tests\Extension;
 use Mockery as m;
 use Payum\Core\Model\Payment;
 use Payum\Core\Request\GetHumanStatus;
 use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 
-class UpdatePaymentStatusExtensionTest extends PHPUnit_Framework_TestCase
+class UpdatePaymentStatusExtensionTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {

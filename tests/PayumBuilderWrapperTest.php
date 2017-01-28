@@ -1,5 +1,7 @@
 <?php
 
+namespace Recca0120\LaravelPayum\Tests;
+
 use Mockery as m;
 use Recca0120\LaravelPayum\PayumBuilderWrapper;
 use Recca0120\LaravelPayum\Security\TokenFactory;
@@ -8,7 +10,7 @@ use Payum\Core\CoreGatewayFactory;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
 use Payum\Core\Storage\FilesystemStorage;
 
-class PayumBuilderWrapperTest extends PHPUnit_Framework_TestCase
+class PayumBuilderWrapperTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {

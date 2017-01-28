@@ -1,9 +1,9 @@
 <?php
-
+namespace Recca0120\LaravelPayum\Tests\Events;
 use Mockery as m;
 use Recca0120\LaravelPayum\Events\StatusChanged;
 
-class StatusChangedTest extends PHPUnit_Framework_TestCase
+class StatusChangedTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {

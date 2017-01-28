@@ -1,9 +1,10 @@
 <?php
+namespace Recca0120\LaravelPayum\Tests\Http\Controllers;
 
 use Mockery as m;
 use Recca0120\LaravelPayum\Http\Controllers\PaymentController;
 
-class PaymentControllerTest extends PHPUnit_Framework_TestCase
+class PaymentControllerTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {

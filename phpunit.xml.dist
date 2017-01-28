@@ -10,8 +10,7 @@
          stopOnError="false"
          stopOnFailure="false"
          syntaxCheck="true"
-         verbose="true"
->
+         verbose="true">
     <testsuites>
         <testsuite name="Package Test Suite">
             <directory suffix="Test.php">./tests</directory>

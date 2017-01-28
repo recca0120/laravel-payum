@@ -1,12 +1,14 @@
 <?php
 
+namespace Recca0120\LaravelPayum\Tests;
+
 use Mockery as m;
 use Recca0120\LaravelPayum\LaravelPayumServiceProvider;
 use Payum\Core\PayumBuilder;
 use Payum\Core\Payum;
 use Recca0120\LaravelPayum\PayumBuilderWrapper;
 
-class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
+class LaravelPayumServiceProviderTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
@@ -103,9 +105,4 @@ class LaravelPayumServiceProviderTest extends PHPUnit_Framework_TestCase
             'Recca0120\LaravelPayum\Service\PayumService',
         ], $serviceProvider->provides());
     }
-}
-
-function storage_path()
-{
-    return '';
 }

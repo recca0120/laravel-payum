@@ -1,9 +1,9 @@
 <?php
-
+namespace Recca0120\LaravelPayum\Tests\Model;
 use Mockery as m;
 use Recca0120\LaravelPayum\Model\Token;
 
-class TokenEloquentTest extends PHPUnit_Framework_TestCase
+class TokenEloquentTest extends \PHPUnit_Framework_TestCase
 {
     public function tearDown()
     {
