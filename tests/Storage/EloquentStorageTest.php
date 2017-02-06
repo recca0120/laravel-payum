@@ -3,17 +3,17 @@
 namespace Recca0120\LaravelPayum\Tests\Storage;
 
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;
-use Payum\Core\Model\Identity;
 
-class EloquentStorageTest extends \PHPUnit_Framework_TestCase
+class EloquentStorageTest extends TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_create_model()
+    public function testCreateModel()
     {
         $storage = new EloquentStorage('stdClass');
         $model = $storage->create();
@@ -22,54 +22,54 @@ class EloquentStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('stdClass', $model);
     }
 
-    public function test_update_model()
+    public function testUpdateModel()
     {
         $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
         $model = m::mock('Illimunate\Database\Eloquent\Model');
         $model->shouldReceive('save')->once();
-        $storage->setModelResolver(function() use ($model) {
+        $storage->setModelResolver(function () use ($model) {
             return $model;
         });
         $storage->update($model);
     }
 
-    public function test_find_id_when_id_is_string()
+    public function testFindIdWhenIdIsString()
     {
         $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
         $model = m::mock('Illimunate\Database\Eloquent\Model');
-        $model->shouldReceive('find')->with($id = uniqid())->once();
-        $storage->setModelResolver(function() use ($model) {
+        $model->shouldReceive('find')->once()->with($id = uniqid());
+        $storage->setModelResolver(function () use ($model) {
             return $model;
         });
         $storage->find($id);
     }
 
-    public function test_find_id_when_id_is_identity()
+    public function testFindIdWhenIdIsIdentity()
     {
         $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
         $model = m::mock('Illimunate\Database\Eloquent\Model');
         $identity = m::mock('Payum\Core\Storage\IdentityInterface');
-        $identity->shouldReceive('getClass')->andReturn(get_parent_class($model))->once();
+        $identity->shouldReceive('getClass')->once()->andReturn(get_parent_class($model));
         $identity->shouldReceive('getId')->andReturn($id = uniqid());
-        $model->shouldReceive('find')->with($id)->once();
-        $storage->setModelResolver(function() use ($model) {
+        $model->shouldReceive('find')->once()->with($id);
+        $storage->setModelResolver(function () use ($model) {
             return $model;
         });
         $storage->find($identity);
     }
 
-    public function test_delete_model()
+    public function testDeleteModel()
     {
         $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
         $model = m::mock('Illimunate\Database\Eloquent\Model');
         $model->shouldReceive('delete')->once();
-        $storage->setModelResolver(function() use ($model) {
+        $storage->setModelResolver(function () use ($model) {
             return $model;
         });
         $storage->delete($model);
     }
 
-    public function test_identify_model()
+    public function testIdentifyModel()
     {
         $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
         $model = m::mock('Illimunate\Database\Eloquent\Model');
@@ -78,13 +78,14 @@ class EloquentStorageTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($key, $identify->getId());
     }
 
-    public function test_find_by_criteria() {
+    public function testFindByCriteria()
+    {
         $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
         $model = m::mock('Illimunate\Database\Eloquent\Model');
-        $model->shouldReceive('newQuery')->andReturn($builder = m::mock('Illuminate\Database\Eloquent\Builder'))->once();
-        $builder->shouldReceive('where')->with('foo', '=', 'bar')->andReturnSelf()->once();
-        $builder->shouldReceive('get->all')->andReturn($result = ['foo', 'bar'])->once();
-        $storage->setModelResolver(function() use ($model) {
+        $model->shouldReceive('newQuery')->once()->andReturn($builder = m::mock('Illuminate\Database\Eloquent\Builder'));
+        $builder->shouldReceive('where')->once()->with('foo', '=', 'bar')->andReturnSelf();
+        $builder->shouldReceive('get->all')->once()->andReturn($result = ['foo', 'bar']);
+        $storage->setModelResolver(function () use ($model) {
             return $model;
         });
         $this->assertSame($result, $storage->findBy($criteria = ['foo' => 'bar']));

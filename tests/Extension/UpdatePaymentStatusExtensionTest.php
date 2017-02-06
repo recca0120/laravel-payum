@@ -1,18 +1,20 @@
 <?php
+
 namespace Recca0120\LaravelPayum\Tests\Extension;
+
 use Mockery as m;
-use Payum\Core\Model\Payment;
+use PHPUnit\Framework\TestCase;
 use Payum\Core\Request\GetHumanStatus;
 use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 
-class UpdatePaymentStatusExtensionTest extends \PHPUnit_Framework_TestCase
+class UpdatePaymentStatusExtensionTest extends TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_context_has_previous()
+    public function testContextHasPrevious()
     {
         $updatePaymentStatusExtension = new UpdatePaymentStatusExtension(
             $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
@@ -20,48 +22,50 @@ class UpdatePaymentStatusExtensionTest extends \PHPUnit_Framework_TestCase
         $context = m::mock('Payum\Core\Extension\Context');
         $updatePaymentStatusExtension->onPreExecute($context);
         $updatePaymentStatusExtension->onExecute($context);
-        $context->shouldReceive('getPrevious')->andReturn(m::mock('stdClass'))->once();
+        $context->shouldReceive('getPrevious')->once()->andReturn(m::mock('stdClass'));
         $updatePaymentStatusExtension->onPostExecute($context);
     }
 
-    public function test_request_isnt_generic()
+    public function testRequestIsntGeneric()
     {
         $updatePaymentStatusExtension = new UpdatePaymentStatusExtension(
             $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
         );
         $context = m::mock('Payum\Core\Extension\Context');
         $context->shouldReceive('getPrevious')->once();
-        $context->shouldReceive('getRequest')->andReturn($request = m::mock('stdClass'))->once();
+        $context->shouldReceive('getRequest')->once()->andReturn($request = m::mock('stdClass'));
         $updatePaymentStatusExtension->onPostExecute($context);
     }
 
-    public function test_request_isnt_get_status_interface()
+    public function testRequestIsntGetStatusInterface()
     {
         $updatePaymentStatusExtension = new UpdatePaymentStatusExtension(
             $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
         );
         $context = m::mock('Payum\Core\Extension\Context');
         $context->shouldReceive('getPrevious')->once();
-        $context->shouldReceive('getRequest')->andReturn($request = m::mock('Payum\Core\Request\GetStatusInterface'))->once();
+        $context->shouldReceive('getRequest')->once()->andReturn($request = m::mock('Payum\Core\Request\GetStatusInterface'));
         $updatePaymentStatusExtension->onPostExecute($context);
     }
 
-    public function test_status_changed()
+    public function testStatusChanged()
     {
         $updatePaymentStatusExtension = new UpdatePaymentStatusExtension(
             $events = m::mock('Illuminate\Contracts\Events\Dispatcher')
         );
         $context = m::mock('Payum\Core\Extension\Context');
         $context->shouldReceive('getPrevious')->once();
-        $context->shouldReceive('getRequest')->andReturn($request = m::mock('Payum\Core\Request\Generic'))->once();
-        $request->shouldReceive('getFirstModel')->andReturn($payment = m::mock('Payum\Core\Model\PaymentInterface, Recca0120\LaravelPayum\Contracts\PaymentStatus'))->once();
-        $context->shouldReceive('getGateway->execute')->with(m::on(function ($status) {
+        $context->shouldReceive('getRequest')->once()->andReturn($request = m::mock('Payum\Core\Request\Generic'));
+        $request->shouldReceive('getFirstModel')->once()->andReturn(
+            $payment = m::mock('Payum\Core\Model\PaymentInterface, Recca0120\LaravelPayum\Contracts\PaymentStatus')
+        );
+        $context->shouldReceive('getGateway->execute')->once()->with(m::on(function ($status) {
             $status->markCaptured();
 
             return $status instanceof GetHumanStatus;
-        }))->once();
-        $payment->shouldReceive('setStatus')->with('captured')->once();
-        $events->shouldReceive('fire')->with(m::type('Recca0120\LaravelPayum\Events\StatusChanged'))->once();
+        }));
+        $payment->shouldReceive('setStatus')->once()->with('captured');
+        $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelPayum\Events\StatusChanged'));
         $updatePaymentStatusExtension->onPostExecute($context);
     }
 }

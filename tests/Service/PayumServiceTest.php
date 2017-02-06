@@ -1,10 +1,13 @@
 <?php
+
 namespace Recca0120\LaravelPayum\Tests\Service;
+
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Payum\Core\Reply\HttpResponse;
 use Recca0120\LaravelPayum\Service\PayumService;
 
-class PayumServiceTest extends \PHPUnit_Framework_TestCase
+class PayumServiceTest extends TestCase
 {
     public function tearDown()
     {

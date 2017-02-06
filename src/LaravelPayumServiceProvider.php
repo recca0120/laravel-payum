@@ -98,7 +98,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../config/payum.php', 'payum');
 
-        $this->app->singleton(PayumBuilderWrapper::class, function($app) {
+        $this->app->singleton(PayumBuilderWrapper::class, function ($app) {
             return new PayumBuilderWrapper(new PayumBuilder, $app['config']['payum']);
         });
 
@@ -140,7 +140,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
             PayumBuilderWrapper::class,
             PayumBuilder::class,
             Payum::class,
-            PayumService::class
+            PayumService::class,
         ];
     }
 }

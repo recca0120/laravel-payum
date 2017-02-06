@@ -1,16 +1,19 @@
 <?php
+
 namespace Recca0120\LaravelPayum\Tests\Events;
+
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelPayum\Events\StatusChanged;
 
-class StatusChangedTest extends \PHPUnit_Framework_TestCase
+class StatusChangedTest extends TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_create_status_changed_event()
+    public function testCreateStatusChangedEvent()
     {
         $event = new StatusChanged(
             $status = m::mock('Payum\Core\Request\GetStatusInterface'),

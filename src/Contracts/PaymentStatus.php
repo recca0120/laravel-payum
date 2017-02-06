@@ -2,7 +2,8 @@
 
 namespace Recca0120\LaravelPayum\Contracts;
 
-interface PaymentStatus {
+interface PaymentStatus
+{
     /**
      * setStatus.
      *
@@ -11,6 +12,7 @@ interface PaymentStatus {
      * @param CreditCardInterface $creditCard
      */
     public function setStatus($status);
+
     /**
      * getStatus.
      *

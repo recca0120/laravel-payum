@@ -21,7 +21,7 @@ class EloquentStorage extends AbstractStorage
     public function __construct($modelClass)
     {
         parent::__construct($modelClass);
-        $this->modelResolver = function() {
+        $this->modelResolver = function () {
             return new $this->modelClass();
         };
     }
@@ -41,7 +41,8 @@ class EloquentStorage extends AbstractStorage
      *
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function create() {
+    public function create()
+    {
         $resolver = $this->modelResolver;
 
         return $resolver();

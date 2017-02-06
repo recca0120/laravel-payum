@@ -1,44 +1,47 @@
 <?php
+
 namespace Recca0120\LaravelPayum\Tests\Model;
+
 use Mockery as m;
+use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelPayum\Model\Token;
 
-class TokenEloquentTest extends \PHPUnit_Framework_TestCase
+class TokenEloquentTest extends TestCase
 {
     public function tearDown()
     {
         m::close();
     }
 
-    public function test_set_hash()
+    public function testSetHash()
     {
         $token = new Token();
         $token->setHash($hash = uniqid());
         $this->assertSame($hash, $token->getHash());
     }
 
-    public function test_set_details()
+    public function testSetDetails()
     {
         $token = new Token();
         $token->setDetails($details = ['foo' => 'bar']);
         $this->assertSame($details, $token->getDetails());
     }
 
-    public function test_set_target_url()
+    public function testSetTargetUrl()
     {
         $token = new Token();
         $token->setTargetUrl($targetUrl = 'foo');
         $this->assertSame($targetUrl, $token->getTargetUrl());
     }
 
-    public function test_set_after_url()
+    public function testSetAfterUrl()
     {
         $token = new Token();
         $token->setAfterUrl($afterUrl = 'foo');
         $this->assertSame($afterUrl, $token->getAfterUrl());
     }
 
-    public function test_set_gateway_name()
+    public function testSetGatewayName()
     {
         $token = new Token();
         $token->setGatewayName($gatewayName = 'foo');

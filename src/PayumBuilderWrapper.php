@@ -15,7 +15,6 @@ use Payum\Core\Model\Payout as PayumPayout;
 use Payum\Core\Model\Payment as PayumPayment;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Recca0120\LaravelPayum\Model\GatewayConfig;
-use Illuminate\Contracts\Foundation\Application;
 use Payum\Core\Registry\StorageRegistryInterface;
 use Recca0120\LaravelPayum\Security\TokenFactory;
 use Recca0120\LaravelPayum\Storage\EloquentStorage;

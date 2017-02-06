@@ -10,7 +10,6 @@ use Payum\Core\Request\GetStatusInterface;
 use Illuminate\Contracts\Events\Dispatcher;
 use Payum\Core\Extension\ExtensionInterface;
 use Recca0120\LaravelPayum\Events\StatusChanged;
-use Recca0120\LaravelPayum\Model\StatusInterface;
 use Recca0120\LaravelPayum\Contracts\PaymentStatus;
 
 class UpdatePaymentStatusExtension implements ExtensionInterface
