@@ -8,7 +8,7 @@ use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
 
 class GetHttpRequestActionTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

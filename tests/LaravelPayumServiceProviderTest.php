@@ -11,7 +11,7 @@ use Recca0120\LaravelPayum\LaravelPayumServiceProvider;
 
 class LaravelPayumServiceProviderTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

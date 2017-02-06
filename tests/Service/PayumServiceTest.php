@@ -9,7 +9,7 @@ use Recca0120\LaravelPayum\Service\PayumService;
 
 class PayumServiceTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

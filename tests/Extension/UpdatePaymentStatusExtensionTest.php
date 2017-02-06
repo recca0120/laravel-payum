@@ -9,7 +9,7 @@ use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 
 class UpdatePaymentStatusExtensionTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

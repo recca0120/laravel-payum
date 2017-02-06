@@ -10,7 +10,7 @@ use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 
 class ObtainCreditCardActionTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

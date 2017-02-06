@@ -8,7 +8,7 @@ use Recca0120\LaravelPayum\Events\StatusChanged;
 
 class StatusChangedTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

@@ -8,7 +8,7 @@ use Recca0120\LaravelPayum\Model\Token;
 
 class TokenEloquentTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

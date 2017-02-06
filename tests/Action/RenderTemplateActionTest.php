@@ -8,7 +8,7 @@ use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 
 class RenderTemplateActionTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

@@ -8,7 +8,7 @@ use Recca0120\LaravelPayum\Security\TokenFactory;
 
 class TokenFactoryTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

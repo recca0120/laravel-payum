@@ -13,7 +13,7 @@ use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
 
 class PayumBuilderWrapperTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }

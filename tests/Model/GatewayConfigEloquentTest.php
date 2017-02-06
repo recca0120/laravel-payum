@@ -8,7 +8,7 @@ use Recca0120\LaravelPayum\Model\GatewayConfig;
 
 class GatewayConfigEloquentTest extends TestCase
 {
-    public function tearDown()
+    protected function tearDown()
     {
         m::close();
     }
