@@ -7,10 +7,26 @@ use Payum\Core\Request\GetStatusInterface;
 
 class StatusChanged
 {
+    /**
+     * $status.
+     *
+     * @var \Payum\Core\Model\PaymentInterface
+     */
     public $status;
 
+    /**
+     * $payment.
+     *
+     * @var [type]
+     */
     public $payment;
 
+    /**
+     * __construct.
+     *
+     * @param \Payum\Core\Model\PaymentInterface $status
+     * @param \Payum\Core\Model\PaymentInterface $payment
+     */
     public function __construct(GetStatusInterface $status, PaymentInterface $payment)
     {
         $this->status = $status;

@@ -133,8 +133,6 @@ class PayumBuilderWrapper
     /**
      * setEloquentStorage.
      *
-     * @method setEloquentStorage
-     *
      * @return static
      */
     protected function setEloquentStorage()
@@ -148,8 +146,6 @@ class PayumBuilderWrapper
 
     /**
      * setFilesystemStorage.
-     *
-     * @method setFilesystemStorage
      *
      * @return static
      */
@@ -208,9 +204,7 @@ class PayumBuilderWrapper
     /**
      * setGatewayConfig.
      *
-     * @method setGatewayConfig
-     *
-     * @return self
+     * @return static
      */
     public function setGatewayConfig()
     {

@@ -15,8 +15,6 @@ class GatewayConfig extends Model implements GatewayConfigInterface
     /**
      * getGatewayName.
      *
-     * @method getGatewayName
-     *
      * @return string
      */
     public function getGatewayName()
@@ -26,8 +24,6 @@ class GatewayConfig extends Model implements GatewayConfigInterface
 
     /**
      * setGatewayName.
-     *
-     * @method setGatewayName
      *
      * @param string $gatewayName
      */
@@ -39,8 +35,6 @@ class GatewayConfig extends Model implements GatewayConfigInterface
     /**
      * getFactoryName.
      *
-     * @method getFactoryName
-     *
      * @return string
      */
     public function getFactoryName()
@@ -50,8 +44,6 @@ class GatewayConfig extends Model implements GatewayConfigInterface
 
     /**
      * setFactoryName.
-     *
-     * @method setFactoryName
      *
      * @param string $name
      */
@@ -63,8 +55,6 @@ class GatewayConfig extends Model implements GatewayConfigInterface
     /**
      * getConfig.
      *
-     * @method getConfig
-     *
      * @return array
      */
     public function getConfig()
@@ -74,8 +64,6 @@ class GatewayConfig extends Model implements GatewayConfigInterface
 
     /**
      * setConfig.
-     *
-     * @method setConfig
      *
      * @param array $config
      */

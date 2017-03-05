@@ -19,8 +19,6 @@ class RenderTemplateAction implements ActionInterface
     /**
      * __construct.
      *
-     * @method __construct
-     *
      * @param \Illuminate\Contracts\View\Factory $viewFactory
      */
     public function __construct(ViewFactory $viewFactory)

@@ -14,8 +14,18 @@ use Recca0120\LaravelPayum\Contracts\PaymentStatus;
 
 class UpdatePaymentStatusExtension implements ExtensionInterface
 {
+    /**
+     * $events.
+     *
+     * @var \Illuminate\Contracts\Events\Dispatcher
+     */
     protected $events;
 
+    /**
+     * __construct.
+     *
+     * @param \Illuminate\Contracts\Events\Dispatcher $events
+     */
     public function __construct(Dispatcher $events)
     {
         $this->events = $events;

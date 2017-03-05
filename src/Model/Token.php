@@ -39,8 +39,6 @@ class Token extends Model implements TokenInterface
     /**
      * __construct.
      *
-     * @method __construct
-     *
      * @param array $attributes
      */
     public function __construct(array $attributes = [])
@@ -52,8 +50,6 @@ class Token extends Model implements TokenInterface
     /**
      * getHash.
      *
-     * @method getHash
-     *
      * @return string
      */
     public function getHash()
@@ -63,8 +59,6 @@ class Token extends Model implements TokenInterface
 
     /**
      * setHash.
-     *
-     * @method setHash
      *
      * @param string $hash
      */
@@ -76,8 +70,6 @@ class Token extends Model implements TokenInterface
     /**
      * setDetails.
      *
-     * @method setDetails
-     *
      * @param mixed $details
      */
     public function setDetails($details)
@@ -87,8 +79,6 @@ class Token extends Model implements TokenInterface
 
     /**
      * getDetails.
-     *
-     * @method getDetails
      *
      * @return mixed
      */
@@ -100,8 +90,6 @@ class Token extends Model implements TokenInterface
     /**
      * getTargetUrl.
      *
-     * @method getTargetUrl
-     *
      * @return string
      */
     public function getTargetUrl()
@@ -111,8 +99,6 @@ class Token extends Model implements TokenInterface
 
     /**
      * setTargetUrl.
-     *
-     * @method setTargetUrl
      *
      * @param string $targetUrl
      */
@@ -124,8 +110,6 @@ class Token extends Model implements TokenInterface
     /**
      * getAfterUrl.
      *
-     * @method getAfterUrl
-     *
      * @return string
      */
     public function getAfterUrl()
@@ -135,8 +119,6 @@ class Token extends Model implements TokenInterface
 
     /**
      * setAfterUrl.
-     *
-     * @method setAfterUrl
      *
      * @param string $afterUrl
      */
@@ -148,8 +130,6 @@ class Token extends Model implements TokenInterface
     /**
      * getGatewayName.
      *
-     * @method getGatewayName
-     *
      * @return string
      */
     public function getGatewayName()
@@ -159,8 +139,6 @@ class Token extends Model implements TokenInterface
 
     /**
      * setGatewayName.
-     *
-     * @method setGatewayName
      *
      * @param string $gatewayName
      */

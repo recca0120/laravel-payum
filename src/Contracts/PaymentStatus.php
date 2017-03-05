@@ -7,16 +7,14 @@ interface PaymentStatus
     /**
      * setStatus.
      *
-     * @method setStatus
-     *
-     * @param CreditCardInterface $creditCard
+     * @param string $status
      */
     public function setStatus($status);
 
     /**
      * getStatus.
      *
-     * @method getStatus
+     * @return string
      */
     public function getStatus();
 }

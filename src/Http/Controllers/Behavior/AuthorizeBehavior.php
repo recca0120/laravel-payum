@@ -9,11 +9,8 @@ trait AuthorizeBehavior
     /**
      * receiveAuthorize.
      *
-     * @method receiveAuthorize
-     *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $payumToken
-     *
      * @return mixed
      */
     public function receiveAuthorize(PayumService $payumService, $payumToken)

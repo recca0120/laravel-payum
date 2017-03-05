@@ -59,8 +59,6 @@ class PayumService
     /**
      * __construct.
      *
-     * @method __construct
-     *
      * @param \Payum\Core\Payum                                          $payum
      * @param \Illuminate\Http\Request                                   $request
      * @param \Illuminate\Contracts\Routing\ResponseFactory              $responseFactory
@@ -81,8 +79,6 @@ class PayumService
     /**
      * getPayum.
      *
-     * @method getPayum
-     *
      * @return \Payum\Core\Payum
      */
     public function getPayum()
@@ -93,10 +89,7 @@ class PayumService
     /**
      * getGateway.
      *
-     * @method getGateway
-     *
      * @param string $gatewayName
-     *
      * @return \Payum\Core\GatewayInterface
      */
     public function getGateway($gatewayName)
@@ -107,14 +100,11 @@ class PayumService
     /**
      * request.
      *
-     * @method request
-     *
      * @param string   $gatewayName
      * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      * @param string   $tokenType
-     *
      * @return mixed
      */
     public function request($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
@@ -138,14 +128,11 @@ class PayumService
     /**
      * prepare.
      *
-     * @method prepare
-     *
      * @param string   $gatewayName
      * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
      * @param string   $tokenType
-     *
      * @return mixed
      */
     public function prepare($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
@@ -156,13 +143,10 @@ class PayumService
     /**
      * capture.
      *
-     * @method capture
-     *
      * @param string   $gatewayName
      * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
-     *
      * @return mixed
      */
     public function capture($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
@@ -173,13 +157,10 @@ class PayumService
     /**
      * authorize.
      *
-     * @method authorize
-     *
      * @param string   $gatewayName
      * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
-     *
      * @return mixed
      */
     public function authorize($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
@@ -190,13 +171,10 @@ class PayumService
     /**
      * refund.
      *
-     * @method refund
-     *
      * @param string   $gatewayName
      * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
-     *
      * @return mixed
      */
     public function refund($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
@@ -207,13 +185,10 @@ class PayumService
     /**
      * cancel.
      *
-     * @method cancel
-     *
      * @param string   $gatewayName
      * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
-     *
      * @return mixed
      */
     public function cancel($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
@@ -224,13 +199,10 @@ class PayumService
     /**
      * payout.
      *
-     * @method payout
-     *
      * @param string   $gatewayName
      * @param callable $closure
      * @param string   $afterPath
      * @param array    $afterParameters
-     *
      * @return mixed
      */
     public function payout($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
@@ -241,11 +213,8 @@ class PayumService
     /**
      * send.
      *
-     * @method send
-     *
      * @param string   $payumToken
      * @param callable $closure
-     *
      * @return mixed
      */
     public function receive($payumToken, callable $closure)
@@ -271,10 +240,7 @@ class PayumService
     /**
      * receiveAuthorize.
      *
-     * @method receiveAuthorize
-     *
      * @param string $payumToken
-     *
      * @return mixed
      */
     public function receiveAuthorize($payumToken)
@@ -290,10 +256,7 @@ class PayumService
     /**
      * receiveCapture.
      *
-     * @method receiveCapture
-     *
      * @param string $payumToken
-     *
      * @return mixed
      */
     public function receiveCapture($payumToken = null)
@@ -309,10 +272,7 @@ class PayumService
     /**
      * receiveNotify.
      *
-     * @method receiveNotify
-     *
      * @param string $payumToken
-     *
      * @return mixed
      */
     public function receiveNotify($payumToken)
@@ -327,10 +287,7 @@ class PayumService
     /**
      * receiveNotifyUnsafe.
      *
-     * @method receiveNotifyUnsafe
-     *
      * @param string $gatewayName
-     *
      * @return mixed
      */
     public function receiveNotifyUnsafe($gatewayName)
@@ -348,10 +305,7 @@ class PayumService
     /**
      * receivePayout.
      *
-     * @method receivePayout
-     *
      * @param string $payumToken
-     *
      * @return mixed
      */
     public function receivePayout($payumToken)
@@ -367,10 +321,7 @@ class PayumService
     /**
      * receiveCancel.
      *
-     * @method receiveCancel
-     *
      * @param string $payumToken
-     *
      * @return mixed
      */
     public function receiveCancel($payumToken)
@@ -390,10 +341,7 @@ class PayumService
     /**
      * receiveRefund.
      *
-     * @method receiveRefund
-     *
      * @param string $payumToken
-     *
      * @return mixed
      */
     public function receiveRefund($payumToken)
@@ -413,10 +361,7 @@ class PayumService
     /**
      * receiveSync.
      *
-     * @method receiveSync
-     *
      * @param string $payumToken
-     *
      * @return mixed
      */
     public function receiveSync($payumToken)
@@ -432,11 +377,8 @@ class PayumService
     /**
      * receiveDone.
      *
-     * @method receiveDone
-     *
      * @param string   $payumToken
      * @param callable $closure
-     *
      * @return mixed
      */
     public function receiveDone($payumToken, callable $closure)
@@ -447,11 +389,8 @@ class PayumService
     /**
      * done.
      *
-     * @method done
-     *
      * @param string   $payumToken
      * @param callable $closure
-     *
      * @return mixed
      */
     public function done($payumToken, callable $closure)
@@ -466,8 +405,6 @@ class PayumService
 
     /**
      * sync.
-     *
-     * @method sync
      *
      * @param string   $gatewayName
      * @param callable $closure
@@ -491,10 +428,7 @@ class PayumService
     /**
      * getSessionFromRequest.
      *
-     * @method getSessionFromRequest
-     *
      * @param \Illuminate\Http\Request $request
-     *
      * @return \Illuminate\Session\SessionInterface
      */
     protected function getSessionFromRequest()
@@ -511,7 +445,6 @@ class PayumService
      * storePayumToken.
      *
      * @param string $payumToken
-     *
      * @return static
      */
     protected function storePayumToken($payumToken)
@@ -525,7 +458,6 @@ class PayumService
      * getPayumToken.
      *
      * @param string $payumToken
-     *
      * @return string
      */
     protected function getPayumToken($payumToken = null)
@@ -542,8 +474,6 @@ class PayumService
 
     /**
      * getStorage.
-     *
-     * @method getStorage
      *
      * @return \Payum\Core\Storage\StorageInterface
      */

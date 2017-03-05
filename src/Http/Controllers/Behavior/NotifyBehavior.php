@@ -9,11 +9,8 @@ trait NotifyBehavior
     /**
      * receiveNotify.
      *
-     * @method receiveNotify
-     *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $payumToken
-     *
      * @return mixed
      */
     public function receiveNotify(PayumService $payumService, $payumToken)
@@ -24,11 +21,8 @@ trait NotifyBehavior
     /**
      * receiveNotifyUnsafe.
      *
-     * @method receiveNotifyUnsafe
-     *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
      * @param string                                $gatewayName
-     *
      * @return mixed
      */
     public function receiveNotifyUnsafe(PayumService $payumService, $gatewayName)

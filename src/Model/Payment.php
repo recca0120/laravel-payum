@@ -26,8 +26,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getNumber.
      *
-     * @method getNumber
-     *
      * @return string
      */
     public function getNumber()
@@ -37,8 +35,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
 
     /**
      * setNumber.
-     *
-     * @method setNumber
      *
      * @param string $number
      */
@@ -50,8 +46,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getDetails.
      *
-     * @method getDetails
-     *
      * @return mixed
      */
     public function getDetails()
@@ -61,8 +55,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
 
     /**
      * setDetails.
-     *
-     * @method setDetails
      *
      * @param mixed $details
      */
@@ -74,8 +66,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getDescription.
      *
-     * @method getDescription
-     *
      * @return string
      */
     public function getDescription()
@@ -85,8 +75,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
 
     /**
      * setDescription.
-     *
-     * @method setDescription
      *
      * @param string $description
      */
@@ -98,8 +86,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getClientEmail.
      *
-     * @method getClientEmail
-     *
      * @return string
      */
     public function getClientEmail()
@@ -109,8 +95,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
 
     /**
      * setClientEmail.
-     *
-     * @method setClientEmail
      *
      * @param string $clientEmail
      */
@@ -122,8 +106,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getClientId.
      *
-     * @method getClientId
-     *
      * @return string
      */
     public function getClientId()
@@ -133,8 +115,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
 
     /**
      * setClientId.
-     *
-     * @method setClientId
      *
      * @param string $clientId
      */
@@ -146,8 +126,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getTotalAmount.
      *
-     * @method getTotalAmount
-     *
      * @param  float
      */
     public function getTotalAmount()
@@ -157,8 +135,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
 
     /**
      * setTotalAmount.
-     *
-     * @method setTotalAmount
      *
      * @param float $totalAmount
      */
@@ -170,8 +146,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getCurrencyCode.
      *
-     * @method getCurrencyCode
-     *
      * @return string
      */
     public function getCurrencyCode()
@@ -181,8 +155,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
 
     /**
      * setCurrencyCode.
-     *
-     * @method setCurrencyCode
      *
      * @param string $currencyCode
      */
@@ -194,8 +166,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getCreditCard.
      *
-     * @method getCreditCard
-     *
      * @return mixed
      */
     public function getCreditCard()
@@ -205,8 +175,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
 
     /**
      * setCreditCard.
-     *
-     * @method setCreditCard
      *
      * @param CreditCardInterface $creditCard
      */
@@ -218,8 +186,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * setStatus.
      *
-     * @method setStatus
-     *
      * @param CreditCardInterface $creditCard
      */
     public function setStatus($status)
@@ -230,7 +196,7 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getStatus.
      *
-     * @method getStatus
+     * @return string
      */
     public function getStatus()
     {

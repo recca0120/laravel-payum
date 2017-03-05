@@ -51,8 +51,6 @@ class EloquentStorage extends AbstractStorage
     /**
      * doUpdateModel.
      *
-     * @method doUpdateModel
-     *
      * @param \Illuminate\Database\Eloquent\Model $model
      */
     protected function doUpdateModel($model)
@@ -62,8 +60,6 @@ class EloquentStorage extends AbstractStorage
 
     /**
      * doDeleteModel.
-     *
-     * @method doDeleteModel
      *
      * @param \Illuminate\Database\Eloquent\Model $model
      */
@@ -75,10 +71,7 @@ class EloquentStorage extends AbstractStorage
     /**
      * doGetIdentity.
      *
-     * @method doGetIdentity
-     *
      * @param \Illuminate\Database\Eloquent\Model $model
-     *
      * @return IdentityInterface
      */
     protected function doGetIdentity($model)
@@ -89,10 +82,7 @@ class EloquentStorage extends AbstractStorage
     /**
      * doFind.
      *
-     * @method doFind
-     *
      * @param mixed $id
-     *
      * @return object|null
      */
     protected function doFind($id)
@@ -103,10 +93,7 @@ class EloquentStorage extends AbstractStorage
     /**
      * findBy.
      *
-     * @method findBy
-     *
      * @param array $criteria
-     *
      * @return array
      */
     public function findBy(array $criteria)
