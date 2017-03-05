@@ -54,7 +54,7 @@ class PayumBuilderWrapper
      * setTokenFactory.
      *
      * @param \Illuminate\Contracts\Routing\UrlGenerator $urlGenerator
-     * @return static
+     * @return $this
      */
     public function setTokenFactory(UrlGenerator $urlGenerator)
     {
@@ -68,7 +68,7 @@ class PayumBuilderWrapper
     /**
      * setHttpRequestVerifier.
      *
-     * @return static
+     * @return $this
      */
     public function setHttpRequestVerifier()
     {
@@ -82,7 +82,7 @@ class PayumBuilderWrapper
     /**
      * setCoreGatewayFactory.
      *
-     * @return static
+     * @return $this
      */
     public function setCoreGatewayFactory()
     {
@@ -97,7 +97,7 @@ class PayumBuilderWrapper
      * setCoreGatewayFactoryConfig.
      *
      * @param array $coreGatewayFactoryConfig
-     * @return static
+     * @return $this
      */
     public function setCoreGatewayFactoryConfig($coreGatewayFactoryConfig)
     {
@@ -109,7 +109,7 @@ class PayumBuilderWrapper
     /**
      * setGenericTokenFactoryPaths.
      *
-     * @return static
+     * @return $this
      */
     public function setGenericTokenFactoryPaths()
     {
@@ -131,7 +131,7 @@ class PayumBuilderWrapper
     /**
      * setEloquentStorage.
      *
-     * @return static
+     * @return $this
      */
     protected function setEloquentStorage()
     {
@@ -145,7 +145,7 @@ class PayumBuilderWrapper
     /**
      * setFilesystemStorage.
      *
-     * @return static
+     * @return $this
      */
     protected function setFilesystemStorage(Filesystem $filesystem)
     {
@@ -167,7 +167,7 @@ class PayumBuilderWrapper
      * setStorage.
      *
      * @param \Illuminate\Filesystem\Filesystem $filesystem
-     * @return static
+     * @return $this
      */
     public function setStorage(Filesystem $filesystem)
     {
@@ -201,7 +201,7 @@ class PayumBuilderWrapper
     /**
      * setGatewayConfig.
      *
-     * @return static
+     * @return $this
      */
     public function setGatewayConfig()
     {

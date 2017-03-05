@@ -46,7 +46,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
      *
      * @param \Illuminate\Routing\Router $router
      * @param array $config
-     * @return static
+     * @return $this
      */
     protected function handleRoutes(Router $router, $config = [])
     {
@@ -67,7 +67,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
     /**
      * handle publishes.
      *
-     * @return static
+     * @return $this
      */
     protected function handlePublishes()
     {
