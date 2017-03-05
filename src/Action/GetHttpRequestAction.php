@@ -14,6 +14,6 @@ class GetHttpRequestAction extends SymfonyGetHttpRequestAction
      */
     public function __construct(Request $httpRequest)
     {
-        $this->setHttpRequest($httpRequest);
+        $this->httpRequest = $httpRequest;
     }
 }
