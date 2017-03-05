@@ -24,7 +24,7 @@ class StatusChanged
     /**
      * __construct.
      *
-     * @param \Payum\Core\Model\GetStatusInterface $status
+     * @param Payum\Core\Request\GetStatusInterface $status
      * @param \Payum\Core\Model\PaymentInterface $payment
      */
     public function __construct(GetStatusInterface $status, PaymentInterface $payment)
