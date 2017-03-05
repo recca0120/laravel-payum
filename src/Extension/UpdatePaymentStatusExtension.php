@@ -55,7 +55,7 @@ class UpdatePaymentStatusExtension implements ExtensionInterface
         }
         /** @var Generic $request */
         $request = $context->getRequest();
-        if (false == $request instanceof Generic || $request instanceof GetStatusInterface) {
+        if (false === $request instanceof Generic || $request instanceof GetStatusInterface) {
             return;
         }
 
