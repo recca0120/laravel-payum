@@ -72,7 +72,7 @@ class EloquentStorage extends AbstractStorage
      * doGetIdentity.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @return IdentityInterface
+     * @return \Payum\Core\Model\Identity
      */
     protected function doGetIdentity($model)
     {

@@ -54,7 +54,6 @@ class PayumBuilderWrapper
      * setTokenFactory.
      *
      * @param \Illuminate\Contracts\Routing\UrlGenerator $urlGenerator
-     *
      * @return static
      */
     public function setTokenFactory(UrlGenerator $urlGenerator)
@@ -98,7 +97,6 @@ class PayumBuilderWrapper
      * setCoreGatewayFactoryConfig.
      *
      * @param array $coreGatewayFactoryConfig
-     *
      * @return static
      */
     public function setCoreGatewayFactoryConfig($coreGatewayFactoryConfig)
@@ -169,7 +167,6 @@ class PayumBuilderWrapper
      * setStorage.
      *
      * @param \Illuminate\Filesystem\Filesystem $filesystem
-     *
      * @return static
      */
     public function setStorage(Filesystem $filesystem)
