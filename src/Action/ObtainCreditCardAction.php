@@ -53,7 +53,7 @@ class ObtainCreditCardAction implements ActionInterface
     public function execute($request)
     {
         /** @var $request ObtainCreditCard */
-        if (false == $this->supports($request)) {
+        if (false === $this->supports($request)) {
             throw RequestNotSupportedException::createActionNotSupported($this, $request);
         }
 

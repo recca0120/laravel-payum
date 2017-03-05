@@ -116,7 +116,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
         });
 
         $this->app->singleton(Payum::class, function ($app) {
-            return $this->app->make(PayumBuilder::class)->getPayum();
+            return $app->make(PayumBuilder::class)->getPayum();
         });
 
         $this->app->singleton(PayumService::class, PayumService::class);
