@@ -10,7 +10,7 @@ trait SyncBehavior
      * receiveSync.
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
-     * @param string                                $payumToken
+     * @param string $payumToken
      * @return mixed
      */
     public function receiveSync(PayumService $payumService, $payumToken)

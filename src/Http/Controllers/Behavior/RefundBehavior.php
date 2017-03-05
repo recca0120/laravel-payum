@@ -10,7 +10,7 @@ trait RefundBehavior
      * receiveRefund.
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
-     * @param string                                $payumToken
+     * @param string $payumToken
      * @return mixed
      */
     public function receiveRefund(PayumService $payumService, $payumToken)

@@ -10,7 +10,7 @@ trait PayoutBehavior
      * receivePayout.
      *
      * @param \Recca0120\LaravelPayum\Service\Payum $payumService
-     * @param string                                $payumToken
+     * @param string $payumToken
      * @return mixed
      */
     public function receivePayout(PayumService $payumService, $payumToken)

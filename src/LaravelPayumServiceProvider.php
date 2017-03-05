@@ -29,7 +29,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
     /**
      * boot.
      *
-     * @param \Illuminate\Routing\Router         $router
+     * @param \Illuminate\Routing\Router $router
      * @param \Illuminate\Contracts\View\Factory $viewFactory
      */
     public function boot(Router $router, ViewFactory $viewFactory)
@@ -45,7 +45,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
      * register routes.
      *
      * @param \Illuminate\Routing\Router $router
-     * @param array                     $config
+     * @param array $config
      * @return static
      */
     protected function handleRoutes(Router $router, $config = [])

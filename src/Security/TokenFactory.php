@@ -19,9 +19,9 @@ class TokenFactory extends AbstractTokenFactory
     /**
      * __construct.
      *
-     * @param \Payum\Core\Storage\StorageInterface          $tokenStorage
+     * @param \Payum\Core\Storage\StorageInterface $tokenStorage
      * @param \Payum\Core\Registry\StorageRegistryInterface $storageRegistry
-     * @param \Illuminate\Contracts\Routing\UrlGenerator    $urlGenerator
+     * @param \Illuminate\Contracts\Routing\UrlGenerator $urlGenerator
      */
     public function __construct(StorageInterface $tokenStorage, StorageRegistryInterface $storageRegistry, UrlGenerator $urlGenerator)
     {
@@ -34,7 +34,7 @@ class TokenFactory extends AbstractTokenFactory
      * generateUrl.
      *
      * @param string $path
-     * @param array  $parameters
+     * @param array $parameters
      * @return string
      */
     protected function generateUrl($path, array $parameters = [])

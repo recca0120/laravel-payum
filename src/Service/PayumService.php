@@ -59,9 +59,9 @@ class PayumService
     /**
      * __construct.
      *
-     * @param \Payum\Core\Payum                                          $payum
-     * @param \Illuminate\Http\Request                                   $request
-     * @param \Illuminate\Contracts\Routing\ResponseFactory              $responseFactory
+     * @param \Payum\Core\Payum $payum
+     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
      * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $converter
      */
     public function __construct(
@@ -100,12 +100,12 @@ class PayumService
     /**
      * request.
      *
-     * @param string   $gatewayName
+     * @param string $gatewayName
      * @param callable $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     * @param string   $tokenType
-     * @return mixed
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @param string $tokenType
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function request($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
     {
@@ -128,12 +128,12 @@ class PayumService
     /**
      * prepare.
      *
-     * @param string   $gatewayName
+     * @param string $gatewayName
      * @param callable $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     * @param string   $tokenType
-     * @return mixed
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @param string $tokenType
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function prepare($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [], $tokenType = 'Capture')
     {
@@ -143,11 +143,11 @@ class PayumService
     /**
      * capture.
      *
-     * @param string   $gatewayName
+     * @param string $gatewayName
      * @param callable $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     * @return mixed
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function capture($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
@@ -157,11 +157,11 @@ class PayumService
     /**
      * authorize.
      *
-     * @param string   $gatewayName
+     * @param string $gatewayName
      * @param callable $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     * @return mixed
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function authorize($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
@@ -171,11 +171,11 @@ class PayumService
     /**
      * refund.
      *
-     * @param string   $gatewayName
+     * @param string $gatewayName
      * @param callable $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     * @return mixed
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function refund($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
@@ -185,11 +185,11 @@ class PayumService
     /**
      * cancel.
      *
-     * @param string   $gatewayName
+     * @param string $gatewayName
      * @param callable $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     * @return mixed
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function cancel($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
@@ -199,11 +199,11 @@ class PayumService
     /**
      * payout.
      *
-     * @param string   $gatewayName
+     * @param string $gatewayName
      * @param callable $closure
-     * @param string   $afterPath
-     * @param array    $afterParameters
-     * @return mixed
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function payout($gatewayName, callable $closure, $afterPath = 'payment.done', array $afterParameters = [])
     {
@@ -213,9 +213,9 @@ class PayumService
     /**
      * send.
      *
-     * @param string   $payumToken
+     * @param string $payumToken
      * @param callable $closure
-     * @return mixed
+     * @return \Illuminate\Http\Response|\Symfony\Component\HttpFoundation\Response
      */
     public function receive($payumToken, callable $closure)
     {
@@ -377,7 +377,7 @@ class PayumService
     /**
      * receiveDone.
      *
-     * @param string   $payumToken
+     * @param string $payumToken
      * @param callable $closure
      * @return mixed
      */
@@ -389,7 +389,7 @@ class PayumService
     /**
      * done.
      *
-     * @param string   $payumToken
+     * @param string $payumToken
      * @param callable $closure
      * @return mixed
      */
@@ -406,7 +406,7 @@ class PayumService
     /**
      * sync.
      *
-     * @param string   $gatewayName
+     * @param string $gatewayName
      * @param callable $closure
      */
     public function sync($gatewayName, callable $closure)
@@ -429,7 +429,7 @@ class PayumService
      * getSessionFromRequest.
      *
      * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Session\SessionInterface
+     * @return \Symfony\Component\HttpFoundation\Session\SessionInterface|null
      */
     protected function getSessionFromRequest()
     {

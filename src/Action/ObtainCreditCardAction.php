@@ -39,8 +39,7 @@ class ObtainCreditCardAction implements ActionInterface
      * __construct.
      *
      * @param \Illuminate\Contracts\View\Factory $viewFactory
-     * @param \Illuminate\Http\Request           $httpRrequest
-     * @param string                             $templateName
+     * @param \Illuminate\Http\Request $request
      */
     public function __construct(ViewFactory $viewFactory, Request $request)
     {

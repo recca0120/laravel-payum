@@ -166,7 +166,7 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * getCreditCard.
      *
-     * @return mixed
+     * @return \Payum\Core\Model\CreditCardInterface
      */
     public function getCreditCard()
     {
@@ -176,7 +176,7 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * setCreditCard.
      *
-     * @param CreditCardInterface $creditCard
+     * @param \Payum\Core\Model\CreditCardInterface $creditCard
      */
     public function setCreditCard(CreditCardInterface $creditCard = null)
     {
@@ -186,7 +186,7 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     /**
      * setStatus.
      *
-     * @param CreditCardInterface $creditCard
+     * @param string $status
      */
     public function setStatus($status)
     {
