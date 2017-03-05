@@ -10,14 +10,14 @@ class StatusChanged
     /**
      * $status.
      *
-     * @var \Payum\Core\Model\PaymentInterface
+     * @var \Payum\Core\Model\GetStatusInterfac
      */
     public $status;
 
     /**
      * $payment.
      *
-     * @var [type]
+     * @var \Payum\Core\Model\PaymentInterface
      */
     public $payment;
 

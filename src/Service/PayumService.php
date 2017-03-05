@@ -241,7 +241,7 @@ class PayumService
      * receiveAuthorize.
      *
      * @param string $payumToken
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receiveAuthorize($payumToken)
     {
@@ -257,7 +257,7 @@ class PayumService
      * receiveCapture.
      *
      * @param string $payumToken
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receiveCapture($payumToken = null)
     {
@@ -273,7 +273,7 @@ class PayumService
      * receiveNotify.
      *
      * @param string $payumToken
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receiveNotify($payumToken)
     {
@@ -288,7 +288,7 @@ class PayumService
      * receiveNotifyUnsafe.
      *
      * @param string $gatewayName
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receiveNotifyUnsafe($gatewayName)
     {
@@ -306,7 +306,7 @@ class PayumService
      * receivePayout.
      *
      * @param string $payumToken
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receivePayout($payumToken)
     {
@@ -322,7 +322,7 @@ class PayumService
      * receiveCancel.
      *
      * @param string $payumToken
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receiveCancel($payumToken)
     {
@@ -342,7 +342,7 @@ class PayumService
      * receiveRefund.
      *
      * @param string $payumToken
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receiveRefund($payumToken)
     {
@@ -362,7 +362,7 @@ class PayumService
      * receiveSync.
      *
      * @param string $payumToken
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receiveSync($payumToken)
     {
@@ -379,7 +379,7 @@ class PayumService
      *
      * @param string $payumToken
      * @param callable $closure
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function receiveDone($payumToken, callable $closure)
     {
@@ -391,7 +391,7 @@ class PayumService
      *
      * @param string $payumToken
      * @param callable $closure
-     * @return mixed
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function done($payumToken, callable $closure)
     {
@@ -428,7 +428,6 @@ class PayumService
     /**
      * getSessionFromRequest.
      *
-     * @param \Illuminate\Http\Request $request
      * @return \Symfony\Component\HttpFoundation\Session\SessionInterface|null
      */
     protected function getSessionFromRequest()
