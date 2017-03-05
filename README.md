@@ -8,6 +8,8 @@
 [![License](https://poser.pugx.org/recca0120/laravel-payum/license.svg)](https://packagist.org/packages/recca0120/laravel-payum)
 [![Monthly Downloads](https://poser.pugx.org/recca0120/laravel-payum/d/monthly)](https://packagist.org/packages/recca0120/laravel-payum)
 [![Daily Downloads](https://poser.pugx.org/recca0120/laravel-payum/d/daily)](https://packagist.org/packages/recca0120/laravel-payum)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/recca0120/laravel-payum/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/recca0120/laravel-payum/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/recca0120/laravel-payum/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/recca0120/laravel-payum/?branch=master)
 
 ## Installing
 
