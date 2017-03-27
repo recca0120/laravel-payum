@@ -49,6 +49,23 @@ class EloquentStorage extends AbstractStorage
     }
 
     /**
+     * findBy.
+     *
+     * @param array $criteria
+     * @return array
+     */
+    public function findBy(array $criteria)
+    {
+        $model = $this->create();
+        $query = $model->newQuery();
+        foreach ($criteria as $name => $value) {
+            $query = $query->where($name, '=', $value);
+        }
+
+        return $query->get()->all();
+    }
+
+    /**
      * doUpdateModel.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
@@ -88,22 +105,5 @@ class EloquentStorage extends AbstractStorage
     protected function doFind($id)
     {
         return $this->create()->find($id);
-    }
-
-    /**
-     * findBy.
-     *
-     * @param array $criteria
-     * @return array
-     */
-    public function findBy(array $criteria)
-    {
-        $model = $this->create();
-        $query = $model->newQuery();
-        foreach ($criteria as $name => $value) {
-            $query = $query->where($name, '=', $value);
-        }
-
-        return $query->get()->all();
     }
 }

@@ -42,51 +42,6 @@ class LaravelPayumServiceProvider extends ServiceProvider
     }
 
     /**
-     * register routes.
-     *
-     * @param \Illuminate\Routing\Router $router
-     * @param array $config
-     * @return $this
-     */
-    protected function handleRoutes(Router $router, $config = [])
-    {
-        if ($this->app->routesAreCached() === false) {
-            $router->group(array_merge([
-                'prefix' => 'payment',
-                'as' => 'payment.',
-                'namespace' => $this->namespace,
-                'middleware' => ['web'],
-            ], Arr::get($config, 'route', [])), function (Router $router) {
-                require __DIR__.'/Http/routes.php';
-            });
-        }
-
-        return $this;
-    }
-
-    /**
-     * handle publishes.
-     *
-     * @return $this
-     */
-    protected function handlePublishes()
-    {
-        $this->publishes([
-            __DIR__.'/../config/payum.php' => $this->app->configPath().'/payum.php',
-        ], 'config');
-
-        $this->publishes([
-            __DIR__.'/../resources/views' => $this->app->basePath().'/resources/views/vendor/payum/',
-        ], 'views');
-
-        $this->publishes([
-            __DIR__.'/../database/migrations' => $this->app->databasePath().'/migrations/',
-        ], 'public');
-
-        return $this;
-    }
-
-    /**
      * Register the service provider.
      */
     public function register()
@@ -135,5 +90,50 @@ class LaravelPayumServiceProvider extends ServiceProvider
             Payum::class,
             PayumService::class,
         ];
+    }
+
+    /**
+     * register routes.
+     *
+     * @param \Illuminate\Routing\Router $router
+     * @param array $config
+     * @return $this
+     */
+    protected function handleRoutes(Router $router, $config = [])
+    {
+        if ($this->app->routesAreCached() === false) {
+            $router->group(array_merge([
+                'prefix' => 'payment',
+                'as' => 'payment.',
+                'namespace' => $this->namespace,
+                'middleware' => ['web'],
+            ], Arr::get($config, 'route', [])), function (Router $router) {
+                require __DIR__.'/Http/routes.php';
+            });
+        }
+
+        return $this;
+    }
+
+    /**
+     * handle publishes.
+     *
+     * @return $this
+     */
+    protected function handlePublishes()
+    {
+        $this->publishes([
+            __DIR__.'/../config/payum.php' => $this->app->configPath().'/payum.php',
+        ], 'config');
+
+        $this->publishes([
+            __DIR__.'/../resources/views' => $this->app->basePath().'/resources/views/vendor/payum/',
+        ], 'views');
+
+        $this->publishes([
+            __DIR__.'/../database/migrations' => $this->app->databasePath().'/migrations/',
+        ], 'public');
+
+        return $this;
     }
 }

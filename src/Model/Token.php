@@ -9,6 +9,12 @@ use Payum\Core\Security\TokenInterface;
 class Token extends Model implements TokenInterface
 {
     /**
+     * $incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+    /**
      * $table.
      *
      * @var string
@@ -21,13 +27,6 @@ class Token extends Model implements TokenInterface
      * @var string
      */
     protected $primaryKey = 'hash';
-
-    /**
-     * $incrementing.
-     *
-     * @var bool
-     */
-    public $incrementing = false;
 
     /**
      * $unguarded.

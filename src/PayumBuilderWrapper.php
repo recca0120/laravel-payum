@@ -129,41 +129,6 @@ class PayumBuilderWrapper
     }
 
     /**
-     * setEloquentStorage.
-     *
-     * @return $this
-     */
-    protected function setEloquentStorage()
-    {
-        $this->payumBuilder
-            ->setTokenStorage(new EloquentStorage(EloquentToken::class))
-            ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class));
-
-        return $this;
-    }
-
-    /**
-     * setFilesystemStorage.
-     *
-     * @return $this
-     */
-    protected function setFilesystemStorage(Filesystem $filesystem)
-    {
-        $storagePath = Arr::get($this->config, 'path');
-        if ($filesystem->isDirectory($storagePath) === false) {
-            $filesystem->makeDirectory($storagePath, 0777, true);
-        }
-
-        $this->payumBuilder
-            ->setTokenStorage(new FilesystemStorage($storagePath, PayumToken::class, 'hash'))
-            ->addStorage(PayumPayment::class, new FilesystemStorage($storagePath, PayumPayment::class, 'number'))
-            ->addStorage(ArrayObject::class, new FilesystemStorage($storagePath, ArrayObject::class))
-            ->addStorage(PayumPayout::class, new FilesystemStorage($storagePath, PayumPayout::class));
-
-        return $this;
-    }
-
-    /**
      * setStorage.
      *
      * @param \Illuminate\Filesystem\Filesystem $filesystem
@@ -173,29 +138,6 @@ class PayumBuilderWrapper
     {
         return Arr::get($this->config, 'storage.token') === 'eloquent' ?
             $this->setEloquentStorage() : $this->setFilesystemStorage($filesystem);
-    }
-
-    /**
-     * loadGatewayConfigs.
-     *
-     * @return array
-     */
-    protected function loadGatewayConfigs()
-    {
-        $gatewayConfigs = [];
-        $storage = new EloquentStorage(GatewayConfig::class);
-        $this->payumBuilder->setGatewayConfigStorage($storage);
-        foreach ($storage->findBy([]) as $gatewayConfig) {
-            $gatewayName = $gatewayConfig->getGatewayName();
-            $factoryName = $gatewayConfig->getFactoryName();
-            $gatewayConfigs[$gatewayName] = array_merge(
-                Arr::get($gatewayConfigs, $gatewayName, []),
-                ['factory' => $factoryName],
-                $gatewayConfig->getConfig()
-            );
-        }
-
-        return $gatewayConfigs;
     }
 
     /**
@@ -232,5 +174,63 @@ class PayumBuilderWrapper
     public function getBuilder()
     {
         return $this->payumBuilder;
+    }
+
+    /**
+     * setEloquentStorage.
+     *
+     * @return $this
+     */
+    protected function setEloquentStorage()
+    {
+        $this->payumBuilder
+            ->setTokenStorage(new EloquentStorage(EloquentToken::class))
+            ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class));
+
+        return $this;
+    }
+
+    /**
+     * setFilesystemStorage.
+     *
+     * @return $this
+     */
+    protected function setFilesystemStorage(Filesystem $filesystem)
+    {
+        $storagePath = Arr::get($this->config, 'path');
+        if ($filesystem->isDirectory($storagePath) === false) {
+            $filesystem->makeDirectory($storagePath, 0777, true);
+        }
+
+        $this->payumBuilder
+            ->setTokenStorage(new FilesystemStorage($storagePath, PayumToken::class, 'hash'))
+            ->addStorage(PayumPayment::class, new FilesystemStorage($storagePath, PayumPayment::class, 'number'))
+            ->addStorage(ArrayObject::class, new FilesystemStorage($storagePath, ArrayObject::class))
+            ->addStorage(PayumPayout::class, new FilesystemStorage($storagePath, PayumPayout::class));
+
+        return $this;
+    }
+
+    /**
+     * loadGatewayConfigs.
+     *
+     * @return array
+     */
+    protected function loadGatewayConfigs()
+    {
+        $gatewayConfigs = [];
+        $storage = new EloquentStorage(GatewayConfig::class);
+        $this->payumBuilder->setGatewayConfigStorage($storage);
+        foreach ($storage->findBy([]) as $gatewayConfig) {
+            $gatewayName = $gatewayConfig->getGatewayName();
+            $factoryName = $gatewayConfig->getFactoryName();
+            $gatewayConfigs[$gatewayName] = array_merge(
+                Arr::get($gatewayConfigs, $gatewayName, []),
+                ['factory' => $factoryName],
+                $gatewayConfig->getConfig()
+            );
+        }
+
+        return $gatewayConfigs;
     }
 }
