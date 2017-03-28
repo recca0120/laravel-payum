@@ -104,7 +104,7 @@ use Payum\Core\Payum;
 use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Security\TokenInterface;
 use Payum\Core\Storage\StorageInterface;
-use Recca0120\LaravelPayum\Service\Payum as PayumService;
+use Recca0120\LaravelPayum\Service\PayumService;
 
 class PaymentController extends BaseController
 {
