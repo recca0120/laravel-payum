@@ -50,10 +50,10 @@ return [
     ],
 
     'storage' => [
-        // optioins: eloquent, filesystem
+        // options: eloquent, filesystem
         'token' => 'filesystem',
 
-        // optioins: eloquent, filesystem
+        // options: eloquent, filesystem
         'gatewayConfig' => 'filesystem',
     ],
 
@@ -206,10 +206,10 @@ return [
     ],
 
     'storage' => [
-        // optioins: eloquent, eloquent
+        // options: eloquent, eloquent
         'token' => 'filesystem',
 
-        // optioins: eloquent, filesystem
+        // options: eloquent, filesystem
         'gatewayConfig' => 'filesystem',
     ],
 
