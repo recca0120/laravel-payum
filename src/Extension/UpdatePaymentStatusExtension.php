@@ -59,15 +59,28 @@ class UpdatePaymentStatusExtension implements ExtensionInterface
             return;
         }
 
+        $this->dispatch($context, $request);
+    }
+
+    protected function dispatch(Context $context, $request)
+    {
         $payment = $request->getFirstModel();
-        if ($payment instanceof PaymentInterface) {
-            /* @var Payment $payment */
-            $status = new GetHumanStatus($payment);
-            $context->getGateway()->execute($status);
-            if ($payment instanceof PaymentStatus) {
-                $payment->setStatus($status->getValue());
-            }
-            $this->events->fire(new StatusChanged($status, $payment));
+        if (($payment instanceof PaymentInterface) === false ) {
+            return;
         }
+
+        $status = $this->getStatus($context, $payment);
+        $this->events->fire(new StatusChanged($status, $payment));
+    }
+
+    protected function getStatus(Context $context, $payment) {
+        $status = new GetHumanStatus($payment);
+        $context->getGateway()->execute($status);
+
+        if ($payment instanceof PaymentStatus) {
+            $payment->setStatus($status->getValue());
+        }
+
+        return $status;
     }
 }

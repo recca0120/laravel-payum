@@ -235,11 +235,22 @@ class WebhookController extends Controller
         }
     }
 
+    /**
+     * getPayum.
+     *
+     * @return \Payum\Core\Payum
+     */
     protected function getPayum()
     {
         return $this->payum;
     }
 
+    /**
+     * convertReply.
+     *
+     * @param  \Payum\Core\Reply\ReplyInterface $reply
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     protected function convertReply($reply)
     {
         return $this->replyToSymfonyResponseConverter->convert($reply);
