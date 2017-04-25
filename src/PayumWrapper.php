@@ -154,6 +154,11 @@ class PayumWrapper
         return $token->getTargetUrl();
     }
 
+    /**
+     * getStorage.
+     *
+     * @return \Payum\Core\Model\PaymentInterface
+     */
     protected function getStorage()
     {
         return $this->getPayum()->getStorage(
