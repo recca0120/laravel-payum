@@ -25,7 +25,7 @@
     ],
     "require": {
         "php": ">=5.5.9",
-        "payum/core": "^1.3",
+        "payum/core": "^1.4",
         "php-http/guzzle6-adapter": "^1.1.1",
         "illuminate/database": "^5.1",
         "illuminate/events": "^5.1",
@@ -50,6 +50,7 @@
         "payum/omnipay-bridge": "If you want to use omnipay provided gateways",
         "payum/stripe": "If you want to use stripe gateways",
         "payum-tw/allpay": "If you want to use allpay gateways",
+        "payum-tw/ecpay": "If you want to use ecpay gateways",
         "payum-tw/mypay": "If you want to use mypay gateways",
         "payum-tw/esunbank": "If you want to use esunbank gateways"
     },
