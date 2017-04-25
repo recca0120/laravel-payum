@@ -18,12 +18,34 @@ use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 
 class WebhookController extends Controller
 {
+    /**
+     * $payum.
+     *
+     * @var \Payum\Core\Payum
+     */
     protected $payum;
 
+    /**
+     * $responseFactory.
+     *
+     * @var \Illuminate\Contracts\Routing\ResponseFactory
+     */
     protected $responseFactory;
 
+    /**
+     * $replyToSymfonyResponseConverter.
+     *
+     * @var \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter
+     */
     protected $replyToSymfonyResponseConverter;
 
+    /**
+     * __construct.
+     *
+     * @param \Payum\Core\Payum $payum
+     * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
+     * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $replyToSymfonyResponseConverter
+     */
     public function __construct(
         Payum $payum,
         ResponseFactory $responseFactory,
@@ -34,6 +56,13 @@ class WebhookController extends Controller
         $this->replyToSymfonyResponseConverter = $replyToSymfonyResponseConverter;
     }
 
+    /**
+     * handleAuthorize.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @return \Illuminate\Http\Response
+     */
     public function handleAuthorize(Request $request, $payumToken)
     {
         return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
@@ -44,6 +73,13 @@ class WebhookController extends Controller
         });
     }
 
+    /**
+     * handleCancel.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @return \Illuminate\Http\Response
+     */
     public function handleCancel(Request $request, $payumToken)
     {
         return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
@@ -58,6 +94,13 @@ class WebhookController extends Controller
         });
     }
 
+    /**
+     * handleCapture.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @return \Illuminate\Http\Response
+     */
     public function handleCapture(Request $request, $payumToken = null)
     {
         return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
@@ -68,6 +111,13 @@ class WebhookController extends Controller
         });
     }
 
+    /**
+     * handleNotify.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @return \Illuminate\Http\Response
+     */
     public function handleNotify(Request $request, $payumToken)
     {
         return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
@@ -77,6 +127,12 @@ class WebhookController extends Controller
         });
     }
 
+    /**
+     * handleNotifyUnsafe.
+     *
+     * @param string $gatewayName
+     * @return \Illuminate\Http\Response
+     */
     public function handleNotifyUnsafe($gatewayName)
     {
         try {
@@ -89,6 +145,13 @@ class WebhookController extends Controller
         }
     }
 
+    /**
+     * handleRefund.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @return \Illuminate\Http\Response
+     */
     public function handleRefund(Request $request, $payumToken)
     {
         return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
@@ -104,6 +167,13 @@ class WebhookController extends Controller
         });
     }
 
+    /**
+     * handlePayout.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @return \Illuminate\Http\Response
+     */
     public function handlePayout(Request $request, $payumToken)
     {
         return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
@@ -114,6 +184,13 @@ class WebhookController extends Controller
         });
     }
 
+    /**
+     * handleSync.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @return \Illuminate\Http\Response
+     */
     public function handleSync(Request $request, $payumToken)
     {
         return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
@@ -124,6 +201,14 @@ class WebhookController extends Controller
         });
     }
 
+    /**
+     * handleReceived.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @param callable $callback
+     * @return \Illuminate\Http\Response
+     */
     protected function handleReceived(Request $request, $payumToken, callable $callback)
     {
         if (is_null($payumToken) === true) {

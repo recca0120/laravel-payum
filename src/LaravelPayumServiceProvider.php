@@ -123,6 +123,13 @@ class LaravelPayumServiceProvider extends ServiceProvider
         return ['payum.builder', 'payum'];
     }
 
+    /**
+     * setStorage.
+     *
+     * @param \Payum\Core\PayumBuilder $builder
+     * @param \Illuminate\Filesystem\Filesystem   $files
+     * @param array $config
+     */
     protected function setStorage(PayumBuilder $builder, Filesystem $files, $config)
     {
         if ($config['storage']['token'] === 'files') {
@@ -143,6 +150,12 @@ class LaravelPayumServiceProvider extends ServiceProvider
             ->addStorage(Payment::class, new EloquentStorage(EloquentPayment::class));
     }
 
+    /**
+     * setGatewayConfigs.
+     *
+     * @param \Payum\Core\PayumBuilder $builder
+     * @param array $gatewayConfigs
+     */
     protected function setGatewayConfigs(PayumBuilder $builder, $gatewayConfigs)
     {
         foreach ($gatewayConfigs as $name => $config) {
@@ -152,6 +165,13 @@ class LaravelPayumServiceProvider extends ServiceProvider
         return $builder;
     }
 
+    /**
+     * setGateway.
+     *
+     * @param \Payum\Core\PayumBuilder $builder
+     * @param string $name
+     * @param array $config
+     */
     protected function setGateway(PayumBuilder $builder, $name, $config)
     {
         $factory = $config['factory'];

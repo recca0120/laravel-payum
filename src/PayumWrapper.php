@@ -9,46 +9,114 @@ use Payum\Core\Request\GetHumanStatus;
 
 class PayumWrapper
 {
+    /**
+     * $gatewayName.
+     *
+     * @var string
+     */
     public $gatewayName;
-
+    /**
+     * $payum.
+     *
+     * @var \Payum\Core\Payum
+     */
     protected $payum;
 
+    /**
+     * __construct.
+     *
+     * @param \Payum\Core\Payum $payum
+     * @param string $gatewayName
+     */
     public function __construct(Payum $payum, $gatewayName)
     {
         $this->payum = $payum;
         $this->gatewayName = $gatewayName;
     }
 
+    /**
+     * getPayum.
+     *
+     * @return \Payum\Core\Payum
+     */
     public function getPayum()
     {
         return $this->payum;
     }
 
-    public function capture(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
-    {
-        return $this->send('capture', $callback, $afterPath, $afterParameters);
-    }
-
+    /**
+     * authorize.
+     *
+     * @param callable $callback
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return string
+     */
     public function authorize(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
     {
         return $this->send('authorize', $callback, $afterPath, $afterParameters);
     }
 
-    public function refund(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
-    {
-        return $this->send('refund', $callback, $afterPath, $afterParameters);
-    }
-
+    /**
+     * cancel.
+     *
+     * @param callable $callback
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return string
+     */
     public function cancel(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
     {
         return $this->send('cancel', $callback, $afterPath, $afterParameters);
     }
 
+    /**
+     * capture.
+     *
+     * @param callable $callback
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return string
+     */
+    public function capture(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
+    {
+        return $this->send('capture', $callback, $afterPath, $afterParameters);
+    }
+
+    /**
+     * refund.
+     *
+     * @param callable $callback
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return string
+     */
+    public function refund(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
+    {
+        return $this->send('refund', $callback, $afterPath, $afterParameters);
+    }
+
+    /**
+     * payout.
+     *
+     * @param callable $callback
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return string
+     */
     public function payout(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
     {
         return $this->send('payout', $callback, $afterPath, $afterParameters);
     }
 
+    /**
+     * done.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string $payumToken
+     * @param callable $callback
+     * @return mixed
+     */
     public function done(Request $request, $payumToken, callable $callback)
     {
         $request->merge([
@@ -61,7 +129,16 @@ class PayumWrapper
         return $callback($status, $status->getFirstModel(), $token, $gateway);
     }
 
-    protected function send($type, $callback, $afterPath, $afterParameters)
+    /**
+     * payout.
+     *
+     * @param string $type
+     * @param callable $callback
+     * @param string $afterPath
+     * @param array $afterParameters
+     * @return string
+     */
+    protected function send($type, callable $callback, $afterPath, $afterParameters)
     {
         $storage = $this->getPayum()->getStorage(Payment::class);
         $payment = $storage->create();
