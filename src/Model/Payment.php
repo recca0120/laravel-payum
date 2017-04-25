@@ -190,7 +190,7 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
      */
     public function setStatus($status)
     {
-        $this->status = $status;
+        $this->setAttribute('status', $status);
     }
 
     /**
@@ -200,6 +200,6 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
      */
     public function getStatus()
     {
-        return $this->status;
+        return $this->getAttribute('status');
     }
 }
