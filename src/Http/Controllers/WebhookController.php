@@ -211,8 +211,9 @@ class WebhookController extends Controller
      */
     protected function handleReceived(Request $request, $payumToken, callable $callback)
     {
+        $session = $request->session();
         if (is_null($payumToken) === true) {
-            $payumToken = $request->session()->remove('payum_token');
+            $payumToken = $session->remove('payum_token');
         }
 
         $request->merge(['payum_token' => $payumToken]);
@@ -223,7 +224,11 @@ class WebhookController extends Controller
         try {
             return $callback($gateway, $token, $httpRequestVerifier, $request);
         } catch (ReplyInterface $reply) {
-            $request->session()->put('payum_token', $payumToken);
+            if (method_exists($session, 'put') === true) {
+                $session->put('payum_token', $payumToken);
+            } else {
+                $session->set('payum_token', $payumToken);
+            }
 
             return $this->convertReply($reply);
         }
