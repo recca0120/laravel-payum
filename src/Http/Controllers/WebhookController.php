@@ -65,7 +65,7 @@ class WebhookController extends Controller
      */
     public function handleAuthorize(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
+        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Authorize($token));
             $httpRequestVerifier->invalidate($token);
 
@@ -82,7 +82,7 @@ class WebhookController extends Controller
      */
     public function handleCancel(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
+        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Cancel($token));
             $httpRequestVerifier->invalidate($token);
             $afterUrl = $token->getAfterUrl();
@@ -103,7 +103,7 @@ class WebhookController extends Controller
      */
     public function handleCapture(Request $request, $payumToken = null)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
+        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Capture($token));
             $httpRequestVerifier->invalidate($token);
 
@@ -120,7 +120,7 @@ class WebhookController extends Controller
      */
     public function handleNotify(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
+        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Notify($token));
 
             return $this->responseFactory->make(null, 204);
@@ -154,7 +154,7 @@ class WebhookController extends Controller
      */
     public function handleRefund(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
+        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Refund($token));
             $httpRequestVerifier->invalidate($token);
             $afterUrl = $token->getAfterUrl();
@@ -176,7 +176,7 @@ class WebhookController extends Controller
      */
     public function handlePayout(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
+        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Payout($token));
             $httpRequestVerifier->invalidate($token);
 
@@ -193,7 +193,7 @@ class WebhookController extends Controller
      */
     public function handleSync(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier, $request) {
+        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Sync($token));
             $httpRequestVerifier->invalidate($token);
 
