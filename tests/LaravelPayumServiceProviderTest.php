@@ -32,11 +32,11 @@ class LaravelPayumServiceProviderTest extends TestCase
 
         $app->shouldReceive('singleton')->once()->with('payum.builder', m::on(function ($closure) use ($app, $config) {
             $config->shouldReceive('offsetGet')->with('payum')->andReturn([
-                'path' => $path = 'foo',
                 'storage' => [
                     'token' => 'eloquent',
+                    'path' => $path = 'foo',
                 ],
-                'gateway_configs' => [
+                'drivers' => [
                     'test' => [
                         'factory' => TestGatewayFactory::class,
                     ],

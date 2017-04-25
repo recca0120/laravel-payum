@@ -99,7 +99,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
                 ]);
 
             $this->setStorage($builder, $app->make(Filesystem::class), $config);
-            $this->setGatewayConfigs($builder, $config['gateway_configs']);
+            $this->setGatewayConfigs($builder, $config['drivers']);
 
             return $builder;
         });
@@ -135,7 +135,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
     protected function setStorage(PayumBuilder $builder, Filesystem $files, $config)
     {
         if ($config['storage']['token'] === 'files') {
-            $storagePath = $config['path'];
+            $storagePath = $config['storage']['path'];
             if ($files->isDirectory($storagePath) === false) {
                 $files->makeDirectory($storagePath, 0777, true);
             }
@@ -156,11 +156,11 @@ class LaravelPayumServiceProvider extends ServiceProvider
      * setGatewayConfigs.
      *
      * @param \Payum\Core\PayumBuilder $builder
-     * @param array $gatewayConfigs
+     * @param array $drivers
      */
-    protected function setGatewayConfigs(PayumBuilder $builder, $gatewayConfigs)
+    protected function setGatewayConfigs(PayumBuilder $builder, $drivers)
     {
-        foreach ($gatewayConfigs as $name => $config) {
+        foreach ($drivers as $name => $config) {
             $this->setGateway($builder, $name, $config);
         }
 
