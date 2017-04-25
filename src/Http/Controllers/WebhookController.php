@@ -31,7 +31,8 @@ class WebhookController extends Controller
      *
      * @param \Payum\Core\Payum $payum
      */
-    public function __construct(Payum $payum) {
+    public function __construct(Payum $payum)
+    {
         $this->payum = $payum;
     }
 

@@ -19,7 +19,6 @@ class WebhookControllerTest extends TestCase
         $response = $this->assertHandleResponse('handleAuthorize', 'Payum\Core\Request\Authorize');
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
         $this->assertSame('foo.after_url', $response->getTargetUrl());
-
     }
 
     public function testHandleCancel()
@@ -146,7 +145,7 @@ class WebhookControllerTest extends TestCase
         }
 
         if (is_null($callback) === true) {
-            $callback = function($gateway, $session, $httpRequestVerifier, $token) {
+            $callback = function ($gateway, $session, $httpRequestVerifier, $token) {
                 $httpRequestVerifier->shouldReceive('invalidate')->once()->with($token);
                 $token->shouldReceive('getAfterUrl')->once()->andReturn($afterUrl = 'foo.after_url');
             };
