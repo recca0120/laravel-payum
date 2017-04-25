@@ -10,7 +10,7 @@ class StatusChanged
     /**
      * $status.
      *
-     * @var \Payum\Core\Model\GetStatusInterfac
+     * @var \Payum\Core\Request\GetStatusInterface
      */
     public $status;
 
@@ -24,7 +24,7 @@ class StatusChanged
     /**
      * __construct.
      *
-     * @param Payum\Core\Request\GetStatusInterface $status
+     * @param \Payum\Core\Request\GetStatusInterface $status
      * @param \Payum\Core\Model\PaymentInterface $payment
      */
     public function __construct(GetStatusInterface $status, PaymentInterface $payment)

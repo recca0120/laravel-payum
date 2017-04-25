@@ -10,42 +10,42 @@
 |
 */
 
-Route::any('capture/{payumToken?}', [
+Route::any('capture/{payum_token?}', [
     'as' => 'capture',
-    'uses' => 'PaymentController@receiveCapture',
+    'uses' => 'WebhookController@handleCapture',
 ]);
 
-Route::any('authorize/{payumToken}', [
+Route::any('authorize/{payum_token}', [
     'as' => 'authorize',
-    'uses' => 'PaymentController@receiveAuthorize',
+    'uses' => 'WebhookController@handleAuthorize',
 ]);
 
-Route::any('notify/{payumToken}', [
+Route::any('notify/{payum_token}', [
     'as' => 'notify',
-    'uses' => 'PaymentController@receiveNotify',
+    'uses' => 'WebhookController@handleNotify',
 ]);
 
 Route::any('notify/unsafe/{gatewayName}', [
     'as' => 'notify.unsafe',
-    'uses' => 'PaymentController@receiveNotifyUnsafe',
+    'uses' => 'WebhookController@handleNotifyUnsafe',
 ]);
 
-Route::any('cancel/{payumToken}', [
+Route::any('cancel/{payum_token}', [
     'as' => 'cancel',
-    'uses' => 'PaymentController@receiveCancel',
+    'uses' => 'WebhookController@handleCancel',
 ]);
 
-Route::any('refund/{payumToken}', [
+Route::any('refund/{payum_token}', [
     'as' => 'refund',
-    'uses' => 'PaymentController@receiveRefund',
+    'uses' => 'WebhookController@handleRefund',
 ]);
 
-Route::any('payout/{payumToken}', [
+Route::any('payout/{payum_token}', [
     'as' => 'payout',
-    'uses' => 'PaymentController@receivePayout',
+    'uses' => 'WebhookController@handlePayout',
 ]);
 
-Route::any('sync/{payumToken}', [
+Route::any('sync/{payum_token}', [
     'as' => 'sync',
-    'uses' => 'PaymentController@receiveSync',
+    'uses' => 'WebhookController@handleSync',
 ]);
