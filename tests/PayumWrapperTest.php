@@ -77,7 +77,7 @@ class PayumWrapperTest extends TestCase
         );
 
         $payum->shouldReceive('getStorages')->once()->andReturn([
-            'Payum\Core\Model\Paymen',
+            'Payum\Core\Model\Paymen' => null,
         ]);
 
         $payum->shouldReceive('getStorage')->once()->with('Payum\Core\Model\Payment')->andReturn(

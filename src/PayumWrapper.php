@@ -162,7 +162,7 @@ class PayumWrapper
     protected function getStorage()
     {
         return $this->getPayum()->getStorage(
-            in_array(EloquentPayment::class, $this->getPayum()->getStorages(), true) ?
+            in_array(EloquentPayment::class, array_keys($this->getPayum()->getStorages()), true) ?
                 EloquentPayment::class : Payment::class
         );
     }
