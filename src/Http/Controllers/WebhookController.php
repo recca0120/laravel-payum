@@ -216,12 +216,13 @@ class WebhookController extends Controller
             $payumToken = $request->session()->remove($tokenName);
         }
 
+        $duplicateRequest = $request->duplicate();
         if (is_null($payumToken) === false) {
-            $request->merge([$tokenName => $payumToken]);
+            $duplicateRequest->merge([$tokenName => $payumToken]);
         }
 
         $httpRequestVerifier = $this->getPayum()->getHttpRequestVerifier();
-        $token = $httpRequestVerifier->verify($request);
+        $token = $httpRequestVerifier->verify($duplicateRequest);
         $gateway = $this->getPayum()->getGateway($token->getGatewayName());
 
         try {

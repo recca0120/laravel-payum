@@ -48,13 +48,16 @@ class PayumWrapperTest extends TestCase
         $request = m::mock('Illuminate\Http\Request');
         $payumToken = 'foo.payum_token';
 
-        $request->shouldReceive('merge')->once()->with([
+        $request->shouldReceive('duplicate')->once()->andReturn(
+            $duplicateRequest = m::mock('Illuminate\Http\Request')
+        );
+        $duplicateRequest->shouldReceive('merge')->once()->with([
             'payum_token' => $payumToken,
         ]);
         $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn(
             $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface')
         );
-        $httpRequestVerifier->shouldReceive('verify')->once()->andReturn(
+        $httpRequestVerifier->shouldReceive('verify')->once()->with($duplicateRequest)->andReturn(
             $token = m::mock('Payum\Core\Security\TokenInterface')
         );
         $token->shouldReceive('getGatewayName')->once()->andReturn(

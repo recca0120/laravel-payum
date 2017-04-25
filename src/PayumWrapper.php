@@ -120,10 +120,11 @@ class PayumWrapper
      */
     public function done(Request $request, $payumToken, callable $callback)
     {
-        $request->merge([
+        $duplicateRequest = $request->duplicate();
+        $duplicateRequest->merge([
             'payum_token' => $payumToken,
         ]);
-        $token = $this->getPayum()->getHttpRequestVerifier()->verify($request);
+        $token = $this->getPayum()->getHttpRequestVerifier()->verify($duplicateRequest);
         $gateway = $this->getPayum()->getGateway($token->getGatewayName());
         $gateway->execute($status = new GetHumanStatus($token));
 

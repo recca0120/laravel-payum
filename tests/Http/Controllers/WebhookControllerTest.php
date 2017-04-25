@@ -110,13 +110,18 @@ class WebhookControllerTest extends TestCase
             $request->shouldReceive('session->remove')->once()->with('payum_token')->andReturn('foo.payum_token');
         }
 
-        $request->shouldReceive('merge')->once()->with([
+        $request->shouldReceive('duplicate')->once()->andReturn(
+            $duplicateRequest = m::mock('\Illuminate\Http\Request')
+        );
+
+        $duplicateRequest->shouldReceive('merge')->once()->with([
             'payum_token' => 'foo.payum_token',
         ]);
+
         $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn(
             $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface')
         );
-        $httpRequestVerifier->shouldReceive('verify')->once()->with($request)->andReturn(
+        $httpRequestVerifier->shouldReceive('verify')->once()->with($duplicateRequest)->andReturn(
             $token = m::mock('Payum\Core\Security\TokenInterface')
         );
         $token->shouldReceive('getGatewayName')->once()->andReturn($gatewayName = 'foo.gateway_name');
