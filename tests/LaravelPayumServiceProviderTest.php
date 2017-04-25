@@ -134,5 +134,8 @@ class TestGatewayFactory extends GatewayFactory
      */
     protected function populateConfig(ArrayObject $config)
     {
+        $config->defaults([
+            'twig.env' => function() {},
+        ]);
     }
 }
