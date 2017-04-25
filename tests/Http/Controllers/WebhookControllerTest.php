@@ -107,7 +107,7 @@ class WebhookControllerTest extends TestCase
         $request = m::mock('\Illuminate\Http\Request');
 
         if (is_null($payumToken) === true) {
-            $request->shouldReceive('session->pull')->once()->with('payum_token')->andReturn('foo.payum_token');
+            $request->shouldReceive('session->remove')->once()->with('payum_token')->andReturn('foo.payum_token');
         }
 
         $request->shouldReceive('merge')->once()->with([
