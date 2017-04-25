@@ -19,7 +19,7 @@ class LaravelPayumServiceProviderTest extends TestCase
 
     public function testRegister()
     {
-        if (!class_exists('Twig_Environment')) {
+        if (! class_exists('Twig_Environment')) {
             $this->markTestSkipped('Twig is not available.');
 
             return;

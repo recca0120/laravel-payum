@@ -31,14 +31,13 @@ class WebhookControllerTest extends TestCase
 
     public function testHandleCaptureThrowReply()
     {
-        $this->assertHandleReceived('handleCapture', null, function ($payum, $responseFactory, $replyToSymfonyResponseConverter, $gateway, $token, $httpRequestVerifier, $request) {
+        $this->assertHandleReceived('handleCapture', null, function ($payum, $responseFactory, $replyToSymfonyResponseConverter, $gateway, $token, $httpRequestVerifier, $request, $session) {
             $gateway->shouldReceive('execute')->once()->andReturnUsing(function () {
                 throw new HttpRedirect('http://dev');
             });
-            $request->shouldReceive('session')->andReturn(
-                $session = m::mock('stdClass')
-            );
-            $session->shouldReceive('put')->with('payum_token', 'foo.payum_token');
+
+            $session->shouldReceive('put')->once()->with('payum_token', 'foo.payum_token');
+
             $replyToSymfonyResponseConverter->shouldReceive('convert')->once()->andReturn('foo');
         });
     }
@@ -106,18 +105,16 @@ class WebhookControllerTest extends TestCase
 
         $request = m::mock('\Illuminate\Http\Request');
 
-        if (is_null($payumToken) === true) {
-            $request->shouldReceive('session->remove')->once()->with('payum_token')->andReturn('foo.payum_token');
-        }
-
-        $request->shouldReceive('duplicate')->once()->andReturn(
-            $duplicateRequest = m::mock('\Illuminate\Http\Request')
+        $request->shouldReceive('session')->once()->andReturn(
+            $session = m::mock('stdClass')
         );
 
-        $duplicateRequest->shouldReceive('merge')->once()->with([
-            'payum_token' => 'foo.payum_token',
-        ]);
-
+        if (is_null($payumToken) === true) {
+            $session->shouldReceive('remove')->once()->with('payum_token')->andReturn('foo.payum_token');
+        }
+        $request->shouldReceive('duplicate')->once()->with(null, null, ['payum_token' => 'foo.payum_token'])->andReturn(
+            $duplicateRequest = m::mock('\Illuminate\Http\Request')
+        );
         $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn(
             $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface')
         );
@@ -147,7 +144,8 @@ class WebhookControllerTest extends TestCase
                 $gateway,
                 $token,
                 $httpRequestVerifier,
-                $request
+                $request,
+                $session
             );
         }
 

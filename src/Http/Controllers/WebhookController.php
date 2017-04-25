@@ -212,25 +212,26 @@ class WebhookController extends Controller
     protected function handleReceived(Request $request, $payumToken, callable $callback)
     {
         $tokenName = 'payum_token';
-        if (is_null($payumToken) === true) {
-            $payumToken = $request->session()->remove($tokenName);
-        }
 
-        $duplicateRequest = $request->duplicate();
-        if (is_null($payumToken) === false) {
-            $duplicateRequest->merge([$tokenName => $payumToken]);
-        }
+        $session = $request->session();
+
+        $payumToken = $payumToken ?: $session->remove($tokenName);
 
         $httpRequestVerifier = $this->getPayum()->getHttpRequestVerifier();
-        $token = $httpRequestVerifier->verify($duplicateRequest);
+
+        $token = $httpRequestVerifier->verify(
+            $request->duplicate(null, null, [$tokenName => $payumToken])
+        );
+
         $gateway = $this->getPayum()->getGateway($token->getGatewayName());
 
         try {
             return $callback($gateway, $token, $httpRequestVerifier, $request);
         } catch (ReplyInterface $reply) {
-            $session = $request->session();
-            $method = method_exists($session, 'set') === true ? 'set' : 'put';
-            call_user_func_array([$session, $method], [$tokenName, $payumToken]);
+            call_user_func_array([
+                $session,
+                method_exists($session, 'set') === true ? 'set' : 'put',
+            ], [$tokenName, $payumToken]);
 
             return $this->convertReply($reply);
         }
