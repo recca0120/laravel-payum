@@ -13,7 +13,8 @@ use Payum\Core\Request\Capture;
 use Payum\Core\Request\Authorize;
 use Illuminate\Routing\Controller;
 use Payum\Core\Reply\ReplyInterface;
-use Illuminate\Contracts\Routing\ResponseFactory;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
 
 class WebhookController extends Controller
@@ -26,34 +27,12 @@ class WebhookController extends Controller
     protected $payum;
 
     /**
-     * $responseFactory.
-     *
-     * @var \Illuminate\Contracts\Routing\ResponseFactory
-     */
-    protected $responseFactory;
-
-    /**
-     * $replyToSymfonyResponseConverter.
-     *
-     * @var \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter
-     */
-    protected $replyToSymfonyResponseConverter;
-
-    /**
      * __construct.
      *
      * @param \Payum\Core\Payum $payum
-     * @param \Illuminate\Contracts\Routing\ResponseFactory $responseFactory
-     * @param \Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter $replyToSymfonyResponseConverter
      */
-    public function __construct(
-        Payum $payum,
-        ResponseFactory $responseFactory,
-        ReplyToSymfonyResponseConverter $replyToSymfonyResponseConverter
-    ) {
+    public function __construct(Payum $payum) {
         $this->payum = $payum;
-        $this->responseFactory = $responseFactory;
-        $this->replyToSymfonyResponseConverter = $replyToSymfonyResponseConverter;
     }
 
     /**
@@ -65,11 +44,11 @@ class WebhookController extends Controller
      */
     public function handleAuthorize(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->handleResponse($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Authorize($token));
             $httpRequestVerifier->invalidate($token);
 
-            return $this->responseFactory->redirectTo($token->getAfterUrl());
+            return new RedirectResponse($token->getAfterUrl());
         });
     }
 
@@ -82,15 +61,16 @@ class WebhookController extends Controller
      */
     public function handleCancel(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->handleResponse($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Cancel($token));
             $httpRequestVerifier->invalidate($token);
+
             $afterUrl = $token->getAfterUrl();
             if (empty($afterUrl) === false) {
-                return $this->responseFactory->redirectTo($afterUrl);
+                return new RedirectResponse($afterUrl);
             }
 
-            return $this->responseFactory->make(null, 204);
+            return new Response(null, 204);
         });
     }
 
@@ -103,11 +83,11 @@ class WebhookController extends Controller
      */
     public function handleCapture(Request $request, $payumToken = null)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->handleResponse($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Capture($token));
             $httpRequestVerifier->invalidate($token);
 
-            return $this->responseFactory->redirectTo($token->getAfterUrl());
+            return new RedirectResponse($token->getAfterUrl());
         });
     }
 
@@ -120,10 +100,10 @@ class WebhookController extends Controller
      */
     public function handleNotify(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->handleResponse($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Notify($token));
 
-            return $this->responseFactory->make(null, 204);
+            return new Response(null, 204);
         });
     }
 
@@ -139,7 +119,7 @@ class WebhookController extends Controller
             $gateway = $this->getPayum()->getGateway($gatewayName);
             $gateway->execute(new Notify(null));
 
-            return $this->responseFactory->make(null, 204);
+            return new Response(null, 204);
         } catch (ReplyInterface $reply) {
             return $this->convertReply($reply);
         }
@@ -154,16 +134,16 @@ class WebhookController extends Controller
      */
     public function handleRefund(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->handleResponse($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Refund($token));
             $httpRequestVerifier->invalidate($token);
-            $afterUrl = $token->getAfterUrl();
 
+            $afterUrl = $token->getAfterUrl();
             if (empty($afterUrl) === false) {
-                return $this->responseFactory->redirectTo($afterUrl);
+                return new RedirectResponse($afterUrl);
             }
 
-            return $this->responseFactory->make(null, 204);
+            return new Response(null, 204);
         });
     }
 
@@ -176,11 +156,11 @@ class WebhookController extends Controller
      */
     public function handlePayout(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->handleResponse($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Payout($token));
             $httpRequestVerifier->invalidate($token);
 
-            return $this->responseFactory->redirectTo($token->getAfterUrl());
+            return new RedirectResponse($token->getAfterUrl());
         });
     }
 
@@ -193,23 +173,23 @@ class WebhookController extends Controller
      */
     public function handleSync(Request $request, $payumToken)
     {
-        return $this->handleReceived($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
+        return $this->handleResponse($request, $payumToken, function ($gateway, $token, $httpRequestVerifier) {
             $gateway->execute(new Sync($token));
             $httpRequestVerifier->invalidate($token);
 
-            return $this->responseFactory->redirectTo($token->getAfterUrl());
+            return new RedirectResponse($token->getAfterUrl());
         });
     }
 
     /**
-     * handleReceived.
+     * handleResponse.
      *
      * @param \Illuminate\Http\Request $request
      * @param string $payumToken
      * @param callable $callback
      * @return \Illuminate\Http\Response
      */
-    protected function handleReceived(Request $request, $payumToken, callable $callback)
+    protected function handleResponse(Request $request, $payumToken, callable $callback)
     {
         $tokenName = 'payum_token';
 
@@ -255,6 +235,6 @@ class WebhookController extends Controller
      */
     protected function convertReply($reply)
     {
-        return $this->replyToSymfonyResponseConverter->convert($reply);
+        return (new ReplyToSymfonyResponseConverter)->convert($reply);
     }
 }

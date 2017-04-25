@@ -16,45 +16,52 @@ class WebhookControllerTest extends TestCase
 
     public function testHandleAuthorize()
     {
-        $this->assertHandleReceived('handleAuthorize', 'Payum\Core\Request\Authorize');
+        $response = $this->assertHandleResponse('handleAuthorize', 'Payum\Core\Request\Authorize');
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
+        $this->assertSame('foo.after_url', $response->getTargetUrl());
+
     }
 
     public function testHandleCancel()
     {
-        $this->assertHandleReceived('handleCancel', 'Payum\Core\Request\Cancel');
+        $response = $this->assertHandleResponse('handleCancel', 'Payum\Core\Request\Cancel');
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
+        $this->assertSame('foo.after_url', $response->getTargetUrl());
     }
 
     public function testHandleCapture()
     {
-        $this->assertHandleReceived('handleCapture', 'Payum\Core\Request\Capture', null, null);
+        $response = $this->assertHandleResponse('handleCapture', 'Payum\Core\Request\Capture', null, null);
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
+        $this->assertSame('foo.after_url', $response->getTargetUrl());
     }
 
     public function testHandleCaptureThrowReply()
     {
-        $this->assertHandleReceived('handleCapture', null, function ($payum, $responseFactory, $replyToSymfonyResponseConverter, $gateway, $token, $httpRequestVerifier, $request, $session) {
+        $response = $this->assertHandleResponse('handleCapture', null, function ($gateway, $session) {
             $gateway->shouldReceive('execute')->once()->andReturnUsing(function () {
                 throw new HttpRedirect('http://dev');
             });
-
             $session->shouldReceive('put')->once()->with('payum_token', 'foo.payum_token');
-
-            $replyToSymfonyResponseConverter->shouldReceive('convert')->once()->andReturn('foo');
         });
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertContains('http://dev', $response->getContent());
     }
 
     public function testHandleNotify()
     {
-        $this->assertHandleReceived('handleNotify', 'Payum\Core\Request\Notify', function ($payum, $responseFactory) {
-            $responseFactory->shouldReceive('make')->once()->with(null, 204)->andReturn('foo');
+        $response = $this->assertHandleResponse('handleNotify', 'Payum\Core\Request\Notify', function ($gateway) {
         });
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        $this->assertSame('', $response->getContent());
+        $this->assertSame(204, $response->getStatusCode());
     }
 
     public function testHandleNotifyUnsafe()
     {
         $controller = new WebhookController(
-            $payum = m::mock('\Payum\Core\Payum'),
-            $responseFactory = m::mock('\Illuminate\Contracts\Routing\ResponseFactory'),
-            $replyToSymfonyResponseConverter = m::mock('\Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')
+            $payum = m::mock('\Payum\Core\Payum')
         );
 
         $gatewayName = 'foo.gateway_name';
@@ -62,45 +69,51 @@ class WebhookControllerTest extends TestCase
             $gateway = m::mock('Payum\Core\GatewayInterface')
         );
         $gateway->shouldReceive('execute')->once()->with(m::type('Payum\Core\Request\Notify'));
-        $responseFactory->shouldReceive('make')->once()->with(null, 204)->andReturn('foo');
+        $response = $controller->handleNotifyUnsafe($gatewayName);
 
-        $this->assertSame('foo', $controller->handleNotifyUnsafe($gatewayName));
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        $this->assertSame('', $response->getContent());
+        $this->assertSame(204, $response->getStatusCode());
     }
 
     public function testHandleNotifyUnsafeThrowReply()
     {
         $controller = new WebhookController(
-            $payum = m::mock('\Payum\Core\Payum'),
-            $responseFactory = m::mock('\Illuminate\Contracts\Routing\ResponseFactory'),
-            $replyToSymfonyResponseConverter = m::mock('\Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')
+            $payum = m::mock('\Payum\Core\Payum')
         );
         $gatewayName = 'foo.gateway_name';
         $payum->shouldReceive('getGateway')->once()->andThrow(new HttpRedirect('http://dev'));
-        $replyToSymfonyResponseConverter->shouldReceive('convert')->once()->andReturn('foo');
-        $this->assertSame('foo', $controller->handleNotifyUnsafe($gatewayName));
+        $response = $controller->handleNotifyUnsafe($gatewayName);
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response);
+        $this->assertSame(302, $response->getStatusCode());
+        $this->assertContains('http://dev', $response->getContent());
     }
 
     public function testHandleRefund()
     {
-        $this->assertHandleReceived('handleRefund', 'Payum\Core\Request\Refund');
+        $response = $this->assertHandleResponse('handleRefund', 'Payum\Core\Request\Refund');
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
+        $this->assertSame('foo.after_url', $response->getTargetUrl());
     }
 
     public function testHandlePayout()
     {
-        $this->assertHandleReceived('handlePayout', 'Payum\Core\Request\Payout');
+        $response = $this->assertHandleResponse('handlePayout', 'Payum\Core\Request\Payout');
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
+        $this->assertSame('foo.after_url', $response->getTargetUrl());
     }
 
     public function testHandleSync()
     {
-        $this->assertHandleReceived('handleSync', 'Payum\Core\Request\Sync');
+        $response = $this->assertHandleResponse('handleSync', 'Payum\Core\Request\Sync');
+        $this->assertInstanceOf('Symfony\Component\HttpFoundation\RedirectResponse', $response);
+        $this->assertSame('foo.after_url', $response->getTargetUrl());
     }
 
-    protected function assertHandleReceived($method, $assertRequest, callable $callback = null, $payumToken = 'foo.payum_token')
+    protected function assertHandleResponse($method, $assertRequest, callable $callback = null, $payumToken = 'foo.payum_token')
     {
         $controller = new WebhookController(
-            $payum = m::mock('\Payum\Core\Payum'),
-            $responseFactory = m::mock('\Illuminate\Contracts\Routing\ResponseFactory'),
-            $replyToSymfonyResponseConverter = m::mock('\Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')
+            $payum = m::mock('\Payum\Core\Payum')
         );
 
         $request = m::mock('\Illuminate\Http\Request');
@@ -133,22 +146,14 @@ class WebhookControllerTest extends TestCase
         }
 
         if (is_null($callback) === true) {
-            $httpRequestVerifier->shouldReceive('invalidate')->once()->with($token);
-            $token->shouldReceive('getAfterUrl')->once()->andReturn($afterUrl = 'foo.after_url');
-            $responseFactory->shouldReceive('redirectTo')->once()->with($afterUrl)->andReturn('foo');
-        } else {
-            $callback(
-                $payum,
-                $responseFactory,
-                $replyToSymfonyResponseConverter,
-                $gateway,
-                $token,
-                $httpRequestVerifier,
-                $request,
-                $session
-            );
+            $callback = function($gateway, $session, $httpRequestVerifier, $token) {
+                $httpRequestVerifier->shouldReceive('invalidate')->once()->with($token);
+                $token->shouldReceive('getAfterUrl')->once()->andReturn($afterUrl = 'foo.after_url');
+            };
         }
 
-        $this->assertSame('foo', call_user_func_array([$controller, $method], [$request, $payumToken]));
+        $callback($gateway, $session, $httpRequestVerifier, $token);
+
+        return call_user_func_array([$controller, $method], [$request, $payumToken]);
     }
 }
