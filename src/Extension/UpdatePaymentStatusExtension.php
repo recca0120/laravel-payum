@@ -65,7 +65,7 @@ class UpdatePaymentStatusExtension implements ExtensionInterface
     protected function dispatch(Context $context, $request)
     {
         $payment = $request->getFirstModel();
-        if (($payment instanceof PaymentInterface) === false ) {
+        if (($payment instanceof PaymentInterface) === false) {
             return;
         }
 
@@ -73,7 +73,8 @@ class UpdatePaymentStatusExtension implements ExtensionInterface
         $this->events->fire(new StatusChanged($status, $payment));
     }
 
-    protected function getStatus(Context $context, $payment) {
+    protected function getStatus(Context $context, $payment)
+    {
         $status = new GetHumanStatus($payment);
         $context->getGateway()->execute($status);
 

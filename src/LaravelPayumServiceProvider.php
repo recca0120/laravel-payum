@@ -149,7 +149,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
 
         return $builder
             ->setTokenStorage(new EloquentStorage(EloquentToken::class))
-            ->addStorage(Payment::class, new EloquentStorage(EloquentPayment::class));
+            ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class));
     }
 
     /**

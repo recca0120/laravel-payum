@@ -13,169 +13,29 @@ class PayumWrapperTest extends TestCase
         m::close();
     }
 
-    public function testCapture()
-    {
-        $payumWrapper = new PayumWrapper(
-            $payum = m::mock('Payum\Core\Payum'),
-            $gatewayName = 'offline'
-        );
-
-        $payum->shouldReceive('getStorage')->once()->with('Payum\Core\Model\Payment')->andReturn(
-            $storage = m::mock('Payum\Core\Storage\StorageInterface')
-        );
-
-        $storage->shouldReceive('create')->once()->andReturn(
-            $payment = m::mock('Payum\Core\Model\Payment')
-        );
-
-        $storage->shouldReceive('update')->once()->with($payment);
-
-        $payum->shouldReceive('getTokenFactory')->once()->andReturn(
-            $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface')
-        );
-
-        $tokenFactory->shouldReceive('createCaptureToken')->once()->with(
-            $gatewayName, $payment, $afterPath = 'foo.done', $afterParameters = ['foo' => 'bar']
-        )->andReturn(
-            $token = m::mock('Payum\Core\Security\TokenInterface')
-        );
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($targetUrl = 'foo.target_url');
-
-        $this->assertSame($targetUrl, $payumWrapper->capture(function () {
-        }, $afterPath, $afterParameters));
-    }
-
     public function testAuthorize()
     {
-        $payumWrapper = new PayumWrapper(
-            $payum = m::mock('Payum\Core\Payum'),
-            $gatewayName = 'offline'
-        );
-
-        $payum->shouldReceive('getStorage')->once()->with('Payum\Core\Model\Payment')->andReturn(
-            $storage = m::mock('Payum\Core\Storage\StorageInterface')
-        );
-
-        $storage->shouldReceive('create')->once()->andReturn(
-            $payment = m::mock('Payum\Core\Model\Payment')
-        );
-
-        $storage->shouldReceive('update')->once()->with($payment);
-
-        $payum->shouldReceive('getTokenFactory')->once()->andReturn(
-            $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface')
-        );
-
-        $tokenFactory->shouldReceive('createAuthorizeToken')->once()->with(
-            $gatewayName, $payment, $afterPath = 'foo.done', $afterParameters = ['foo' => 'bar']
-        )->andReturn(
-            $token = m::mock('Payum\Core\Security\TokenInterface')
-        );
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($targetUrl = 'foo.target_url');
-
-        $this->assertSame($targetUrl, $payumWrapper->authorize(function () {
-        }, $afterPath, $afterParameters));
-    }
-
-    public function testRefund()
-    {
-        $payumWrapper = new PayumWrapper(
-            $payum = m::mock('Payum\Core\Payum'),
-            $gatewayName = 'offline'
-        );
-
-        $payum->shouldReceive('getStorage')->once()->with('Payum\Core\Model\Payment')->andReturn(
-            $storage = m::mock('Payum\Core\Storage\StorageInterface')
-        );
-
-        $storage->shouldReceive('create')->once()->andReturn(
-            $payment = m::mock('Payum\Core\Model\Payment')
-        );
-
-        $storage->shouldReceive('update')->once()->with($payment);
-
-        $payum->shouldReceive('getTokenFactory')->once()->andReturn(
-            $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface')
-        );
-
-        $tokenFactory->shouldReceive('createRefundToken')->once()->with(
-            $gatewayName, $payment, $afterPath = 'foo.done', $afterParameters = ['foo' => 'bar']
-        )->andReturn(
-            $token = m::mock('Payum\Core\Security\TokenInterface')
-        );
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($targetUrl = 'foo.target_url');
-
-        $this->assertSame($targetUrl, $payumWrapper->refund(function () {
-        }, $afterPath, $afterParameters));
+        $this->assertSend('authorize');
     }
 
     public function testCancel()
     {
-        $payumWrapper = new PayumWrapper(
-            $payum = m::mock('Payum\Core\Payum'),
-            $gatewayName = 'offline'
-        );
+        $this->assertSend('cancel');
+    }
 
-        $payum->shouldReceive('getStorage')->once()->with('Payum\Core\Model\Payment')->andReturn(
-            $storage = m::mock('Payum\Core\Storage\StorageInterface')
-        );
+    public function testCapture()
+    {
+        $this->assertSend('capture');
+    }
 
-        $storage->shouldReceive('create')->once()->andReturn(
-            $payment = m::mock('Payum\Core\Model\Payment')
-        );
-
-        $storage->shouldReceive('update')->once()->with($payment);
-
-        $payum->shouldReceive('getTokenFactory')->once()->andReturn(
-            $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface')
-        );
-
-        $tokenFactory->shouldReceive('createCancelToken')->once()->with(
-            $gatewayName, $payment, $afterPath = 'foo.done', $afterParameters = ['foo' => 'bar']
-        )->andReturn(
-            $token = m::mock('Payum\Core\Security\TokenInterface')
-        );
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($targetUrl = 'foo.target_url');
-
-        $this->assertSame($targetUrl, $payumWrapper->cancel(function () {
-        }, $afterPath, $afterParameters));
+    public function testRefund()
+    {
+        $this->assertSend('refund');
     }
 
     public function testPayout()
     {
-        $payumWrapper = new PayumWrapper(
-            $payum = m::mock('Payum\Core\Payum'),
-            $gatewayName = 'offline'
-        );
-
-        $payum->shouldReceive('getStorage')->once()->with('Payum\Core\Model\Payment')->andReturn(
-            $storage = m::mock('Payum\Core\Storage\StorageInterface')
-        );
-
-        $storage->shouldReceive('create')->once()->andReturn(
-            $payment = m::mock('Payum\Core\Model\Payment')
-        );
-
-        $storage->shouldReceive('update')->once()->with($payment);
-
-        $payum->shouldReceive('getTokenFactory')->once()->andReturn(
-            $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface')
-        );
-
-        $tokenFactory->shouldReceive('createPayoutToken')->once()->with(
-            $gatewayName, $payment, $afterPath = 'foo.done', $afterParameters = ['foo' => 'bar']
-        )->andReturn(
-            $token = m::mock('Payum\Core\Security\TokenInterface')
-        );
-
-        $token->shouldReceive('getTargetUrl')->once()->andReturn($targetUrl = 'foo.target_url');
-
-        $this->assertSame($targetUrl, $payumWrapper->payout(function () {
-        }, $afterPath, $afterParameters));
+        $this->assertSend('payout');
     }
 
     public function testDone()
@@ -207,5 +67,43 @@ class PayumWrapperTest extends TestCase
         $payumWrapper->done($request, $payumToken, function ($status) {
             $this->assertInstanceOf('Payum\Core\Request\GetHumanStatus', $status);
         });
+    }
+
+    protected function assertSend($method)
+    {
+        $payumWrapper = new PayumWrapper(
+            $payum = m::mock('Payum\Core\Payum'),
+            $gatewayName = 'offline'
+        );
+
+        $payum->shouldReceive('getStorages')->once()->andReturn([
+            'Payum\Core\Model\Paymen',
+        ]);
+
+        $payum->shouldReceive('getStorage')->once()->with('Payum\Core\Model\Payment')->andReturn(
+            $storage = m::mock('Payum\Core\Storage\StorageInterface')
+        );
+
+        $storage->shouldReceive('create')->once()->andReturn(
+            $payment = m::mock('Payum\Core\Model\Payment')
+        );
+
+        $storage->shouldReceive('update')->once()->with($payment);
+
+        $payum->shouldReceive('getTokenFactory')->once()->andReturn(
+            $tokenFactory = m::mock('Payum\Core\Security\TokenFactoryInterface')
+        );
+
+        $tokenFactory->shouldReceive('create'.ucfirst($method).'Token')->once()->with(
+            $gatewayName, $payment, $afterPath = 'foo.done', $afterParameters = ['foo' => 'bar']
+        )->andReturn(
+            $token = m::mock('Payum\Core\Security\TokenInterface')
+        );
+
+        $token->shouldReceive('getTargetUrl')->once()->andReturn($targetUrl = 'foo.target_url');
+
+        $callback = function () {
+        };
+        $this->assertSame($targetUrl, call_user_func_array([$payumWrapper, $method], [$callback, $afterPath, $afterParameters]));
     }
 }

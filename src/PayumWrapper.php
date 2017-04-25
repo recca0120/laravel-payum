@@ -6,6 +6,7 @@ use Payum\Core\Payum;
 use Illuminate\Http\Request;
 use Payum\Core\Model\Payment;
 use Payum\Core\Request\GetHumanStatus;
+use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
 class PayumWrapper
 {
@@ -132,24 +133,32 @@ class PayumWrapper
     /**
      * payout.
      *
-     * @param string $type
+     * @param string $method
      * @param callable $callback
      * @param string $afterPath
      * @param array $afterParameters
      * @return string
      */
-    protected function send($type, callable $callback, $afterPath, $afterParameters)
+    protected function send($method, callable $callback, $afterPath, $afterParameters)
     {
-        $storage = $this->getPayum()->getStorage(Payment::class);
+        $storage = $this->getStorage();
         $payment = $storage->create();
         $callback($payment, $this->gatewayName);
         $storage->update($payment);
         $tokenFactory = $this->getPayum()->getTokenFactory();
         $token = call_user_func_array(
-            [$tokenFactory, sprintf('create%sToken', ucfirst($type))],
+            [$tokenFactory, sprintf('create%sToken', ucfirst($method))],
             [$this->gatewayName, $payment, $afterPath, $afterParameters]
         );
 
         return $token->getTargetUrl();
+    }
+
+    protected function getStorage()
+    {
+        return $this->getPayum()->getStorage(
+            in_array(EloquentPayment::class, $this->getPayum()->getStorages(), true) ?
+                EloquentPayment::class : Payment::class
+        );
     }
 }
