@@ -12,6 +12,13 @@ use Recca0120\LaravelPayum\LaravelPayumServiceProvider;
 
 class LaravelPayumServiceProviderTest extends TestCase
 {
+    protected function setUp()
+    {
+        if (!class_exists('Twig_Environment')) {
+            $this->markTestSkipped('Twig is not available.');
+        }
+    }
+
     protected function tearDown()
     {
         m::close();
