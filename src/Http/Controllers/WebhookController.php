@@ -212,7 +212,7 @@ class WebhookController extends Controller
     protected function handleReceived(Request $request, $payumToken, callable $callback)
     {
         if (is_null($payumToken) === true) {
-            $payumToken = $request->session()->pull('payum_token');
+            $payumToken = $request->session()->remove('payum_token');
         }
 
         $request->merge(['payum_token' => $payumToken]);
