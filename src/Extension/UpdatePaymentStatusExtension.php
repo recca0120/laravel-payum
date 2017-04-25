@@ -9,7 +9,7 @@ use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\GetStatusInterface;
 use Illuminate\Contracts\Events\Dispatcher;
 use Payum\Core\Extension\ExtensionInterface;
-use Recca0120\LaravelPayum\Events\StatusChanged;
+use Recca0120\LaravelPayum\Events\PaymentStatusChanged;
 use Recca0120\LaravelPayum\Contracts\PaymentStatus;
 
 class UpdatePaymentStatusExtension implements ExtensionInterface
@@ -70,7 +70,7 @@ class UpdatePaymentStatusExtension implements ExtensionInterface
         }
 
         $status = $this->getStatus($context, $payment);
-        $this->events->fire(new StatusChanged($status, $payment));
+        $this->events->fire(new PaymentStatusChanged($status, $payment));
     }
 
     protected function getStatus(Context $context, $payment)

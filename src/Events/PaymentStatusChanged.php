@@ -5,7 +5,7 @@ namespace Recca0120\LaravelPayum\Events;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\GetStatusInterface;
 
-class StatusChanged
+class PaymentStatusChanged
 {
     /**
      * $status.

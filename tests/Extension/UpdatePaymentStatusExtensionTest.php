@@ -65,7 +65,7 @@ class UpdatePaymentStatusExtensionTest extends TestCase
             return $status instanceof GetHumanStatus;
         }));
         $payment->shouldReceive('setStatus')->once()->with('captured');
-        $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelPayum\Events\StatusChanged'));
+        $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelPayum\Events\PaymentStatusChanged'));
         $updatePaymentStatusExtension->onPostExecute($context);
     }
 }
