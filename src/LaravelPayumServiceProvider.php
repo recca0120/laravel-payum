@@ -134,22 +134,22 @@ class LaravelPayumServiceProvider extends ServiceProvider
      */
     protected function setStorage(PayumBuilder $builder, Filesystem $files, $config)
     {
-        if ($config['storage']['token'] === 'files') {
-            $storagePath = $config['storage']['path'];
-            if ($files->isDirectory($storagePath) === false) {
-                $files->makeDirectory($storagePath, 0777, true);
-            }
+        $storagePath = $config['storage']['path'];
+        if ($files->isDirectory($storagePath) === false) {
+            $files->makeDirectory($storagePath, 0777, true);
+        }
 
-            return $builder
-                ->setTokenStorage(new FilesystemStorage($storagePath, Token::class, 'hash'))
-                ->addStorage(Payment::class, new FilesystemStorage($storagePath, Payment::class, 'number'))
-                ->addStorage(ArrayObject::class, new FilesystemStorage($storagePath, ArrayObject::class))
-                ->addStorage(Payout::class, new FilesystemStorage($storagePath, Payout::class));
+        if ($config['storage']['token'] === 'files') {
+            $builder->setTokenStorage(new FilesystemStorage($storagePath, Token::class, 'hash'));
+        } else {
+            $builder->setTokenStorage(new EloquentStorage(EloquentToken::class));
         }
 
         return $builder
-            ->setTokenStorage(new EloquentStorage(EloquentToken::class))
-            ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class));
+            ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class))
+            ->addStorage(Payment::class, new FilesystemStorage($storagePath, Payment::class, 'number'))
+            ->addStorage(ArrayObject::class, new FilesystemStorage($storagePath, ArrayObject::class))
+            ->addStorage(Payout::class, new FilesystemStorage($storagePath, Payout::class));
     }
 
     /**

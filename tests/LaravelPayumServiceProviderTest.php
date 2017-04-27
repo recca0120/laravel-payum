@@ -53,6 +53,9 @@ class LaravelPayumServiceProviderTest extends TestCase
                 $files = m::mock('Illuminate\Filesystem\Filesystem')
             );
 
+            $files->shouldReceive('isDirectory')->once()->with($path)->andReturn(false);
+            $files->shouldReceive('makeDirectory')->once()->with($path, 0777, true)->andReturn(false);
+
             $app->shouldReceive('make')->once()->with('Illuminate\Contracts\Routing\UrlGenerator')->andReturn(
                 $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
             );

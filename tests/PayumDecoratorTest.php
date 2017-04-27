@@ -38,9 +38,22 @@ class PayumDecoratorTest extends TestCase
         $this->assertSend('payout');
     }
 
+    public function testGateway() {
+        $payumDecorator = new PayumDecorator(
+            $payum = m::mock('Payum\Core\Payum'),
+            $gatewayName = 'offline'
+        );
+
+        $payum->shouldReceive('getGateway')->once()->with($gatewayName)->andReturn(
+            $gateway = m::mock('Payum\Core\GatewayInterface')
+        );
+
+        $this->assertSame($gateway, $payumDecorator->getGateway());
+    }
+
     public function testDone()
     {
-        $payumWrapper = new PayumDecorator(
+        $payumDecorator = new PayumDecorator(
             $payum = m::mock('Payum\Core\Payum'),
             $gatewayName = 'offline'
         );
@@ -64,14 +77,14 @@ class PayumDecoratorTest extends TestCase
             $gateway = m::mock('Payum\Core\GatewayInterface')
         );
         $gateway->shouldReceive('execute')->once()->with(m::type('Payum\Core\Request\GetHumanStatus'));
-        $payumWrapper->done($request, $payumToken, function ($status) {
+        $payumDecorator->done($request, $payumToken, function ($status) {
             $this->assertInstanceOf('Payum\Core\Request\GetHumanStatus', $status);
         });
     }
 
     protected function assertSend($method)
     {
-        $payumWrapper = new PayumDecorator(
+        $payumDecorator = new PayumDecorator(
             $payum = m::mock('Payum\Core\Payum'),
             $gatewayName = 'offline'
         );
@@ -104,6 +117,8 @@ class PayumDecoratorTest extends TestCase
 
         $callback = function () {
         };
-        $this->assertSame($targetUrl, call_user_func_array([$payumWrapper, $method], [$callback, $afterPath, $afterParameters]));
+        $this->assertSame($targetUrl, call_user_func_array([$payumDecorator, $method], [$callback, $afterPath, $afterParameters]));
     }
+
+
 }
