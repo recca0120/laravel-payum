@@ -24,7 +24,7 @@ class PayumManagerTest extends TestCase
             ],
         ]);
 
-        $this->assertInstanceOf('Recca0120\LaravelPayum\PayumWrapper', $manager->driver());
+        $this->assertInstanceOf('Recca0120\LaravelPayum\PayumDecorator', $manager->driver());
     }
 
     public function testOfflineDriver()
@@ -38,6 +38,6 @@ class PayumManagerTest extends TestCase
             ],
         ]);
 
-        $this->assertInstanceOf('Recca0120\LaravelPayum\PayumWrapper', $manager->driver('offline'));
+        $this->assertInstanceOf('Recca0120\LaravelPayum\PayumDecorator', $manager->driver('offline'));
     }
 }

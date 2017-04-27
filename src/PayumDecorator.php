@@ -8,7 +8,7 @@ use Payum\Core\Model\Payment;
 use Payum\Core\Request\GetHumanStatus;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
-class PayumWrapper
+class PayumDecorator
 {
     /**
      * $gatewayName.
@@ -55,7 +55,7 @@ class PayumWrapper
      */
     public function authorize(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
     {
-        return $this->send('authorize', $callback, $afterPath, $afterParameters);
+        return $this->sendRequest('authorize', $callback, $afterPath, $afterParameters);
     }
 
     /**
@@ -68,7 +68,7 @@ class PayumWrapper
      */
     public function cancel(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
     {
-        return $this->send('cancel', $callback, $afterPath, $afterParameters);
+        return $this->sendRequest('cancel', $callback, $afterPath, $afterParameters);
     }
 
     /**
@@ -81,7 +81,7 @@ class PayumWrapper
      */
     public function capture(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
     {
-        return $this->send('capture', $callback, $afterPath, $afterParameters);
+        return $this->sendRequest('capture', $callback, $afterPath, $afterParameters);
     }
 
     /**
@@ -94,7 +94,7 @@ class PayumWrapper
      */
     public function refund(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
     {
-        return $this->send('refund', $callback, $afterPath, $afterParameters);
+        return $this->sendRequest('refund', $callback, $afterPath, $afterParameters);
     }
 
     /**
@@ -107,7 +107,7 @@ class PayumWrapper
      */
     public function payout(callable $callback, $afterPath = 'payum.done', array $afterParameters = [])
     {
-        return $this->send('payout', $callback, $afterPath, $afterParameters);
+        return $this->sendRequest('payout', $callback, $afterPath, $afterParameters);
     }
 
     /**
@@ -120,11 +120,9 @@ class PayumWrapper
      */
     public function done(Request $request, $payumToken, callable $callback)
     {
-        $duplicateRequest = $request->duplicate();
-        $duplicateRequest->merge([
-            'payum_token' => $payumToken,
-        ]);
-        $token = $this->getPayum()->getHttpRequestVerifier()->verify($duplicateRequest);
+        $token = $this->getPayum()->getHttpRequestVerifier()->verify(
+            $request->duplicate(null, null, ['payum_token' => $payumToken])
+        );
         $gateway = $this->getPayum()->getGateway($token->getGatewayName());
         $gateway->execute($status = new GetHumanStatus($token));
 
@@ -140,7 +138,7 @@ class PayumWrapper
      * @param array $afterParameters
      * @return string
      */
-    protected function send($method, callable $callback, $afterPath, $afterParameters)
+    protected function sendRequest($method, callable $callback, $afterPath, $afterParameters)
     {
         $storage = $this->getStorage();
         $payment = $storage->create();

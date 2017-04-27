@@ -4,9 +4,9 @@ namespace Recca0120\LaravelPayum\Tests;
 
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use Recca0120\LaravelPayum\PayumWrapper;
+use Recca0120\LaravelPayum\PayumDecorator;
 
-class PayumWrapperTest extends TestCase
+class PayumDecoratorTest extends TestCase
 {
     protected function tearDown()
     {
@@ -40,7 +40,7 @@ class PayumWrapperTest extends TestCase
 
     public function testDone()
     {
-        $payumWrapper = new PayumWrapper(
+        $payumWrapper = new PayumDecorator(
             $payum = m::mock('Payum\Core\Payum'),
             $gatewayName = 'offline'
         );
@@ -48,12 +48,9 @@ class PayumWrapperTest extends TestCase
         $request = m::mock('Illuminate\Http\Request');
         $payumToken = 'foo.payum_token';
 
-        $request->shouldReceive('duplicate')->once()->andReturn(
+        $request->shouldReceive('duplicate')->once()->with(null, null, ['payum_token' => $payumToken])->andReturn(
             $duplicateRequest = m::mock('Illuminate\Http\Request')
         );
-        $duplicateRequest->shouldReceive('merge')->once()->with([
-            'payum_token' => $payumToken,
-        ]);
         $payum->shouldReceive('getHttpRequestVerifier')->once()->andReturn(
             $httpRequestVerifier = m::mock('Payum\Core\Security\HttpRequestVerifierInterface')
         );
@@ -74,7 +71,7 @@ class PayumWrapperTest extends TestCase
 
     protected function assertSend($method)
     {
-        $payumWrapper = new PayumWrapper(
+        $payumWrapper = new PayumDecorator(
             $payum = m::mock('Payum\Core\Payum'),
             $gatewayName = 'offline'
         );
