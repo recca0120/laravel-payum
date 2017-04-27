@@ -140,14 +140,14 @@ class LaravelPayumServiceProvider extends ServiceProvider
         }
 
         if ($config['storage']['token'] === 'files') {
-            $builder->setTokenStorage(new FilesystemStorage($storagePath, Token::class, 'hash'))
-                ->addStorage(Payment::class, new FilesystemStorage($storagePath, Payment::class, 'number'));
+            $builder->setTokenStorage(new FilesystemStorage($storagePath, Token::class, 'hash'));
         } else {
             $builder->setTokenStorage(new EloquentStorage(EloquentToken::class))
                 ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class));
         }
 
         return $builder
+            ->addStorage(Payment::class, new FilesystemStorage($storagePath, Payment::class, 'number'))
             ->addStorage(ArrayObject::class, new FilesystemStorage($storagePath, ArrayObject::class))
             ->addStorage(Payout::class, new FilesystemStorage($storagePath, Payout::class));
     }
