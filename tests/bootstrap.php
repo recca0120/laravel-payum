@@ -37,6 +37,17 @@ Carbon::setTestNow(Carbon::now());
 if (! function_exists('storage_path')) {
     function storage_path()
     {
-        return '';
+    }
+}
+
+if (! function_exists('base_path')) {
+    function base_path()
+    {
+    }
+}
+
+if (! function_exists('config_path')) {
+    function config_path()
+    {
     }
 }

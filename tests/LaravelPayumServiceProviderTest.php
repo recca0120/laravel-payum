@@ -3,6 +3,7 @@
 namespace Recca0120\LaravelPayum\Tests;
 
 use Mockery as m;
+use Illuminate\Container\Container;
 use Payum\Core\PayumBuilder;
 use Payum\Core\GatewayFactory;
 use PHPUnit\Framework\TestCase;
@@ -12,8 +13,20 @@ use Recca0120\LaravelPayum\LaravelPayumServiceProvider;
 
 class LaravelPayumServiceProviderTest extends TestCase
 {
+    protected function setUp()
+    {
+        parent::setUp();
+        $container = m::mock(new Container);
+        $container->instance('path.config', __DIR__);
+        $container->instance('path.storage', __DIR__);
+        $container->shouldReceive('basePath')->andReturn(__DIR__);
+        $container->shouldReceive('databasePath')->andReturn(__DIR__);
+        Container::setInstance($container);
+    }
+
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 
@@ -129,10 +142,8 @@ class LaravelPayumServiceProviderTest extends TestCase
             return is_null(realpath($path)) === false;
         }));
         $app->shouldReceive('runningInConsole')->once()->andReturn(true);
-        $app->shouldReceive('configPath');
-        $app->shouldReceive('basePath');
-        $app->shouldReceive('databasePath');
-        $serviceProvider->boot($router, $viewFactory);
+
+        $this->assertNull($serviceProvider->boot($router, $viewFactory));
     }
 }
 

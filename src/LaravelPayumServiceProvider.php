@@ -219,15 +219,15 @@ class LaravelPayumServiceProvider extends ServiceProvider
     protected function handlePublishes()
     {
         $this->publishes([
-            __DIR__.'/../config/payum.php' => $this->app->configPath().'/payum.php',
+            __DIR__.'/../config/payum.php' => config_path('payum.php'),
         ], 'config');
 
         $this->publishes([
-            __DIR__.'/../resources/views' => $this->app->basePath().'/resources/views/vendor/payum/',
+            __DIR__.'/../resources/views' => base_path('resources/views/vendor/payum'),
         ], 'views');
 
         $this->publishes([
-            __DIR__.'/../database/migrations' => $this->app->databasePath().'/migrations/',
+            __DIR__.'/../database/migrations' => database_path('migrations'),
         ], 'public');
 
         return $this;
