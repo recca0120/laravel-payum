@@ -51,3 +51,9 @@ if (! function_exists('config_path')) {
     {
     }
 }
+
+if (! function_exists('database_path')) {
+    function database_path()
+    {
+    }
+}

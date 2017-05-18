@@ -11,18 +11,17 @@ use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 class PayumDecorator
 {
     /**
-     * $payum.
-     *
-     * @var \Payum\Core\Payum
-     */
-    protected $payum;
-
-    /**
      * $gatewayName.
      *
      * @var string
      */
     public $gatewayName;
+    /**
+     * $payum.
+     *
+     * @var \Payum\Core\Payum
+     */
+    protected $payum;
 
     /**
      * __construct.

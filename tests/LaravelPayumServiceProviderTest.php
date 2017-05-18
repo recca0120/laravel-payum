@@ -3,10 +3,10 @@
 namespace Recca0120\LaravelPayum\Tests;
 
 use Mockery as m;
-use Illuminate\Container\Container;
 use Payum\Core\PayumBuilder;
 use Payum\Core\GatewayFactory;
 use PHPUnit\Framework\TestCase;
+use Illuminate\Container\Container;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Recca0120\LaravelPayum\PayumManager;
 use Recca0120\LaravelPayum\LaravelPayumServiceProvider;

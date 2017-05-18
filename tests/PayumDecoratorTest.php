@@ -39,7 +39,8 @@ class PayumDecoratorTest extends TestCase
         $this->assertSend('payout');
     }
 
-    public function testGateway() {
+    public function testGateway()
+    {
         $payumDecorator = new PayumDecorator(
             $payum = m::mock('Payum\Core\Payum'),
             $gatewayName = 'offline'
@@ -120,6 +121,4 @@ class PayumDecoratorTest extends TestCase
         };
         $this->assertSame($targetUrl, call_user_func_array([$payumDecorator, $method], [$callback, $afterPath, $afterParameters]));
     }
-
-
 }

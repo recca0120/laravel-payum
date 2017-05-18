@@ -13,6 +13,7 @@ class EloquentStorageTest extends TestCase
         parent::tearDown();
         m::close();
     }
+
     public function testCreateModel()
     {
         $storage = new EloquentStorage('stdClass');
