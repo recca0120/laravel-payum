@@ -10,6 +10,7 @@ class RenderTemplateActionTest extends TestCase
 {
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 
@@ -24,6 +25,6 @@ class RenderTemplateActionTest extends TestCase
         $viewFactory->shouldReceive('make')->once()->with($templateName, $parameters)->andReturnSelf();
         $viewFactory->shouldReceive('render')->once()->andReturn($html = 'html');
         $request->shouldReceive('setResult')->once()->with($html);
-        $renderTemplateAction->execute($request);
+        $this->assertNull($renderTemplateAction->execute($request));
     }
 }

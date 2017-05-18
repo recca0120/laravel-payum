@@ -10,6 +10,7 @@ class TokenFactoryTest extends TestCase
 {
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 
@@ -22,7 +23,9 @@ class TokenFactoryTest extends TestCase
         ))->shouldAllowMockingProtectedMethods();
         $path = 'foo';
         $parameters = ['foo' => 'bar'];
-        $urlGenerator->shouldReceive('route')->once()->with($path, $parameters);
-        $tokenFactory->generateUrl($path, $parameters);
+        $urlGenerator->shouldReceive('route')->once()->with($path, $parameters)->andReturn(
+            $url = 'foo'
+        );
+        $this->assertSame($url, $tokenFactory->generateUrl($path, $parameters));
     }
 }

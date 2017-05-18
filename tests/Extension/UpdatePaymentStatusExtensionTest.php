@@ -11,6 +11,7 @@ class UpdatePaymentStatusExtensionTest extends TestCase
 {
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 
@@ -23,7 +24,7 @@ class UpdatePaymentStatusExtensionTest extends TestCase
         $updatePaymentStatusExtension->onPreExecute($context);
         $updatePaymentStatusExtension->onExecute($context);
         $context->shouldReceive('getPrevious')->once()->andReturn(m::mock('stdClass'));
-        $updatePaymentStatusExtension->onPostExecute($context);
+        $this->assertNull($updatePaymentStatusExtension->onPostExecute($context));
     }
 
     public function testRequestIsntGeneric()
@@ -34,7 +35,7 @@ class UpdatePaymentStatusExtensionTest extends TestCase
         $context = m::mock('Payum\Core\Extension\Context');
         $context->shouldReceive('getPrevious')->once();
         $context->shouldReceive('getRequest')->once()->andReturn($request = m::mock('stdClass'));
-        $updatePaymentStatusExtension->onPostExecute($context);
+        $this->assertNull($updatePaymentStatusExtension->onPostExecute($context));
     }
 
     public function testRequestIsntGetStatusInterface()
@@ -45,7 +46,7 @@ class UpdatePaymentStatusExtensionTest extends TestCase
         $context = m::mock('Payum\Core\Extension\Context');
         $context->shouldReceive('getPrevious')->once();
         $context->shouldReceive('getRequest')->once()->andReturn($request = m::mock('Payum\Core\Request\GetStatusInterface'));
-        $updatePaymentStatusExtension->onPostExecute($context);
+        $this->assertNull($updatePaymentStatusExtension->onPostExecute($context));
     }
 
     public function testStatusChanged()
@@ -66,6 +67,6 @@ class UpdatePaymentStatusExtensionTest extends TestCase
         }));
         $payment->shouldReceive('setStatus')->once()->with('captured');
         $events->shouldReceive('fire')->once()->with(m::type('Recca0120\LaravelPayum\Events\PaymentStatusChanged'));
-        $updatePaymentStatusExtension->onPostExecute($context);
+        $this->assertNull($updatePaymentStatusExtension->onPostExecute($context));
     }
 }

@@ -10,6 +10,7 @@ class GetHttpRequestActionTest extends TestCase
 {
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 

@@ -10,9 +10,9 @@ class EloquentStorageTest extends TestCase
 {
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
-
     public function testCreateModel()
     {
         $storage = new EloquentStorage('stdClass');
@@ -30,18 +30,18 @@ class EloquentStorageTest extends TestCase
         $storage->setModelResolver(function () use ($model) {
             return $model;
         });
-        $storage->update($model);
+        $this->assertNull($storage->update($model));
     }
 
     public function testFindIdWhenIdIsString()
     {
         $storage = new EloquentStorage('Illimunate\Database\Eloquent\Model');
         $model = m::mock('Illimunate\Database\Eloquent\Model');
-        $model->shouldReceive('find')->once()->with($id = uniqid());
+        $model->shouldReceive('find')->once()->with($id = uniqid())->andReturnSelf();
         $storage->setModelResolver(function () use ($model) {
             return $model;
         });
-        $storage->find($id);
+        $this->assertSame($model, $storage->find($id));
     }
 
     public function testFindIdWhenIdIsIdentity()
@@ -51,11 +51,11 @@ class EloquentStorageTest extends TestCase
         $identity = m::mock('Payum\Core\Storage\IdentityInterface');
         $identity->shouldReceive('getClass')->once()->andReturn(get_parent_class($model));
         $identity->shouldReceive('getId')->andReturn($id = uniqid());
-        $model->shouldReceive('find')->once()->with($id);
+        $model->shouldReceive('find')->once()->with($id)->andReturnSelf();
         $storage->setModelResolver(function () use ($model) {
             return $model;
         });
-        $storage->find($identity);
+        $this->assertSame($model, $storage->find($identity));
     }
 
     public function testDeleteModel()
@@ -66,7 +66,7 @@ class EloquentStorageTest extends TestCase
         $storage->setModelResolver(function () use ($model) {
             return $model;
         });
-        $storage->delete($model);
+        $this->assertNull($storage->delete($model));
     }
 
     public function testIdentifyModel()

@@ -6,10 +6,11 @@ use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Recca0120\LaravelPayum\Events\PaymentStatusChanged;
 
-class PaymentStatusChanged extends TestCase
+class PaymentStatusChangedTest extends TestCase
 {
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 

@@ -10,6 +10,7 @@ class TokenEloquentTest extends TestCase
 {
     protected function tearDown()
     {
+        parent::tearDown();
         m::close();
     }
 
