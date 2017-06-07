@@ -46,6 +46,16 @@ class PayumDecorator
     }
 
     /**
+     * getGatewayName.
+     *
+     * @return string
+     */
+    public function getGatewayName()
+    {
+        return $this->gatewayName;
+    }
+
+    /**
      * getGateway.
      *
      * @return \Payum\Core\GatewayInterface
@@ -140,7 +150,7 @@ class PayumDecorator
     }
 
     /**
-     * payout.
+     * sendRequest.
      *
      * @param string $method
      * @param callable $callback

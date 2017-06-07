@@ -20,7 +20,7 @@ class PayumManager extends Manager
      * createDriver.
      *
      * @param string $driver
-     * @return \Recca0120\LaravelPayum\PayumWrapper
+     * @return \Recca0120\LaravelPayum\PayumDecorator
      */
     protected function createDriver($driver)
     {

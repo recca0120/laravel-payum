@@ -57,3 +57,10 @@ if (! function_exists('database_path')) {
     {
     }
 }
+
+if (! function_exists('app')) {
+    function app($className = null)
+    {
+        return \Illuminate\Container\Container::getInstance()->make($className);
+    }
+}
