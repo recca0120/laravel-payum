@@ -204,7 +204,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
                 'namespace' => $this->namespace,
                 'middleware' => ['web'],
             ], Arr::get($config, 'route', [])), function (Router $router) {
-                require __DIR__.'/Http/routes.php';
+                require __DIR__.'/../routes/web.php';
             });
         }
 
