@@ -27,15 +27,14 @@ class BillableTest extends TestCase
             $payumDecorator = m::mock('Recca0120\LaravelPayum\PayumDecorator')
         );
         $payumDecorator->shouldReceive('driver')->once()->andReturn($driver);
-        $payumDecorator->shouldReceive('getPayum')->once()->andReturn(
-            $payum = m::mock('Payum\Core\Payum')
-        );
-        $payum->shouldReceive('capture')->once()->andReturnUsing(function ($closure) use ($options) {
+        $payumDecorator->shouldReceive('capture')->once()->andReturnUsing(function ($closure) use ($options) {
             $paymentInterface = m::mock('Payum\Core\Model\PaymentInterface');
             list($payment, $opts) = $closure($paymentInterface, $options);
 
             $this->assertSame($paymentInterface, $payment);
             $this->assertSame($options, $opts);
+
+            return 'http://localhost';
         });
 
         $billable->capture($options, $driver);
