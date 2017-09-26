@@ -72,7 +72,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
             $routeAlias = Arr::get($config, 'route.as');
             $builder = (new PayumBuilder())
                 ->setTokenFactory(function (StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($app) {
-                    return new TokenFactory($tokenStorage, $registry, $app->make(UrlGenerator::class));
+                    return new TokenFactory($tokenStorage, $registry, $app[UrlGenerator::class]);
                 })
                 ->setHttpRequestVerifier(function (StorageInterface $tokenStorage) {
                     return new HttpRequestVerifier($tokenStorage);
@@ -81,11 +81,11 @@ class LaravelPayumServiceProvider extends ServiceProvider
                     return new CoreGatewayFactory($defaultConfig);
                 })
                 ->setCoreGatewayFactoryConfig([
-                    'payum.action.get_http_request' => $app->make(GetHttpRequestAction::class),
-                    'payum.action.obtain_credit_card' => $app->make(ObtainCreditCardAction::class),
-                    'payum.action.render_template' => $app->make(RenderTemplateAction::class),
-                    'payum.converter.reply_to_http_response' => $app->make(ReplyToSymfonyResponseConverter::class),
-                    'payum.extension.update_payment_status' => $app->make(UpdatePaymentStatusExtension::class),
+                    'payum.action.get_http_request' => $app[GetHttpRequestAction::class],
+                    'payum.action.obtain_credit_card' => $app[ObtainCreditCardAction::class],
+                    'payum.action.render_template' => $app[RenderTemplateAction::class],
+                    'payum.converter.reply_to_http_response' => $app[ReplyToSymfonyResponseConverter::class],
+                    'payum.extension.update_payment_status' => $app[UpdatePaymentStatusExtension::class],
                 ])
                 ->setGenericTokenFactoryPaths([
                     'authorize' => $routeAlias.'authorize',
@@ -98,7 +98,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
                     'done' => $routeAlias.'done',
                 ]);
 
-            $this->setStorage($builder, $app->make(Filesystem::class), $config);
+            $this->setStorage($builder, $app[Filesystem::class], $config);
             $this->setGatewayConfigs($builder, $config['drivers']);
 
             return $builder;

@@ -8,6 +8,7 @@ use Illuminate\Container\Container;
 use Recca0120\LaravelPayum\Billable;
 use Payum\Core\Model\PaymentInterface;
 use Recca0120\LaravelPayum\PayumManager;
+use Recca0120\LaravelPayum\PayumDecorator;
 
 class BillableTest extends TestCase
 {
@@ -17,30 +18,29 @@ class BillableTest extends TestCase
         m::close();
     }
 
-    public function testGetPayumManager()
+    public function testCapture()
     {
-        $this->mockPayumManager();
-        $billable = new BillableStub;
-        $this->assertInstanceOf(PayumManager::class, $billable->getPayumManager());
-    }
+        $options = ['foo' => 'bar'];
+        $driver = 'foo_bar';
 
-    public function testCharge()
-    {
         $billable = new BillableStub;
-        $amount = 100;
-        $options = [];
         $payumManager = $this->mockPayumManager();
-        $payumManager->shouldReceive('getGatewayName')->once()->andReturn($gatewayName = 'foo_bar');
-        $payumManager->shouldReceive('capture')->once()->with(m::on(function ($closure) use ($billable, $amount, $options) {
-            $payment = m::mock(PaymentInterface::class);
-            $this->assertSame([
-                $payment, $amount, $options,
-            ], $closure($payment));
+        $payumManager->shouldReceive('driver')->once()->andReturn(
+            $payumDecorator = m::mock('Recca0120\LaravelPayum\PayumDecorator')
+        );
+        $payumDecorator->shouldReceive('driver')->once()->andReturn($driver);
+        $payumDecorator->shouldReceive('getPayum')->once()->andReturn(
+            $payum = m::mock('Payum\Core\Payum')
+        );
+        $payum->shouldReceive('capture')->once()->andReturnUsing(function($closure) use ($options) {
+            $paymentInterface = m::mock('Payum\Core\Model\PaymentInterface');
+            list($payment, $opts) = $closure($paymentInterface, $options);
 
-            return true;
-        }));
+            $this->assertSame($paymentInterface, $payment);
+            $this->assertSame($options, $opts);
+        });
 
-        $billable->charge($amount, $options);
+        $billable->capture($options, $driver);
     }
 
     protected function mockPayumManager()
@@ -58,8 +58,8 @@ class BillableStub
 {
     use Billable;
 
-    public function chargeFooBar($payment, $amount, $options)
+    public function captureFooBar($payment, $options)
     {
-        return [$payment, $amount, $options];
+        return [$payment, $options];
     }
 }

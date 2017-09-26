@@ -56,6 +56,16 @@ class PayumDecorator
     }
 
     /**
+     * driver.
+     *
+     * @return string
+     */
+    public function driver()
+    {
+        return $this->getGatewayName();
+    }
+
+    /**
      * getGateway.
      *
      * @return \Payum\Core\GatewayInterface

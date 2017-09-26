@@ -62,34 +62,34 @@ class LaravelPayumServiceProviderTest extends TestCase
                 ],
             ]);
 
-            $app->shouldReceive('make')->once()->with('Illuminate\Filesystem\Filesystem')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Illuminate\Filesystem\Filesystem')->andReturn(
                 $files = m::mock('Illuminate\Filesystem\Filesystem')
             );
 
             $files->shouldReceive('isDirectory')->once()->with($path)->andReturn(false);
             $files->shouldReceive('makeDirectory')->once()->with($path, 0777, true)->andReturn(false);
 
-            $app->shouldReceive('make')->once()->with('Illuminate\Contracts\Routing\UrlGenerator')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Illuminate\Contracts\Routing\UrlGenerator')->andReturn(
                 $urlGenerator = m::mock('Illuminate\Contracts\Routing\UrlGenerator')
             );
 
-            $app->shouldReceive('make')->once()->with('Recca0120\LaravelPayum\Action\GetHttpRequestAction')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelPayum\Action\GetHttpRequestAction')->andReturn(
                 m::mock('Recca0120\LaravelPayum\Action\GetHttpRequestAction')
             );
 
-            $app->shouldReceive('make')->once()->with('Recca0120\LaravelPayum\Action\ObtainCreditCardAction')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelPayum\Action\ObtainCreditCardAction')->andReturn(
                 m::mock('Recca0120\LaravelPayum\Action\ObtainCreditCardAction')
             );
 
-            $app->shouldReceive('make')->once()->with('Recca0120\LaravelPayum\Action\RenderTemplateAction')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelPayum\Action\RenderTemplateAction')->andReturn(
                 m::mock('Recca0120\LaravelPayum\Action\RenderTemplateAction')
             );
 
-            $app->shouldReceive('make')->once()->with('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')->andReturn(
                 m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')
             );
 
-            $app->shouldReceive('make')->once()->with('Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension')->andReturn(
+            $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension')->andReturn(
                 m::mock('Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension')
             );
 
