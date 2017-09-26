@@ -6,9 +6,7 @@ use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use Illuminate\Container\Container;
 use Recca0120\LaravelPayum\Billable;
-use Payum\Core\Model\PaymentInterface;
 use Recca0120\LaravelPayum\PayumManager;
-use Recca0120\LaravelPayum\PayumDecorator;
 
 class BillableTest extends TestCase
 {
@@ -32,7 +30,7 @@ class BillableTest extends TestCase
         $payumDecorator->shouldReceive('getPayum')->once()->andReturn(
             $payum = m::mock('Payum\Core\Payum')
         );
-        $payum->shouldReceive('capture')->once()->andReturnUsing(function($closure) use ($options) {
+        $payum->shouldReceive('capture')->once()->andReturnUsing(function ($closure) use ($options) {
             $paymentInterface = m::mock('Payum\Core\Model\PaymentInterface');
             list($payment, $opts) = $closure($paymentInterface, $options);
 

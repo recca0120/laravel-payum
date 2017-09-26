@@ -45,7 +45,7 @@ trait Billable
         $driver = $payumDecorator->driver();
         $payum = $payumDecorator->getPayum();
 
-        return new RedirectResponse(call_user_func_array([$payum, $method], [function(PaymentInterface $payment) use ($method, $options, $driver) {
+        return new RedirectResponse(call_user_func_array([$payum, $method], [function (PaymentInterface $payment) use ($method, $options, $driver) {
             $method = sprintf('%s%s', $method, Str::studly($driver));
 
             return call_user_func_array([$this, $method], [$payment, $options]);
@@ -53,7 +53,7 @@ trait Billable
     }
 
     /**
-     * getPayumDecorator
+     * getPayumDecorator.
      *
      * @param  string $driver
      * @return \Recca0120\LaravelPayum\PayumDecorator
