@@ -33,6 +33,31 @@ trait Billable
     }
 
     /**
+     * done.
+     *
+     * @param string $payumToken
+     * @param callable $callback
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function done($payumToken, callable $callback = null)
+    {
+        $payumDecorator = $this->getPayumDecorator();
+        $status = $payumDecorator->getStatus($payumToken);
+        $payment = $status->getFirstModel();
+        $token = $status->getToken();
+        $gatewayName = $token->getGatewayName();
+        $method = sprintf('%s%s', 'done', Str::studly($gatewayName));
+
+        $response = call_user_func_array([$this, $method], [$status, $payment, $gatewayName]);
+
+        if (is_callable($callback) === true) {
+            $callback($status, $payment, $gatewayName);
+        }
+
+        return $response;
+    }
+
+    /**
      * payum.
      *
      * @param  array  $options
