@@ -57,7 +57,7 @@ class PaymentStatusExtensionTest extends TestCase
         $context = m::mock('Payum\Core\Extension\Context');
         $context->shouldReceive('getPrevious')->once();
         $context->shouldReceive('getRequest')->once()->andReturn($request = m::mock('Payum\Core\Request\Generic'));
-        $request->shouldReceive('getModel')->once()->andReturn(
+        $request->shouldReceive('getFirstModel')->once()->andReturn(
             $payment = m::mock('Payum\Core\Model\PaymentInterface')
         );
         $context->shouldReceive('getGateway->execute')->once()->with(m::on(function ($status) {
