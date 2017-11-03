@@ -4,8 +4,8 @@ namespace Recca0120\LaravelPayum;
 
 use Payum\Core\Payum;
 use Illuminate\Http\Request;
-use Payum\Core\Model\Payment;
 use Payum\Core\Request\Sync;
+use Payum\Core\Model\Payment;
 use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetHumanStatus;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
@@ -91,7 +91,7 @@ class Gateway
      * execute.
      *
      * @param mixed $request
-     * @param boolean $catchReply
+     * @param bool $catchReply
      * @return mixed
      */
     public function execute($request, $catchReply = false)
@@ -172,7 +172,8 @@ class Gateway
      * @param callable $callback
      * @return mixed
      */
-    public function sync(callable $callback) {
+    public function sync(callable $callback)
+    {
         $gateway = $this->getGateway();
         $storage = $this->getStorage();
         $payment = $storage->create();

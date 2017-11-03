@@ -17,7 +17,7 @@ trait Billable
      */
     public function authorize($options = [], $driver = null)
     {
-        return $this->payum('authorize', $options, $driver);
+        return $this->sendRequest('authorize', $options, $driver);
     }
 
     /**
@@ -29,7 +29,7 @@ trait Billable
      */
     public function capture($options = [], $driver = null)
     {
-        return $this->payum('capture', $options, $driver);
+        return $this->sendRequest('capture', $options, $driver);
     }
 
     /**
@@ -63,15 +63,16 @@ trait Billable
      * @param  string $driver
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    protected function payum($method, $options = [], $driver = null)
+    protected function sendRequest($method, $options = [], $driver = null)
     {
-        $payum = $this->getPayumManager()->driver($driver);
-        $driver = $payum->driver();
+        $gateway = $this->getPayumManager()->driver($driver);
+        $driver = $gateway->driver();
 
-        return new RedirectResponse(call_user_func_array([$payum, $method], [function (PaymentInterface $payment) use ($method, $options, $driver) {
-            $method = sprintf('%s%s', $method, Str::studly($driver));
-
-            return call_user_func_array([$this, $method], [$payment, $options]);
+        return new RedirectResponse(call_user_func_array([$gateway, $method], [function (PaymentInterface $payment) use ($method, $options, $driver) {
+            return call_user_func_array(
+                [$this, sprintf('%s%s', $method, Str::studly($driver))],
+                [$payment, $options]
+            );
         }]));
     }
 

@@ -68,7 +68,8 @@ class GatewayTest extends TestCase
 
         $payumGateway->shouldReceive('execute')->once()->with(m::type('Payum\Core\Request\Sync'));
 
-        $this->assertInstanceOf('Payum\Core\Model\Payment', $gateway->sync(function() {}));
+        $this->assertInstanceOf('Payum\Core\Model\Payment', $gateway->sync(function () {
+        }));
     }
 
     public function testDriver()
