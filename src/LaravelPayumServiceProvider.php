@@ -85,7 +85,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
                     'payum.action.obtain_credit_card' => $app[ObtainCreditCardAction::class],
                     'payum.action.render_template' => $app[RenderTemplateAction::class],
                     'payum.converter.reply_to_http_response' => $app[ReplyToSymfonyResponseConverter::class],
-                    'payum.extension.update_payment_status' => $app[PaymentStatusExtension::class],
+                    'payum.extension.payment_status' => $app[PaymentStatusExtension::class],
                 ])
                 ->setGenericTokenFactoryPaths([
                     'authorize' => $routeAlias.'authorize',
@@ -142,7 +142,8 @@ class LaravelPayumServiceProvider extends ServiceProvider
         if ($config['storage']['token'] === 'files') {
             $builder->setTokenStorage(new FilesystemStorage($storagePath, Token::class, 'hash'));
         } else {
-            $builder->setTokenStorage(new EloquentStorage(EloquentToken::class))
+            $builder
+                ->setTokenStorage(new EloquentStorage(EloquentToken::class))
                 ->addStorage(EloquentPayment::class, new EloquentStorage(EloquentPayment::class));
         }
 
