@@ -19,7 +19,7 @@ class GatewayConfig extends Model implements GatewayConfigInterface
      */
     public function getGatewayName()
     {
-        return $this->getAttribute('gatewayName');
+        return $this->getAttribute('gateway_name');
     }
 
     /**
@@ -29,7 +29,7 @@ class GatewayConfig extends Model implements GatewayConfigInterface
      */
     public function setGatewayName($gatewayName)
     {
-        $this->setAttribute('gatewayName', $gatewayName);
+        $this->setAttribute('gateway_name', $gatewayName);
     }
 
     /**
@@ -39,7 +39,7 @@ class GatewayConfig extends Model implements GatewayConfigInterface
      */
     public function getFactoryName()
     {
-        return $this->getAttribute('factoryName');
+        return $this->getAttribute('factory_name');
     }
 
     /**
@@ -49,7 +49,7 @@ class GatewayConfig extends Model implements GatewayConfigInterface
      */
     public function setFactoryName($name)
     {
-        $this->setAttribute('factoryName', $name);
+        $this->setAttribute('factory_name', $name);
     }
 
     /**

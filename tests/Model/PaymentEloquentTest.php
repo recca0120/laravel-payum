@@ -67,6 +67,6 @@ class PaymentEloquentTest extends TestCase
     {
         $payment = new Payment();
         $payment->setCreditCard($creditCard = m::mock('Payum\Core\Model\CreditCardInterface'));
-        $this->assertSame($creditCard, $payment->getCreditCard());
+        $this->assertEquals($creditCard, $payment->getCreditCard());
     }
 }

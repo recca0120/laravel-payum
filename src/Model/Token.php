@@ -93,7 +93,7 @@ class Token extends Model implements TokenInterface
      */
     public function getTargetUrl()
     {
-        return $this->getAttribute('targetUrl');
+        return $this->getAttribute('target_url');
     }
 
     /**
@@ -103,7 +103,7 @@ class Token extends Model implements TokenInterface
      */
     public function setTargetUrl($targetUrl)
     {
-        $this->setAttribute('targetUrl', $targetUrl);
+        $this->setAttribute('target_url', $targetUrl);
     }
 
     /**
@@ -113,7 +113,7 @@ class Token extends Model implements TokenInterface
      */
     public function getAfterUrl()
     {
-        return $this->getAttribute('afterUrl');
+        return $this->getAttribute('after_url');
     }
 
     /**
@@ -123,7 +123,7 @@ class Token extends Model implements TokenInterface
      */
     public function setAfterUrl($afterUrl)
     {
-        $this->setAttribute('afterUrl', $afterUrl);
+        $this->setAttribute('after_url', $afterUrl);
     }
 
     /**
@@ -133,7 +133,7 @@ class Token extends Model implements TokenInterface
      */
     public function getGatewayName()
     {
-        return $this->getAttribute('gatewayName');
+        return $this->getAttribute('gateway_name');
     }
 
     /**
@@ -143,6 +143,6 @@ class Token extends Model implements TokenInterface
      */
     public function setGatewayName($gatewayName)
     {
-        $this->setAttribute('gatewayName', $gatewayName);
+        $this->setAttribute('gateway_name', $gatewayName);
     }
 }

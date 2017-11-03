@@ -5,8 +5,10 @@ namespace Recca0120\LaravelPayum\Model;
 use Payum\Core\Model\PaymentInterface;
 use Illuminate\Database\Eloquent\Model;
 use Payum\Core\Model\CreditCardInterface;
+use Payum\Core\Model\BankAccountInterface;
+use Payum\Core\Model\DirectDebitPaymentInterface;
 
-class Payment extends Model implements PaymentInterface
+class Payment extends Model implements PaymentInterface, DirectDebitPaymentInterface
 {
     /**
      * $table.
@@ -89,7 +91,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function getClientEmail()
     {
-        return $this->getAttribute('clientEmail');
+        return $this->getAttribute('client_email');
     }
 
     /**
@@ -99,7 +101,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function setClientEmail($clientEmail)
     {
-        $this->setAttribute('clientEmail', $clientEmail);
+        $this->setAttribute('client_email', $clientEmail);
     }
 
     /**
@@ -109,7 +111,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function getClientId()
     {
-        return $this->getAttribute('clientId');
+        return $this->getAttribute('client_id');
     }
 
     /**
@@ -119,7 +121,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function setClientId($clientId)
     {
-        $this->setAttribute('clientId', $clientId);
+        $this->setAttribute('client_id', $clientId);
     }
 
     /**
@@ -129,7 +131,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function getTotalAmount()
     {
-        return $this->getAttribute('totalAmount');
+        return $this->getAttribute('total_amount');
     }
 
     /**
@@ -139,7 +141,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function setTotalAmount($totalAmount)
     {
-        $this->setAttribute('totalAmount', $totalAmount);
+        $this->setAttribute('total_amount', $totalAmount);
     }
 
     /**
@@ -149,7 +151,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function getCurrencyCode()
     {
-        return $this->getAttribute('currencyCode');
+        return $this->getAttribute('currency_code');
     }
 
     /**
@@ -159,7 +161,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function setCurrencyCode($currencyCode)
     {
-        $this->setAttribute('currencyCode', $currencyCode);
+        $this->setAttribute('currency_code', $currencyCode);
     }
 
     /**
@@ -169,7 +171,7 @@ class Payment extends Model implements PaymentInterface
      */
     public function getCreditCard()
     {
-        return $this->creditCard;
+        return unserialize($this->getAttribute('credit_card'));
     }
 
     /**
@@ -179,6 +181,22 @@ class Payment extends Model implements PaymentInterface
      */
     public function setCreditCard(CreditCardInterface $creditCard = null)
     {
-        $this->creditCard = $creditCard;
+        $this->setAttribute('credit_card', serialize($creditCard));
+    }
+
+    /**
+     * @return BankAccountInterface|null
+     */
+    public function getBankAccount()
+    {
+        return unserialize($this->getAttribute('bank_account'));
+    }
+
+    /**
+     * @param BankAccountInterface|null $bankAccount
+     */
+    public function setBankAccount(BankAccountInterface $bankAccount = null)
+    {
+        return $this->setAttribute('bank_account', unserialize($bankAccount));
     }
 }

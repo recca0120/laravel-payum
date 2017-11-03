@@ -16,8 +16,8 @@ class CreatePayumGatewayConfigsTable extends Migration
         Schema::create('payum_gateway_configs', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->text('config');
-            $table->string('factoryName');
-            $table->string('gatewayName');
+            $table->string('factory_name');
+            $table->string('gateway_name');
             $table->timestamps();
         });
     }
