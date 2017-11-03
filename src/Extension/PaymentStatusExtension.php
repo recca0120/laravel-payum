@@ -58,7 +58,7 @@ class PaymentStatusExtension implements ExtensionInterface
             return;
         }
 
-        $payment = $request->getModel();
+        $payment = $request->getFirstModel();
 
         if (($payment instanceof PaymentInterface) === false) {
             return;
