@@ -49,7 +49,7 @@ trait Billable
 
         $response = call_user_func_array([$this, $method], [$status, $payment, $driver]);
 
-        if (is_callable($callback) === true) {
+        if (is_null($callback) === false) {
             $callback($status, $payment, $driver);
         }
 
