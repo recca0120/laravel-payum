@@ -64,7 +64,7 @@ class BillableTest extends TestCase
         $billable->capture($options, $driver);
     }
 
-    public function testDone()
+    public function testReceive()
     {
         $payumToken = uniqid();
         $billable = new BillableStub;
@@ -89,7 +89,7 @@ class BillableTest extends TestCase
             $status,
             $payment,
             $gatewayName,
-        ], $billable->done($payumToken, function ($status2, $payment2, $gatewayName2) use ($status, $payment, $gatewayName) {
+        ], $billable->receive($payumToken, function ($status2, $payment2, $gatewayName2) use ($status, $payment, $gatewayName) {
             $this->assertSame($status, $status2);
             $this->assertSame($payment, $payment2);
             $this->assertSame($gatewayName, $gatewayName2);
@@ -121,7 +121,7 @@ class BillableStub
         return [$payment, $options];
     }
 
-    public function doneFooBar($status, $payment, $gatewayName)
+    public function receiveFooBar($status, $payment, $gatewayName)
     {
         return [$status, $payment, $gatewayName];
     }

@@ -33,20 +33,20 @@ trait Billable
     }
 
     /**
-     * done.
+     * receive.
      *
      * @param string $payumToken
      * @param callable $callback
      * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function done($payumToken, callable $callback = null)
+    public function receive($payumToken, callable $callback = null)
     {
         $payumDecorator = $this->getPayumDecorator();
         $status = $payumDecorator->getStatus($payumToken);
         $payment = $status->getFirstModel();
         $token = $status->getToken();
         $gatewayName = $token->getGatewayName();
-        $method = sprintf('%s%s', 'done', Str::studly($gatewayName));
+        $method = sprintf('%s%s', 'receive', Str::studly($gatewayName));
 
         $response = call_user_func_array([$this, $method], [$status, $payment, $gatewayName]);
 
