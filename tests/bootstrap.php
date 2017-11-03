@@ -34,6 +34,15 @@ date_default_timezone_set('UTC');
 
 Carbon::setTestNow(Carbon::now());
 
+if (! function_exists('env')) {
+    function env($env)
+    {
+        if ($env === 'APP_DEBUG') {
+            return true;
+        }
+    }
+}
+
 if (! function_exists('storage_path')) {
     function storage_path()
     {

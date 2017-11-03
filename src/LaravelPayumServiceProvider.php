@@ -26,6 +26,7 @@ use Recca0120\LaravelPayum\Action\GetHttpRequestAction;
 use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 use Recca0120\LaravelPayum\Model\Token as EloquentToken;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
+use Payum\Core\Bridge\Psr\Log\LogExecutedActionsExtension;
 use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
 use Recca0120\LaravelPayum\Extension\PaymentStatusExtension;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
@@ -70,6 +71,15 @@ class LaravelPayumServiceProvider extends ServiceProvider
             $config = $app['config']['payum'];
 
             $routeAlias = Arr::get($config, 'route.as');
+
+            $extensions = [
+                'payum.extension.payment_status' => $app[PaymentStatusExtension::class],
+            ];
+
+            if (array_get($config, 'debug', false) === true) {
+                $extensions['payum.extension.Log_executed_actions'] = $app[LogExecutedActionsExtension::class];
+            }
+
             $builder = (new PayumBuilder())
                 ->setTokenFactory(function (StorageInterface $tokenStorage, StorageRegistryInterface $registry) use ($app) {
                     return new TokenFactory($tokenStorage, $registry, $app[UrlGenerator::class]);
@@ -80,13 +90,12 @@ class LaravelPayumServiceProvider extends ServiceProvider
                 ->setCoreGatewayFactory(function ($defaultConfig) {
                     return new CoreGatewayFactory($defaultConfig);
                 })
-                ->setCoreGatewayFactoryConfig([
+                ->setCoreGatewayFactoryConfig(array_merge([
                     'payum.action.get_http_request' => $app[GetHttpRequestAction::class],
                     'payum.action.obtain_credit_card' => $app[ObtainCreditCardAction::class],
                     'payum.action.render_template' => $app[RenderTemplateAction::class],
                     'payum.converter.reply_to_http_response' => $app[ReplyToSymfonyResponseConverter::class],
-                    'payum.extension.payment_status' => $app[PaymentStatusExtension::class],
-                ])
+                ], $extensions))
                 ->setGenericTokenFactoryPaths([
                     'authorize' => $routeAlias.'authorize',
                     'capture' => $routeAlias.'capture',
@@ -112,6 +121,10 @@ class LaravelPayumServiceProvider extends ServiceProvider
 
         $this->app->singleton(PayumManager::class, function ($app) {
             return new PayumManager($app);
+        });
+
+        $this->app->singleton(LogExecutedActionsExtension::class, function ($app) {
+            return new LogExecutedActionsExtension($app['log']);
         });
     }
 

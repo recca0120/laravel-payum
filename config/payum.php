@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'debug' => env('APP_DEBUG'),
+
     'storage' => [
         'token' => 'files',
         'gateway_config' => 'files',

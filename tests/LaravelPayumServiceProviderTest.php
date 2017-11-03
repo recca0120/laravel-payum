@@ -10,6 +10,7 @@ use Illuminate\Container\Container;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Recca0120\LaravelPayum\PayumManager;
 use Recca0120\LaravelPayum\LaravelPayumServiceProvider;
+use Payum\Core\Bridge\Psr\Log\LogExecutedActionsExtension;
 
 class LaravelPayumServiceProviderTest extends TestCase
 {
@@ -118,6 +119,14 @@ class LaravelPayumServiceProviderTest extends TestCase
 
         $app->shouldReceive('singleton')->once()->with('Recca0120\LaravelPayum\PayumManager', m::on(function ($closure) use ($app) {
             return $closure($app) instanceof PayumManager;
+        }));
+
+        $app->shouldReceive('offsetGet')->once()->with('log')->andReturn(
+            $log = m::mock('Psr\Log\LoggerInterface')
+        );
+
+        $app->shouldReceive('singleton')->once()->with('Payum\Core\Bridge\Psr\Log\LogExecutedActionsExtension', m::on(function ($closure) use ($app) {
+            return $closure($app) instanceof LogExecutedActionsExtension;
         }));
 
         $serviceProvider->register();
