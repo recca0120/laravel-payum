@@ -197,6 +197,6 @@ class Payment extends Model implements PaymentInterface, DirectDebitPaymentInter
      */
     public function setBankAccount(BankAccountInterface $bankAccount = null)
     {
-        return $this->setAttribute('bank_account', unserialize($bankAccount));
+        return $this->setAttribute('bank_account', serialize($bankAccount));
     }
 }
