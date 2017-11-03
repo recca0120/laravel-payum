@@ -41,17 +41,16 @@ trait Billable
      */
     public function receive($payumToken, callable $callback = null)
     {
-        $payumDecorator = $this->getPayumDecorator();
-        $status = $payumDecorator->getStatus($payumToken);
+        $status = $this->getPayumManager()->driver(null)->getStatus($payumToken);
         $payment = $status->getFirstModel();
         $token = $status->getToken();
-        $gatewayName = $token->getGatewayName();
-        $method = sprintf('%s%s', 'receive', Str::studly($gatewayName));
+        $driver = $token->getGatewayName();
+        $method = sprintf('%s%s', 'receive', Str::studly($driver));
 
-        $response = call_user_func_array([$this, $method], [$status, $payment, $gatewayName]);
+        $response = call_user_func_array([$this, $method], [$status, $payment, $driver]);
 
         if (is_callable($callback) === true) {
-            $callback($status, $payment, $gatewayName);
+            $callback($status, $payment, $driver);
         }
 
         return $response;
@@ -66,25 +65,14 @@ trait Billable
      */
     protected function payum($method, $options = [], $driver = null)
     {
-        $payumDecorator = $this->getPayumDecorator($driver);
-        $driver = $payumDecorator->driver();
+        $payum = $this->getPayumManager()->driver($driver);
+        $driver = $payum->driver();
 
-        return new RedirectResponse(call_user_func_array([$payumDecorator, $method], [function (PaymentInterface $payment) use ($method, $options, $driver) {
+        return new RedirectResponse(call_user_func_array([$payum, $method], [function (PaymentInterface $payment) use ($method, $options, $driver) {
             $method = sprintf('%s%s', $method, Str::studly($driver));
 
             return call_user_func_array([$this, $method], [$payment, $options]);
         }]));
-    }
-
-    /**
-     * getPayumDecorator.
-     *
-     * @param  string $driver
-     * @return \Recca0120\LaravelPayum\PayumDecorator
-     */
-    protected function getPayumDecorator($driver = null)
-    {
-        return $this->getPayumManager()->driver($driver);
     }
 
     /**

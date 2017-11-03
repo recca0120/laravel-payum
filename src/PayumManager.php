@@ -24,6 +24,6 @@ class PayumManager extends Manager
      */
     protected function createDriver($driver)
     {
-        return new PayumDecorator($this->app['payum'], $driver);
+        return new PayumDecorator($this->app['payum'], $this->app['request'], $driver);
     }
 }

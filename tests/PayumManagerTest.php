@@ -17,6 +17,7 @@ class PayumManagerTest extends TestCase
     public function testDefaultDriver()
     {
         $manager = new PayumManager([
+            'request' => $request = m::mock('Illuminate\Http\Request'),
             'payum' => m::mock('Payum\Core\Payum'),
             'config' => [
                 'payum' => [
@@ -31,6 +32,7 @@ class PayumManagerTest extends TestCase
     public function testOfflineDriver()
     {
         $manager = new PayumManager([
+            'request' => $request = m::mock('Illuminate\Http\Request'),
             'payum' => m::mock('Payum\Core\Payum'),
             'config' => [
                 'payum' => [

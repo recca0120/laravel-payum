@@ -16,6 +16,7 @@ class PayumDecorator
      * @var string
      */
     public $gatewayName;
+
     /**
      * $payum.
      *
@@ -24,14 +25,23 @@ class PayumDecorator
     protected $payum;
 
     /**
+     * $payum.
+     *
+     * @var \Payum\Core\Payum
+     */
+    protected $request;
+
+    /**
      * __construct.
      *
      * @param \Payum\Core\Payum $payum
+     * @param \Illuminate\Http\Request $request
      * @param string $gatewayName
      */
-    public function __construct(Payum $payum, $gatewayName)
+    public function __construct(Payum $payum, Request $request, $gatewayName)
     {
         $this->payum = $payum;
+        $this->request = $request;
         $this->gatewayName = $gatewayName;
     }
 
@@ -141,70 +151,20 @@ class PayumDecorator
     }
 
     /**
-     * done.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param string $payumToken
-     * @param callable $callback
-     * @return mixed
-     */
-    public function done(Request $request, $payumToken, callable $callback)
-    {
-        $token = $this->getPayum()->getHttpRequestVerifier()->verify(
-            $request->duplicate(null, null, ['payum_token' => $payumToken])
-        );
-        $gateway = $this->getPayum()->getGateway($token->getGatewayName());
-        $gateway->execute($status = new GetHumanStatus($token));
-
-        return $callback($status, $status->getFirstModel(), $token, $gateway);
-    }
-
-    /**
      * getStatus.
      *
      * @param string $payumToken
-     * @param \Illuminate\Http\Request $request
      * @return \Payum\Core\Request\GetHumanStatus
      */
-    public function getStatus($payumToken, Request $request = null)
+    public function getStatus($payumToken)
     {
-        $request = $request ?: Request::capture();
         $token = $this->getPayum()->getHttpRequestVerifier()->verify(
-            $request->duplicate(null, null, ['payum_token' => $payumToken])
+            $this->request->duplicate(null, null, ['payum_token' => $payumToken])
         );
         $gateway = $this->getPayum()->getGateway($token->getGatewayName());
         $gateway->execute($status = new GetHumanStatus($token));
 
         return $status;
-    }
-
-    /**
-     * getResult.
-     *
-     * @param string $payumToken
-     * @param \Illuminate\Http\Request $request
-     * @return array
-     */
-    public function getResult($payumToken, Request $request = null)
-    {
-        $status = $this->getStatus($payumToken, $request);
-        $payment = $status->getFirstModel();
-
-        $token = $status->getToken();
-        $gatewayName = $token->getGatewayName();
-
-        return [
-            'client_email' => $payment->getClientEmail(),
-            'client_id' => $payment->getClientId(),
-            'creditcard' => $payment->getCreditCard(),
-            'currency_code' => $payment->getCurrencyCode(),
-            'description' => $payment->getDescription(),
-            'details' => $payment->getDetails(),
-            'gatewayName' => $gatewayName,
-            'number' => $payment->getNumber(),
-            'status' => $status->getValue(),
-            'total_amount' => $payment->getTotalAmount(),
-        ];
     }
 
     /**
