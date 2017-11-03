@@ -5,6 +5,8 @@ namespace Recca0120\LaravelPayum;
 use Payum\Core\Payum;
 use Illuminate\Http\Request;
 use Payum\Core\Model\Payment;
+use Payum\Core\Request\Sync;
+use Payum\Core\Request\Convert;
 use Payum\Core\Request\GetHumanStatus;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
@@ -36,13 +38,13 @@ class Gateway
      *
      * @param \Payum\Core\Payum $payum
      * @param \Illuminate\Http\Request $request
-     * @param string $gatewayName
+     * @param string $name
      */
-    public function __construct(Payum $payum, Request $request, $gatewayName)
+    public function __construct(Payum $payum, Request $request, $name)
     {
         $this->payum = $payum;
         $this->request = $request;
-        $this->gatewayName = $gatewayName;
+        $this->name = $name;
     }
 
     /**
@@ -56,13 +58,13 @@ class Gateway
     }
 
     /**
-     * getGatewayName.
+     * getName.
      *
      * @return string
      */
-    public function getGatewayName()
+    public function getName()
     {
-        return $this->gatewayName;
+        return $this->name;
     }
 
     /**
@@ -72,7 +74,7 @@ class Gateway
      */
     public function driver()
     {
-        return $this->getGatewayName();
+        return $this->getName();
     }
 
     /**
@@ -82,7 +84,21 @@ class Gateway
      */
     public function getGateway()
     {
-        return $this->getPayum()->getGateway($this->gatewayName);
+        return $this->getPayum()->getGateway($this->name);
+    }
+
+    /**
+     * execute.
+     *
+     * @param mixed $request
+     * @param boolean $catchReply
+     * @return mixed
+     */
+    public function execute($request, $catchReply = false)
+    {
+        $this->getGateway($request, $catchReply);
+
+        return $request;
     }
 
     /**
@@ -151,6 +167,30 @@ class Gateway
     }
 
     /**
+     * sync.
+     *
+     * @param callable $callback
+     * @return mixed
+     */
+    public function sync(callable $callback) {
+        $gateway = $this->getGateway();
+        $storage = $this->getStorage();
+        $payment = $storage->create();
+
+        $callback($payment, $storage, $this->driver(), $this->getPayum());
+
+        $request = new Sync($payment);
+        $convert = new Convert($payment, 'array', $request->getToken());
+
+        $gateway->execute($convert);
+        $payment->setDetails($convert->getResult());
+
+        $gateway->execute($request);
+
+        return $request->getModel();
+    }
+
+    /**
      * getStatus.
      *
      * @param string $payumToken
@@ -180,12 +220,12 @@ class Gateway
     {
         $storage = $this->getStorage();
         $payment = $storage->create();
-        $callback($payment, $this->gatewayName);
+        $callback($payment, $this->name);
         $storage->update($payment);
         $tokenFactory = $this->getPayum()->getTokenFactory();
         $token = call_user_func_array(
             [$tokenFactory, sprintf('create%sToken', ucfirst($method))],
-            [$this->gatewayName, $payment, $afterPath, $afterParameters]
+            [$this->name, $payment, $afterPath, $afterParameters]
         );
 
         return $token->getTargetUrl();

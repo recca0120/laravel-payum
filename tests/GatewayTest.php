@@ -39,15 +39,69 @@ class GatewayTest extends TestCase
         $this->assertSend('payout');
     }
 
-    public function testGateway()
+    public function testSync()
     {
         $gateway = new Gateway(
             $payum = m::mock('Payum\Core\Payum'),
             $request = m::mock('illuminate\Http\Request'),
-            $gatewayName = 'offline'
+            $name = 'offline'
         );
 
-        $payum->shouldReceive('getGateway')->once()->with($gatewayName)->andReturn(
+        $payum->shouldReceive('getGateway')->once()->with($name)->andReturn(
+            $payumGateway = m::mock('Payum\Core\GatewayInterface')
+        );
+
+        $payum->shouldReceive('getStorages')->once()->andReturn([
+            'Payum\Core\Model\Paymen' => null,
+        ]);
+
+        $payum->shouldReceive('getStorage')->once()->with('Payum\Core\Model\Payment')->andReturn(
+            $storage = m::mock('Payum\Core\Storage\StorageInterface')
+        );
+
+        $storage->shouldReceive('create')->once()->andReturn(
+            $payment = m::mock('Payum\Core\Model\Payment')
+        );
+
+        $payumGateway->shouldReceive('execute')->once()->with(m::type('Payum\Core\Request\Convert'));
+        $payment->shouldReceive('setDetails');
+
+        $payumGateway->shouldReceive('execute')->once()->with(m::type('Payum\Core\Request\Sync'));
+
+        $this->assertInstanceOf('Payum\Core\Model\Payment', $gateway->sync(function() {}));
+    }
+
+    public function testDriver()
+    {
+        $gateway = new Gateway(
+            $payum = m::mock('Payum\Core\Payum'),
+            $request = m::mock('illuminate\Http\Request'),
+            $name = 'offline'
+        );
+
+        $this->assertSame($name, $gateway->driver());
+    }
+
+    public function testGetPayum()
+    {
+        $gateway = new Gateway(
+            $payum = m::mock('Payum\Core\Payum'),
+            $request = m::mock('illuminate\Http\Request'),
+            $name = 'offline'
+        );
+
+        $this->assertSame($payum, $gateway->getPayum());
+    }
+
+    public function testGetGateway()
+    {
+        $gateway = new Gateway(
+            $payum = m::mock('Payum\Core\Payum'),
+            $request = m::mock('illuminate\Http\Request'),
+            $name = 'offline'
+        );
+
+        $payum->shouldReceive('getGateway')->once()->with($name)->andReturn(
             $payumGateway = m::mock('Payum\Core\GatewayInterface')
         );
 
@@ -59,7 +113,7 @@ class GatewayTest extends TestCase
         $gateway = new Gateway(
             $payum = m::mock('Payum\Core\Payum'),
             $request = m::mock('illuminate\Http\Request'),
-            $gatewayName = 'offline'
+            $name = 'offline'
         );
 
         $payumToken = 'foo.payum_token';
@@ -74,9 +128,9 @@ class GatewayTest extends TestCase
             $token = m::mock('Payum\Core\Security\TokenInterface')
         );
         $token->shouldReceive('getGatewayName')->once()->andReturn(
-            $gatewayName = 'foo.gateway_name'
+            $name = 'foo.gateway_name'
         );
-        $payum->shouldReceive('getGateway')->once()->with($gatewayName)->andReturn(
+        $payum->shouldReceive('getGateway')->once()->with($name)->andReturn(
             $payumGateway = m::mock('Payum\Core\GatewayInterface')
         );
         $payumGateway->shouldReceive('execute')->once()->with(m::type('Payum\Core\Request\GetHumanStatus'));
@@ -89,7 +143,7 @@ class GatewayTest extends TestCase
         $gateway = new Gateway(
             $payum = m::mock('Payum\Core\Payum'),
             $request = m::mock('illuminate\Http\Request'),
-            $gatewayName = 'offline'
+            $name = 'offline'
         );
 
         $payum->shouldReceive('getStorages')->once()->andReturn([
@@ -111,7 +165,7 @@ class GatewayTest extends TestCase
         );
 
         $tokenFactory->shouldReceive('create'.ucfirst($method).'Token')->once()->with(
-            $gatewayName, $payment, $afterPath = 'foo.done', $afterParameters = ['foo' => 'bar']
+            $name, $payment, $afterPath = 'foo.done', $afterParameters = ['foo' => 'bar']
         )->andReturn(
             $token = m::mock('Payum\Core\Security\TokenInterface')
         );
