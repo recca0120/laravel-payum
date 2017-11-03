@@ -69,11 +69,4 @@ class PaymentEloquentTest extends TestCase
         $payment->setCreditCard($creditCard = m::mock('Payum\Core\Model\CreditCardInterface'));
         $this->assertSame($creditCard, $payment->getCreditCard());
     }
-
-    public function testSetStatus()
-    {
-        $payment = new Payment();
-        $payment->setStatus($status = 'captured');
-        $this->assertSame($status, $payment->getStatus());
-    }
 }

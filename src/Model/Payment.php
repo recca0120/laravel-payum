@@ -5,9 +5,8 @@ namespace Recca0120\LaravelPayum\Model;
 use Payum\Core\Model\PaymentInterface;
 use Illuminate\Database\Eloquent\Model;
 use Payum\Core\Model\CreditCardInterface;
-use Recca0120\LaravelPayum\Contracts\PaymentStatus;
 
-class Payment extends Model implements PaymentInterface, PaymentStatus
+class Payment extends Model implements PaymentInterface
 {
     /**
      * $table.
@@ -181,25 +180,5 @@ class Payment extends Model implements PaymentInterface, PaymentStatus
     public function setCreditCard(CreditCardInterface $creditCard = null)
     {
         $this->creditCard = $creditCard;
-    }
-
-    /**
-     * setStatus.
-     *
-     * @param string $status
-     */
-    public function setStatus($status)
-    {
-        $this->setAttribute('status', $status);
-    }
-
-    /**
-     * getStatus.
-     *
-     * @return string
-     */
-    public function getStatus()
-    {
-        return $this->getAttribute('status');
     }
 }

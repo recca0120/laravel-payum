@@ -22,7 +22,6 @@ class CreatePayumPaymentsTable extends Migration
             $table->string('clientEmail')->nullable();
             $table->string('totalAmount')->nullable();
             $table->string('currencyCode')->nullable();
-            $table->string('status')->nullable();
             $table->timestamps();
         });
     }

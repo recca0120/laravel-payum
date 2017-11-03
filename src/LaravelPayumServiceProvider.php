@@ -27,9 +27,9 @@ use Recca0120\LaravelPayum\Action\RenderTemplateAction;
 use Recca0120\LaravelPayum\Model\Token as EloquentToken;
 use Recca0120\LaravelPayum\Action\ObtainCreditCardAction;
 use Payum\Core\Bridge\Symfony\Security\HttpRequestVerifier;
+use Recca0120\LaravelPayum\Extension\PaymentStatusExtension;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 use Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter;
-use Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension;
 
 class LaravelPayumServiceProvider extends ServiceProvider
 {
@@ -85,7 +85,7 @@ class LaravelPayumServiceProvider extends ServiceProvider
                     'payum.action.obtain_credit_card' => $app[ObtainCreditCardAction::class],
                     'payum.action.render_template' => $app[RenderTemplateAction::class],
                     'payum.converter.reply_to_http_response' => $app[ReplyToSymfonyResponseConverter::class],
-                    'payum.extension.update_payment_status' => $app[UpdatePaymentStatusExtension::class],
+                    'payum.extension.update_payment_status' => $app[PaymentStatusExtension::class],
                 ])
                 ->setGenericTokenFactoryPaths([
                     'authorize' => $routeAlias.'authorize',

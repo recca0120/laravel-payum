@@ -9,10 +9,9 @@ use Payum\Core\Request\GetHumanStatus;
 use Payum\Core\Request\GetStatusInterface;
 use Illuminate\Contracts\Events\Dispatcher;
 use Payum\Core\Extension\ExtensionInterface;
-use Recca0120\LaravelPayum\Contracts\PaymentStatus;
 use Recca0120\LaravelPayum\Events\PaymentStatusChanged;
 
-class UpdatePaymentStatusExtension implements ExtensionInterface
+class PaymentStatusExtension implements ExtensionInterface
 {
     /**
      * $events.
@@ -59,29 +58,14 @@ class UpdatePaymentStatusExtension implements ExtensionInterface
             return;
         }
 
-        $this->dispatch($context, $request);
-    }
+        $payment = $request->getModel();
 
-    protected function dispatch(Context $context, $request)
-    {
-        $payment = $request->getFirstModel();
         if (($payment instanceof PaymentInterface) === false) {
             return;
         }
 
-        $status = $this->getStatus($context, $payment);
+        $context->getGateway()->execute($status = new GetHumanStatus($payment));
+
         $this->events->fire(new PaymentStatusChanged($status, $payment));
-    }
-
-    protected function getStatus(Context $context, $payment)
-    {
-        $status = new GetHumanStatus($payment);
-        $context->getGateway()->execute($status);
-
-        if ($payment instanceof PaymentStatus) {
-            $payment->setStatus($status->getValue());
-        }
-
-        return $status;
     }
 }

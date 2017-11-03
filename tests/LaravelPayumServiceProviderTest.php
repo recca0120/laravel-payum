@@ -89,8 +89,8 @@ class LaravelPayumServiceProviderTest extends TestCase
                 m::mock('Payum\Core\Bridge\Symfony\ReplyToSymfonyResponseConverter')
             );
 
-            $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension')->andReturn(
-                m::mock('Recca0120\LaravelPayum\Extension\UpdatePaymentStatusExtension')
+            $app->shouldReceive('offsetGet')->once()->with('Recca0120\LaravelPayum\Extension\PaymentStatusExtension')->andReturn(
+                m::mock('Recca0120\LaravelPayum\Extension\PaymentStatusExtension')
             );
 
             $builder = $closure($app);
