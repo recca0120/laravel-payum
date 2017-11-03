@@ -20,10 +20,10 @@ class PayumManager extends Manager
      * createDriver.
      *
      * @param string $driver
-     * @return \Recca0120\LaravelPayum\PayumDecorator
+     * @return \Recca0120\LaravelPayum\Gateway
      */
     protected function createDriver($driver)
     {
-        return new PayumDecorator($this->app['payum'], $this->app['request'], $driver);
+        return new Gateway($this->app['payum'], $this->app['request'], $driver);
     }
 }

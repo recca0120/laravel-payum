@@ -24,10 +24,10 @@ class BillableTest extends TestCase
         $billable = new BillableStub;
         $payumManager = $this->mockPayumManager();
         $payumManager->shouldReceive('driver')->once()->andReturn(
-            $payumDecorator = m::mock('Recca0120\LaravelPayum\PayumDecorator')
+            $gateway = m::mock('Recca0120\LaravelPayum\Gateway')
         );
-        $payumDecorator->shouldReceive('driver')->once()->andReturn($driver);
-        $payumDecorator->shouldReceive('authorize')->once()->andReturnUsing(function ($closure) use ($options) {
+        $gateway->shouldReceive('driver')->once()->andReturn($driver);
+        $gateway->shouldReceive('authorize')->once()->andReturnUsing(function ($closure) use ($options) {
             $paymentInterface = m::mock('Payum\Core\Model\PaymentInterface');
             list($payment, $opts) = $closure($paymentInterface, $options);
 
@@ -48,10 +48,10 @@ class BillableTest extends TestCase
         $billable = new BillableStub;
         $payumManager = $this->mockPayumManager();
         $payumManager->shouldReceive('driver')->once()->andReturn(
-            $payumDecorator = m::mock('Recca0120\LaravelPayum\PayumDecorator')
+            $gateway = m::mock('Recca0120\LaravelPayum\Gateway')
         );
-        $payumDecorator->shouldReceive('driver')->once()->andReturn($driver);
-        $payumDecorator->shouldReceive('capture')->once()->andReturnUsing(function ($closure) use ($options) {
+        $gateway->shouldReceive('driver')->once()->andReturn($driver);
+        $gateway->shouldReceive('capture')->once()->andReturnUsing(function ($closure) use ($options) {
             $paymentInterface = m::mock('Payum\Core\Model\PaymentInterface');
             list($payment, $opts) = $closure($paymentInterface, $options);
 
@@ -70,9 +70,9 @@ class BillableTest extends TestCase
         $billable = new BillableStub;
         $payumManager = $this->mockPayumManager();
         $payumManager->shouldReceive('driver')->once()->andReturn(
-            $payumDecorator = m::mock('Recca0120\LaravelPayum\PayumDecorator')
+            $gateway = m::mock('Recca0120\LaravelPayum\Gateway')
         );
-        $payumDecorator->shouldReceive('getStatus')->once()->with($payumToken)->andReturn(
+        $gateway->shouldReceive('getStatus')->once()->with($payumToken)->andReturn(
             $status = m::mock('Payum\Core\Request\GetHumanStatus')
         );
         $status->shouldReceive('getFirstModel')->once()->andReturn(

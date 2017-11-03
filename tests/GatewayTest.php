@@ -4,9 +4,9 @@ namespace Recca0120\LaravelPayum\Tests;
 
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use Recca0120\LaravelPayum\PayumDecorator;
+use Recca0120\LaravelPayum\Gateway;
 
-class PayumDecoratorTest extends TestCase
+class GatewayTest extends TestCase
 {
     protected function tearDown()
     {
@@ -41,22 +41,22 @@ class PayumDecoratorTest extends TestCase
 
     public function testGateway()
     {
-        $payumDecorator = new PayumDecorator(
+        $gateway = new Gateway(
             $payum = m::mock('Payum\Core\Payum'),
             $request = m::mock('illuminate\Http\Request'),
             $gatewayName = 'offline'
         );
 
         $payum->shouldReceive('getGateway')->once()->with($gatewayName)->andReturn(
-            $gateway = m::mock('Payum\Core\GatewayInterface')
+            $payumGateway = m::mock('Payum\Core\GatewayInterface')
         );
 
-        $this->assertSame($gateway, $payumDecorator->getGateway());
+        $this->assertSame($payumGateway, $gateway->getGateway());
     }
 
     public function testGetStatus()
     {
-        $payumDecorator = new PayumDecorator(
+        $gateway = new Gateway(
             $payum = m::mock('Payum\Core\Payum'),
             $request = m::mock('illuminate\Http\Request'),
             $gatewayName = 'offline'
@@ -77,16 +77,16 @@ class PayumDecoratorTest extends TestCase
             $gatewayName = 'foo.gateway_name'
         );
         $payum->shouldReceive('getGateway')->once()->with($gatewayName)->andReturn(
-            $gateway = m::mock('Payum\Core\GatewayInterface')
+            $payumGateway = m::mock('Payum\Core\GatewayInterface')
         );
-        $gateway->shouldReceive('execute')->once()->with(m::type('Payum\Core\Request\GetHumanStatus'));
+        $payumGateway->shouldReceive('execute')->once()->with(m::type('Payum\Core\Request\GetHumanStatus'));
 
-        $this->assertInstanceOf('Payum\Core\Request\GetHumanStatus', $payumDecorator->getStatus($payumToken));
+        $this->assertInstanceOf('Payum\Core\Request\GetHumanStatus', $gateway->getStatus($payumToken));
     }
 
     protected function assertSend($method)
     {
-        $payumDecorator = new PayumDecorator(
+        $gateway = new Gateway(
             $payum = m::mock('Payum\Core\Payum'),
             $request = m::mock('illuminate\Http\Request'),
             $gatewayName = 'offline'
@@ -120,6 +120,6 @@ class PayumDecoratorTest extends TestCase
 
         $callback = function () {
         };
-        $this->assertSame($targetUrl, call_user_func_array([$payumDecorator, $method], [$callback, $afterPath, $afterParameters]));
+        $this->assertSame($targetUrl, call_user_func_array([$gateway, $method], [$callback, $afterPath, $afterParameters]));
     }
 }

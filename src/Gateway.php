@@ -8,7 +8,7 @@ use Payum\Core\Model\Payment;
 use Payum\Core\Request\GetHumanStatus;
 use Recca0120\LaravelPayum\Model\Payment as EloquentPayment;
 
-class PayumDecorator
+class Gateway
 {
     /**
      * $gatewayName.
